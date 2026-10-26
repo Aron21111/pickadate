@@ -1,0 +1,16 @@
+{
+  "name": "Wie kan wanneer",
+  "short_name": "Wie kan?",
+  "description": "Prik een datum met je groep: kies dagen, deel een bericht en zie welke dag voor iedereen past.",
+  "lang": "nl",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#F2F3EE",
+  "theme_color": "#F2F3EE",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

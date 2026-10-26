@@ -1,0 +1,1172 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Wie kan wanneer</title>
+<meta name="description" content="Prik een datum met je groep: kies dagen, deel een genummerd bericht in WhatsApp, plak de antwoorden terug en zie welke dag voor iedereen past. Alles blijft op je eigen toestel.">
+<meta name="theme-color" content="#F2F3EE" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#111513" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="icon" href="icons/icon-192.png" sizes="192x192" type="image/png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Wie kan?">
+<meta property="og:title" content="Wie kan wanneer">
+<meta property="og:description" content="Prik een datum met je groep zonder gedoe.">
+<link rel="preload" href="fonts/hanken-grotesk-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+/* Fonts are self-hosted: the page makes no requests to other sites. */
+@font-face { font-family: "Hanken Grotesk"; src: url("fonts/hanken-grotesk-latin-wght-normal.woff2") format("woff2"); font-weight: 100 900; font-style: normal; font-display: swap; }
+@font-face { font-family: "Barlow Condensed"; src: url("fonts/barlow-condensed-latin-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: swap; }
+@font-face { font-family: "Barlow Condensed"; src: url("fonts/barlow-condensed-latin-600-normal.woff2") format("woff2"); font-weight: 600; font-style: normal; font-display: swap; }
+@font-face { font-family: "Barlow Condensed"; src: url("fonts/barlow-condensed-latin-700-normal.woff2") format("woff2"); font-weight: 700; font-style: normal; font-display: swap; }
+
+/* Layout: one calm column, wall-calendar details (tear-off sheet, condensed day numerals, highlighter on the winning day). */
+:root {
+  --paper: #F2F3EE;
+  --card: #FBFBF8;
+  --ink: #17201C;
+  --ink-2: #57615C;
+  --ink-3: #8A938E;
+  --line: #D9DCD3;
+  --cobalt: #2445C9;
+  --cobalt-soft: #E2E7FA;
+  --on-cobalt: #FFFFFF;
+  --amber: #D99A12;
+  --amber-soft: #FBF0D4;
+  --marker: #FFE35A;
+  --marker-ink: #1C1A0C;
+  --hl: #FFE35A;
+  --danger: #B3261E;
+  --ok: #1E7A4C;
+  --shadow: 0 1px 0 rgba(23, 32, 28, .04), 0 6px 18px -10px rgba(23, 32, 28, .18);
+  --f-display: "Barlow Condensed", "Arial Narrow", "Roboto Condensed", system-ui, sans-serif;
+  --f-body: "Hanken Grotesk", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --r: 10px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #111513; --card: #191E1B; --ink: #E5EAE6; --ink-2: #A2ABA6; --ink-3: #6E7772; --line: #2B322E;
+    --cobalt: #8EA3FF; --cobalt-soft: #1F2848; --on-cobalt: #0D1430; --amber: #E6B13F; --amber-soft: #3A2F14;
+    --marker: #D8BC2C; --marker-ink: #17150A; --hl: rgba(216, 188, 44, .34); --danger: #F2867E; --ok: #6FD1A0;
+    --shadow: 0 1px 0 rgba(0,0,0,.3), 0 8px 20px -12px rgba(0,0,0,.6);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #111513; --card: #191E1B; --ink: #E5EAE6; --ink-2: #A2ABA6; --ink-3: #6E7772; --line: #2B322E;
+  --cobalt: #8EA3FF; --cobalt-soft: #1F2848; --on-cobalt: #0D1430; --amber: #E6B13F; --amber-soft: #3A2F14;
+  --marker: #D8BC2C; --marker-ink: #17150A; --hl: rgba(216, 188, 44, .34); --danger: #F2867E; --ok: #6FD1A0;
+  --shadow: 0 1px 0 rgba(0,0,0,.3), 0 8px 20px -12px rgba(0,0,0,.6);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; color-scheme: light; background: var(--paper); }
+[hidden] { display: none !important; }
+img, svg { max-width: 100%; }
+body {
+  margin: 0;
+  background: var(--paper); color: var(--ink);
+  font-family: var(--f-body); font-size: 15px; line-height: 1.5;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-top: calc(20px + env(safe-area-inset-top, 0px));
+  padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+  -webkit-font-smoothing: antialiased;
+}
+.foot { display: grid; gap: 10px; font-size: 13px; color: var(--ink-2); border-top: 1px solid var(--line); padding-top: 16px; }
+.foot .row { gap: 6px 14px; }
+.linkbtn { background: none; border: 0; padding: 0; color: var(--cobalt); font-weight: 600; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; font-size: 13px; }
+.wrap { max-width: 880px; margin: 0 auto; display: grid; gap: 20px; }
+h1, h2, h3 { margin: 0; text-wrap: balance; }
+h1 { font-family: var(--f-display); font-weight: 700; font-size: 34px; line-height: 1.05; letter-spacing: .01em; }
+h2 { font-size: 18px; font-weight: 700; }
+h3 { font-size: 15px; font-weight: 700; }
+p { margin: 0; }
+.muted { color: var(--ink-2); }
+.small { font-size: 13px; }
+.eyebrow { font-size: 12px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-2); }
+button, input, textarea { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--cobalt); outline-offset: 2px; }
+
+/* top bar */
+.top { display: flex; align-items: center; gap: 12px; }
+.brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+.sheet-mini { width: 30px; height: 32px; border-radius: 5px; background: var(--card); border: 1.5px solid var(--ink); overflow: hidden; display: grid; grid-template-rows: 9px 1fr; }
+.sheet-mini::before { content: ""; background: var(--cobalt); }
+.sheet-mini span { font-family: var(--f-display); font-weight: 700; font-size: 15px; line-height: 1; display: grid; place-items: center; }
+.brand b { font-family: var(--f-display); font-size: 22px; font-weight: 700; letter-spacing: .01em; white-space: nowrap; }
+.top .spacer { flex: 1; }
+
+/* buttons */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 42px; padding: 0 16px; border-radius: 999px; border: 1.5px solid var(--line); background: var(--card); color: var(--ink); font-weight: 600; cursor: pointer; text-decoration: none; white-space: nowrap; }
+.btn:hover { border-color: var(--ink-3); }
+.btn.primary { background: var(--cobalt); border-color: var(--cobalt); color: var(--on-cobalt); }
+.btn.primary:hover { filter: brightness(1.06); }
+.btn.ghost { background: transparent; border-color: transparent; padding: 0 10px; }
+.btn.ghost:hover { background: var(--cobalt-soft); }
+.btn.danger { color: var(--danger); }
+.btn.small { min-height: 34px; padding: 0 12px; font-size: 14px; }
+.btn[disabled] { opacity: .45; cursor: not-allowed; }
+.back { background: none; border: 0; padding: 4px 0; color: var(--ink-2); font-weight: 600; cursor: pointer; justify-self: start; }
+.back:hover { color: var(--ink); }
+.row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 18px; box-shadow: var(--shadow); display: grid; gap: 14px; min-width: 0; }
+.banner { border-radius: var(--r); padding: 12px 14px; background: var(--amber-soft); border: 1px solid color-mix(in srgb, var(--amber) 40%, transparent); font-size: 14px; }
+
+/* list */
+.list-head { display: flex; flex-wrap: wrap; gap: 12px; align-items: end; justify-content: space-between; }
+.events { display: grid; gap: 10px; }
+.ev { display: grid; grid-template-columns: auto 1fr auto; gap: 14px; align-items: center; text-align: left; width: 100%; padding: 14px 16px; border-radius: 14px; background: var(--card); border: 1px solid var(--line); box-shadow: var(--shadow); cursor: pointer; }
+.ev:hover { border-color: var(--ink-3); }
+.ev .t { font-weight: 700; font-size: 16px; overflow-wrap: anywhere; }
+.ev .m { font-size: 13px; color: var(--ink-2); }
+.ev .go { color: var(--ink-3); font-size: 20px; }
+.chip-tag { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; padding: 2px 7px; border-radius: 999px; background: var(--cobalt-soft); color: var(--cobalt); vertical-align: 2px; margin-left: 6px; }
+.chip-tag.amber { background: var(--amber-soft); color: color-mix(in srgb, var(--amber) 70%, var(--ink)); }
+
+/* tear-off sheet */
+.sheet { width: 64px; flex: none; border-radius: 8px; overflow: hidden; background: var(--card); border: 1.5px solid var(--ink); text-align: center; line-height: 1; }
+.sheet .mo { background: var(--cobalt); color: var(--on-cobalt); font-family: var(--f-display); font-weight: 600; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; padding: 4px 0 3px; }
+.sheet .dn { font-family: var(--f-display); font-weight: 700; font-size: 32px; padding: 5px 0 2px; font-variant-numeric: tabular-nums; }
+.sheet .wd { font-size: 11px; font-weight: 600; color: var(--ink-2); padding-bottom: 6px; }
+.sheet.big { width: 104px; }
+.sheet.big .mo { font-size: 15px; padding: 6px 0 5px; }
+.sheet.big .dn { font-size: 56px; padding: 8px 0 2px; }
+.sheet.big .wd { font-size: 13px; padding-bottom: 10px; }
+.sheet.empty .mo { background: var(--line); color: var(--ink-2); }
+.sheet.empty .dn { color: var(--ink-3); }
+
+.how { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+.how .step { display: grid; grid-template-columns: auto 1fr; gap: 10px; align-items: start; }
+.how .num { font-family: var(--f-display); font-weight: 700; font-size: 28px; line-height: 1; color: var(--cobalt); }
+.how p { font-size: 14px; color: var(--ink-2); }
+.how b { color: var(--ink); display: block; }
+
+/* form */
+label.lbl { font-weight: 600; font-size: 14px; display: block; margin-bottom: 6px; }
+.input { width: 100%; min-height: 46px; padding: 10px 14px; border-radius: var(--r); border: 1.5px solid var(--line); background: var(--paper); }
+.input:focus { border-color: var(--cobalt); outline: none; }
+textarea.input { min-height: 140px; resize: vertical; font-size: 14px; line-height: 1.45; }
+.err { color: var(--danger); font-size: 14px; font-weight: 600; }
+
+/* calendar */
+.cal { display: grid; gap: 10px; max-width: 420px; }
+.cal-head { display: flex; align-items: center; justify-content: space-between; }
+.cal-head b { font-family: var(--f-display); font-size: 22px; font-weight: 700; text-transform: capitalize; }
+.cal-nav { width: 38px; height: 38px; border-radius: 999px; border: 1.5px solid var(--line); background: var(--card); cursor: pointer; font-size: 18px; line-height: 1; }
+.cal-nav[disabled] { opacity: .35; cursor: default; }
+.cal-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
+.cal-dow { font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-3); text-align: center; padding-bottom: 2px; }
+.day { position: relative; aspect-ratio: 1; max-width: 100%; border-radius: 9px; border: 1.5px solid transparent; background: var(--paper); cursor: pointer; font-family: var(--f-display); font-weight: 600; font-size: 19px; font-variant-numeric: tabular-nums; display: grid; place-items: center; }
+.day:hover:not([disabled]) { border-color: var(--cobalt); }
+.day.we { color: var(--ink-2); }
+.day.today { border-color: var(--ink); }
+.day[disabled] { opacity: .3; cursor: default; }
+.day.sel { background: var(--cobalt); color: var(--on-cobalt); }
+.day.off { background: var(--paper); color: var(--ink-3); text-decoration: line-through; border-color: var(--line); border-style: dashed; }
+.day .badge { position: absolute; top: 2px; right: 4px; font-family: var(--f-body); font-size: 10px; font-weight: 700; opacity: .85; }
+.blank { aspect-ratio: 1; }
+.quick { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 13px; color: var(--ink-2); }
+
+.picked { display: flex; flex-wrap: wrap; gap: 6px; }
+.pick { display: inline-flex; align-items: center; gap: 6px; padding: 5px 6px 5px 10px; border-radius: 999px; background: var(--cobalt-soft); font-size: 14px; font-weight: 600; }
+.pick .n { font-family: var(--f-display); font-weight: 700; color: var(--cobalt); }
+.pick button { border: 0; background: transparent; width: 24px; height: 24px; border-radius: 999px; cursor: pointer; color: var(--ink-2); font-size: 15px; line-height: 1; }
+.pick button:hover { background: var(--card); color: var(--ink); }
+.pick.off { background: transparent; border: 1px dashed var(--line); color: var(--ink-3); text-decoration: line-through; }
+
+/* event view */
+.ev-head { display: grid; gap: 6px; }
+.ev-head .meta { color: var(--ink-2); font-size: 14px; }
+.tabs { display: flex; gap: 4px; padding: 4px; border-radius: 999px; background: var(--card); border: 1px solid var(--line); width: fit-content; max-width: 100%; overflow-x: auto; }
+.tab { border: 0; background: transparent; padding: 8px 14px; border-radius: 999px; font-weight: 600; font-size: 14px; color: var(--ink-2); cursor: pointer; white-space: nowrap; }
+.tab[aria-selected="true"] { background: var(--ink); color: var(--paper); }
+.tab .cnt { font-variant-numeric: tabular-nums; opacity: .7; margin-left: 4px; }
+
+/* best day */
+.best { display: flex; gap: 18px; align-items: center; flex-wrap: wrap; }
+.best .txt { display: grid; gap: 6px; min-width: 0; flex: 1 1 220px; }
+.best .big { font-family: var(--f-display); font-size: 30px; font-weight: 700; line-height: 1.05; }
+.hl { background: linear-gradient(transparent 48%, var(--hl) 48%, var(--hl) 92%, transparent 92%); color: inherit; padding: 0 2px; }
+.pin-done { display: inline-flex; align-items: center; gap: 6px; font-weight: 700; color: var(--ok); }
+
+/* ranking */
+.rank { display: grid; gap: 2px; }
+.rank-row { display: grid; grid-template-columns: 30px 92px minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 10px 8px; border-radius: 10px; }
+.rank-row + .rank-row { border-top: 1px solid var(--line); }
+.rank-row.top { background: color-mix(in srgb, var(--hl) 40%, transparent); }
+.rank-row .n { font-family: var(--f-display); font-weight: 700; font-size: 18px; color: var(--ink-3); text-align: center; }
+.rank-row .dl { font-weight: 600; white-space: nowrap; }
+.rank-row .dl .dnum { font-family: var(--f-display); font-weight: 700; font-size: 22px; margin: 0 2px; }
+.bar { height: 10px; border-radius: 999px; background: var(--paper); border: 1px solid var(--line); overflow: hidden; display: flex; }
+.bar .y { background: var(--cobalt); }
+.bar .m { background: repeating-linear-gradient(135deg, var(--amber) 0 3px, transparent 3px 6px); }
+.who { font-size: 13px; color: var(--ink-2); margin-top: 4px; overflow-wrap: anywhere; }
+.who .mb { color: color-mix(in srgb, var(--amber) 65%, var(--ink)); }
+.score { font-family: var(--f-display); font-weight: 700; font-size: 24px; font-variant-numeric: tabular-nums; text-align: right; line-height: 1; }
+.score small { font-size: 15px; color: var(--ink-3); font-weight: 600; }
+.score .q { display: block; font-family: var(--f-body); font-size: 11px; font-weight: 600; color: color-mix(in srgb, var(--amber) 70%, var(--ink)); margin-top: 3px; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; padding: 2px; background: var(--paper); }
+.seg button { border: 0; background: transparent; padding: 5px 12px; border-radius: 999px; font-size: 13px; font-weight: 600; color: var(--ink-2); cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--card); color: var(--ink); box-shadow: var(--shadow); }
+.legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 13px; color: var(--ink-2); align-items: center; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; vertical-align: -1px; margin-right: 5px; border: 1px solid var(--line); }
+.legend i.y { background: var(--cobalt); border-color: var(--cobalt); }
+.legend i.m { background: repeating-linear-gradient(135deg, var(--amber) 0 2px, transparent 2px 4px); border-color: var(--amber); }
+
+/* matrix */
+.tablewrap { overflow-x: auto; margin: 0 -4px; padding: 0 4px; }
+table.grid { border-collapse: separate; border-spacing: 0; min-width: 100%; font-size: 14px; }
+table.grid th, table.grid td { padding: 4px; text-align: center; }
+table.grid thead th { font-weight: 600; font-size: 12px; color: var(--ink-2); vertical-align: bottom; white-space: nowrap; }
+table.grid thead th .n { display: block; font-family: var(--f-display); font-size: 17px; font-weight: 700; color: var(--ink); }
+table.grid th.name { text-align: left; position: sticky; left: 0; background: var(--card); z-index: 1; min-width: 120px; }
+table.grid tbody tr + tr td, table.grid tbody tr + tr th { border-top: 1px solid var(--line); }
+table.grid tfoot td, table.grid tfoot th { border-top: 1.5px solid var(--ink); font-family: var(--f-display); font-weight: 700; font-size: 17px; font-variant-numeric: tabular-nums; padding-top: 8px; }
+table.grid tfoot th { font-family: var(--f-body); font-size: 13px; text-align: left; }
+.nm { width: 100%; min-width: 110px; border: 1px solid transparent; background: transparent; border-radius: 6px; padding: 6px 6px; font-weight: 600; }
+.nm:hover { border-color: var(--line); }
+.nm:focus { border-color: var(--cobalt); outline: none; background: var(--paper); }
+.cell { width: 36px; height: 36px; border-radius: 8px; border: 1.5px solid var(--line); background: transparent; cursor: pointer; font-weight: 700; font-size: 15px; display: inline-grid; place-items: center; color: var(--ink-3); }
+.cell.yes { background: var(--cobalt); border-color: var(--cobalt); color: var(--on-cobalt); }
+.cell.maybe { background: repeating-linear-gradient(135deg, var(--amber-soft) 0 4px, transparent 4px 8px); border-color: var(--amber); color: color-mix(in srgb, var(--amber) 70%, var(--ink)); }
+.cell[disabled] { cursor: default; }
+.x { width: 30px; height: 30px; border-radius: 999px; border: 0; background: transparent; color: var(--ink-3); cursor: pointer; font-size: 16px; }
+.x:hover { background: var(--paper); color: var(--danger); }
+th.top-col { background: color-mix(in srgb, var(--hl) 50%, transparent); border-radius: 8px 8px 0 0; }
+
+/* messages */
+.msg { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; font-family: var(--f-body); font-size: 14.5px; line-height: 1.5; background: var(--paper); border: 1px solid var(--line); border-radius: 4px 14px 14px 14px; padding: 12px 14px; max-width: 460px; }
+.msg-card { display: grid; gap: 12px; }
+
+/* paste preview */
+.pv { display: grid; gap: 8px; }
+.pv-row { display: grid; grid-template-columns: auto minmax(110px, 180px) 1fr; gap: 8px 12px; align-items: center; padding: 10px; border: 1px solid var(--line); border-radius: 10px; background: var(--paper); }
+.pv-row.skip { opacity: .5; }
+.pv-row .raw { grid-column: 2 / -1; font-size: 13px; color: var(--ink-2); overflow-wrap: anywhere; }
+.pv-row .note { grid-column: 2 / -1; font-size: 12px; font-weight: 600; color: color-mix(in srgb, var(--amber) 70%, var(--ink)); }
+.pv-row input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--cobalt); }
+.chips { display: flex; flex-wrap: wrap; gap: 4px; }
+.chips .cell { width: 34px; height: 34px; font-family: var(--f-display); font-size: 16px; }
+.unrec { font-size: 13px; color: var(--ink-2); }
+.unrec li { overflow-wrap: anywhere; }
+.quickadd { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px; }
+
+.empty { text-align: center; padding: 28px 16px; display: grid; gap: 10px; justify-items: center; }
+.empty p { max-width: 46ch; color: var(--ink-2); }
+
+.confirm { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 10px 12px; border-radius: 10px; border: 1px solid color-mix(in srgb, var(--danger) 40%, transparent); }
+
+#toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(18px + env(safe-area-inset-bottom, 0px)); background: var(--ink); color: var(--paper); padding: 10px 14px; border-radius: 12px; font-size: 14px; font-weight: 600; box-shadow: var(--shadow); z-index: 20; display: flex; gap: 12px; align-items: center; max-width: calc(100% - 32px); }
+#toast[hidden] { display: none; }
+#toast button { background: transparent; border: 1px solid currentColor; color: inherit; border-radius: 999px; padding: 3px 10px; font-weight: 700; cursor: pointer; }
+
+.skeleton { height: 64px; border-radius: 14px; background: var(--card); border: 1px solid var(--line); }
+
+@media (max-width: 560px) {
+  h1 { font-size: 30px; }
+  .rank-row { grid-template-columns: 24px 74px minmax(0, 1fr) auto; gap: 8px; }
+  .rank-row .dl { font-size: 13px; }
+  .rank-row .dl .dnum { font-size: 19px; }
+  .quickadd { grid-template-columns: 1fr; }
+  .pv-row { grid-template-columns: auto 1fr; }
+  .pv-row .chips, .pv-row .raw, .pv-row .note { grid-column: 1 / -1; }
+  .card { padding: 14px; }
+  .sheet.big { width: 88px; }
+  .sheet.big .dn { font-size: 46px; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
+</head>
+<body>
+<main class="wrap" id="app"><noscript><p>Deze pagina heeft JavaScript nodig. Zet JavaScript aan in je browser.</p></noscript></main>
+<div id="toast" role="status" aria-live="polite" hidden></div>
+<input type="file" id="restore-file" accept="application/json,.json" hidden>
+
+<script>
+/* ---------- dates ---------- */
+const WD = ['zo','ma','di','wo','do','vr','za'];
+const WDL = ['zondag','maandag','dinsdag','woensdag','donderdag','vrijdag','zaterdag'];
+const MO = ['jan','feb','mrt','apr','mei','jun','jul','aug','sep','okt','nov','dec'];
+const MOL = ['januari','februari','maart','april','mei','juni','juli','augustus','september','oktober','november','december'];
+const pad = n => String(n).padStart(2, '0');
+function pd(s) { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); }
+function iso(dt) { return dt.getFullYear() + '-' + pad(dt.getMonth() + 1) + '-' + pad(dt.getDate()); }
+function todayIso() { return iso(new Date()); }
+function yearSuffix(t) { return t.getFullYear() !== new Date().getFullYear() ? ' ' + t.getFullYear() : ''; }
+function shortDate(s) { const t = pd(s); return WD[t.getDay()] + ' ' + t.getDate() + ' ' + MO[t.getMonth()] + yearSuffix(t); }
+function longDate(s) { const t = pd(s); return WDL[t.getDay()] + ' ' + t.getDate() + ' ' + MOL[t.getMonth()] + yearSuffix(t); }
+
+/* Options = the numbered days that are still open. Numbers stay fixed once shared. */
+function optionsOf(ev) {
+  return ev.dates.map((x, i) => ({ n: i + 1, d: x.d, off: !!x.off })).filter(o => !o.off);
+}
+
+/* ---------- answer parsing ---------- */
+const MAYBE_WORDS = new Set(['?', 'misschien', 'mss', 'misch', 'evt', 'evt.', 'eventueel', 'wss', 'waarschijnlijk', 'twijfel', 'onzeker', 'vermoedelijk', 'misschiens', 'normaal']);
+const EXCEPT_WORDS = new Set(['behalve', 'buiten', 'uitgezonderd', 'except', 'zonder']);
+const RE_ALL = /\b(alles|allemaal|overal|altijd|elke dag|alle dagen|om het even|maakt niet uit|eender wanneer|eender welke)\b/;
+const RE_NONE = /\b(geen enkele|geen enkel|niks|niets|nergens|kan niet|lukt niet|helaas niet|ben er niet|kan er niet)\b/;
+const RE_NEG = /\b(niet|geen|nee|neen)\b/;
+
+function parseAnswer(text, opts) {
+  const byN = new Map(opts.map(o => [o.n, o.d]));
+  let t = ' ' + String(text).toLowerCase().replace(/[\u2019\u2018]/g, "'").replace(/\u00a0/g, ' ') + ' ';
+  // times like 19u, 19:30, 20h, 19.30 are not day numbers
+  t = t.replace(/\b\d{1,2}[:.]\d{2}\b/g, ' ').replace(/\b\d{1,2}\s?(?:u|h|uur)\b/g, ' ');
+  // explicit dates: 14/11, 14/11/2026
+  t = t.replace(/(\d{1,2})\s*\/\s*(\d{1,2})(?:\s*\/\s*\d{2,4})?/g, (m, d, mo) => {
+    const o = opts.find(o => { const x = pd(o.d); return x.getDate() === +d && x.getMonth() + 1 === +mo; });
+    return o ? ' #' + o.n + ' ' : ' ';
+  });
+  // 14 nov, 14 november
+  t = t.replace(/(\d{1,2})\s*(jan|feb|mrt|maa|apr|mei|jun|jul|aug|sep|okt|nov|dec)[a-z.]*/g, (m, d, mon) => {
+    const mi = mon === 'maa' ? 2 : MO.indexOf(mon);
+    const o = opts.find(o => { const x = pd(o.d); return x.getDate() === +d && x.getMonth() === mi; });
+    return o ? ' #' + o.n + ' ' : ' ';
+  });
+  // weekday names (singular or plural), unless a date follows right after
+  t = t.replace(/\b(maandag|dinsdag|woensdag|donderdag|vrijdag|zaterdag|zondag)(?:en)?\b(?!\s*#\d)/g, (m, w) => {
+    const wd = WDL.indexOf(w);
+    const ns = opts.filter(o => pd(o.d).getDay() === wd).map(o => '#' + o.n);
+    return ns.length ? ' ' + ns.join(' ') + ' ' : ' ';
+  });
+
+  const hasAll = RE_ALL.test(t);
+  const toks = t.match(/#\d+|\d+\s*(?:-|–|t\/m|tot)\s*\d+|\d+|[,;\n!]|\?|[a-zà-ÿ.]+/g) || [];
+  const clauses = [[]];
+  const items = [];
+  let pendingMaybe = false, adjacent = null, exceptSeen = false;
+  for (const tok of toks) {
+    if (/^[,;\n!]$/.test(tok) || tok === 'maar') {
+      if (pendingMaybe) markClauseMaybe();
+      clauses.push([]); adjacent = null; pendingMaybe = false; continue;
+    }
+    const clause = clauses.length - 1;
+    if (/^#?\d/.test(tok)) {
+      let ns;
+      const r = tok.match(/^(\d+)\s*(?:-|–|t\/m|tot)\s*(\d+)$/);
+      if (r) {
+        const a = +r[1], b = +r[2];
+        ns = [];
+        if (a <= b && b - a <= 40) for (let k = a; k <= b; k++) ns.push(k); else ns.push(a, b);
+      } else ns = [+tok.replace('#', '')];
+      const it = { ns, maybe: pendingMaybe, clause, except: exceptSeen };
+      pendingMaybe = false;
+      items.push(it); adjacent = it;
+      continue;
+    }
+    clauses[clause].push(tok);
+    if (MAYBE_WORDS.has(tok)) {
+      // "2?" or "2 misschien" marks that number; "misschien 2" marks the next one
+      if (adjacent) adjacent.maybe = true; else pendingMaybe = true;
+    } else if (EXCEPT_WORDS.has(tok)) {
+      exceptSeen = true;
+    }
+    adjacent = null;
+  }
+  if (pendingMaybe) markClauseMaybe();
+  function markClauseMaybe() {
+    const c = clauses.length - 1;
+    const inClause = items.filter(i => i.clause === c);
+    if (inClause.length && !inClause.some(i => i.maybe)) inClause.forEach(i => { i.maybe = true; });
+  }
+  const neg = clauses.map(words => RE_NEG.test(' ' + words.join(' ') + ' '));
+
+  const yes = new Set(), maybe = new Set(), ignored = [];
+  if (hasAll) opts.forEach(o => yes.add(o.d));
+  let valid = 0;
+  for (const it of items) {
+    for (const n of it.ns) {
+      const d = byN.get(n);
+      if (!d) { ignored.push(n); continue; }
+      valid++;
+      if (it.except || neg[it.clause]) { yes.delete(d); maybe.delete(d); }
+      else if (it.maybe) { yes.delete(d); maybe.add(d); }
+      else { yes.add(d); maybe.delete(d); }
+    }
+  }
+  const noneWord = RE_NONE.test(t) && !/geen idee/.test(t);
+  const recognized = hasAll || valid > 0 || noneWord;
+  return { yes: [...yes], maybe: [...maybe], recognized, ignored, none: recognized && !yes.size && !maybe.size };
+}
+
+/* ---------- chat paste parsing ---------- */
+const RE_BRACKET = /^\[([^\]]*\d[^\]]*)\]\s*([^:]{1,60}?):\s?(.*)$/;
+const RE_ANDROID = /^\d{1,4}[\/.\-]\d{1,2}[\/.\-]\d{1,4},?\s+\d{1,2}[:.]\d{2}(?:[:.]\d{2})?(?:\s?[ap]\.?\s?m\.?)?\s*[-–]\s*([^:]{1,60}?):\s?(.*)$/i;
+const RE_PLAIN = /^([^\d:\s\[][^:]{0,40}?):\s*(.+)$/;
+
+function cleanName(n) {
+  return String(n).replace(/[\u200e\u200f\u202a-\u202e\u2066-\u2069]/g, '').replace(/^~\s*/, '').replace(/\s+/g, ' ').trim();
+}
+function nameKey(n) { return cleanName(n).toLowerCase(); }
+
+function parsePaste(text, opts) {
+  const lines = String(text).replace(/\r/g, '').split('\n')
+    .map(l => l.replace(/[\u200e\u200f\u202a-\u202e\u2066-\u2069]/g, '').trim());
+  const structured = lines.some(l => RE_BRACKET.test(l) || RE_ANDROID.test(l));
+  const msgs = [], orphans = [];
+  for (const l of lines) {
+    if (!l) continue;
+    let m, name = null, body = null;
+    if (structured) {
+      if ((m = l.match(RE_BRACKET))) { name = m[2]; body = m[3]; }
+      else if ((m = l.match(RE_ANDROID))) { name = m[1]; body = m[2]; }
+    } else if ((m = l.match(RE_PLAIN))) { name = m[1]; body = m[2]; }
+    if (name !== null) msgs.push({ name: cleanName(name), text: body });
+    else if (msgs.length) msgs[msgs.length - 1].text += '\n' + l;
+    else orphans.push(l);
+  }
+  if (!msgs.length && orphans.length) msgs.push({ name: '', text: orphans.join('\n') });
+
+  const people = new Map(), unrecognized = [];
+  for (const m of msgs) {
+    const r = parseAnswer(m.text, opts);
+    if (!r.recognized) { unrecognized.push(m); continue; }
+    const key = nameKey(m.name) || '__' + people.size;
+    const prev = people.get(key);
+    const adds = /\b(ook|nog)\b/.test(m.text.toLowerCase()) || /^\s*(en|\+)\s/.test(m.text.toLowerCase());
+    if (prev && adds) {
+      const y = new Set(prev.yes), mb = new Set(prev.maybe);
+      r.yes.forEach(d => { y.add(d); mb.delete(d); });
+      r.maybe.forEach(d => { if (!y.has(d)) mb.add(d); });
+      prev.yes = [...y]; prev.maybe = [...mb]; prev.raw.push(m.text);
+      prev.ignored = prev.ignored.concat(r.ignored);
+    } else {
+      people.set(key, { name: m.name, yes: r.yes, maybe: r.maybe, raw: prev ? prev.raw.concat(m.text) : [m.text], ignored: r.ignored, include: true });
+    }
+  }
+  return { rows: [...people.values()], unrecognized };
+}
+
+
+</script>
+<script>
+(function () {
+  'use strict';
+  const app = document.getElementById('app');
+  const toastEl = document.getElementById('toast');
+  const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const newId = () => (window.crypto && crypto.randomUUID ? crypto.randomUUID().replace(/-/g, '').slice(0, 16) : Math.random().toString(36).slice(2, 10) + Date.now().toString(36));
+  const clone = o => JSON.parse(JSON.stringify(o));
+
+  const S = {
+    events: {}, loaded: false, backend: null, readOnly: false, error: '',
+    view: 'list', currentId: null, tab: 'result', sortMode: 'best',
+    draft: null, calMonth: null, draftErr: '',
+    paste: '', preview: null,
+    quick: { name: '', text: '', yes: [], maybe: [] }, quickErr: '',
+    confirmDelete: false, lastRemoved: null,
+  };
+
+  /* ---------- storage: everything stays in this browser (localStorage) ---------- */
+  const KEY = 'wiekanwanneer-v1';
+  let canStore = true;
+  try { localStorage.setItem('__wkw_test', '1'); localStorage.removeItem('__wkw_test'); } catch (e) { canStore = false; }
+
+  function normalize(id, data) {
+    const ev = data ? clone(data) : {};
+    ev.id = id;
+    ev.title = typeof ev.title === 'string' ? ev.title : '';
+    ev.dates = Array.isArray(ev.dates) ? ev.dates.filter(x => x && typeof x.d === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(x.d)).map(x => ({ d: x.d, off: !!x.off })) : [];
+    ev.people = Array.isArray(ev.people) ? ev.people.filter(p => p && typeof p.name === 'string').map(p => ({
+      id: String(p.id || newId()), name: p.name,
+      yes: Array.isArray(p.yes) ? p.yes.filter(d => typeof d === 'string') : [],
+      maybe: Array.isArray(p.maybe) ? p.maybe.filter(d => typeof d === 'string') : []
+    })) : [];
+    ev.chosen = typeof ev.chosen === 'string' ? ev.chosen : null;
+    ev.createdAt = +ev.createdAt || Date.now();
+    ev.updatedAt = +ev.updatedAt || ev.createdAt;
+    ev.sharedAt = ev.sharedAt || null;
+    ev.example = !!ev.example;
+    return ev;
+  }
+  function serialize() {
+    const events = {};
+    for (const id of Object.keys(S.events)) { const d = clone(S.events[id]); delete d.id; events[id] = d; }
+    return events;
+  }
+  function loadAll() {
+    if (!canStore) return {};
+    let raw = null;
+    try { raw = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) { raw = null; }
+    const evs = raw && raw.events && typeof raw.events === 'object' ? raw.events : {};
+    const out = {};
+    for (const id of Object.keys(evs)) out[id] = normalize(id, evs[id]);
+    return out;
+  }
+  let saveTimer = null;
+  function saveNow() {
+    clearTimeout(saveTimer); saveTimer = null;
+    if (!canStore) return;
+    try { localStorage.setItem(KEY, JSON.stringify({ version: 1, events: serialize() })); }
+    catch (e) { S.error = 'Opslaan lukte niet: de opslag van je browser zit vol. Verwijder een paar oude planningen.'; render(); }
+  }
+  function persist(id, delay) {
+    const ev = S.events[id]; if (ev) ev.updatedAt = Date.now();
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(saveNow, delay == null ? 250 : delay);
+  }
+  function removeEvent(id) { delete S.events[id]; saveNow(); }
+  window.addEventListener('pagehide', () => { if (saveTimer) saveNow(); });
+  // The planner is open in another tab and changed something there: show the new state here too.
+  window.addEventListener('storage', e => {
+    if (e.key !== KEY) return;
+    S.events = loadAll();
+    if (S.view === 'event' && !S.events[S.currentId]) { S.view = 'list'; S.currentId = null; }
+    if (S.view !== 'edit') render();
+  });
+
+  /* ---------- back-up ---------- */
+  function backup() {
+    const body = JSON.stringify({ app: 'wie-kan-wanneer', version: 1, exportedAt: new Date().toISOString(), events: serialize() }, null, 2);
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([body], { type: 'application/json' }));
+    a.download = 'wie-kan-wanneer-backup-' + todayIso() + '.json';
+    document.body.appendChild(a); a.click();
+    setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+    toast('Back-up gedownload.');
+  }
+  function restore(file) {
+    const reader = new FileReader();
+    reader.onload = () => {
+      let data = null;
+      try { data = JSON.parse(reader.result); } catch (e) { data = null; }
+      if (!data || data.app !== 'wie-kan-wanneer' || !data.events || typeof data.events !== 'object') {
+        toast('Dit bestand is geen back-up van Wie kan wanneer.'); return;
+      }
+      let n = 0;
+      for (const id of Object.keys(data.events)) {
+        const inc = normalize(id, data.events[id]);
+        const have = S.events[id];
+        if (!have || inc.updatedAt > have.updatedAt) { S.events[id] = inc; n++; }
+      }
+      saveNow(); S.view = 'list'; S.currentId = null; render();
+      toast(n ? plural(n, 'planning', 'planningen') + ' teruggezet.' : 'Alles uit deze back-up stond er al.');
+    };
+    reader.onerror = () => toast('Dit bestand kon niet gelezen worden.');
+    reader.readAsText(file);
+  }
+
+  /* ---------- example ---------- */
+  function addExample() {
+    const base = new Date(); base.setHours(0, 0, 0, 0);
+    const fri = new Date(base);
+    fri.setDate(base.getDate() + ((5 - base.getDay() + 7) % 7));
+    if ((fri - base) / 864e5 < 3) fri.setDate(fri.getDate() + 7);
+    const day = k => { const x = new Date(fri); x.setDate(fri.getDate() + k); return iso(x); };
+    const D = [day(0), day(1), day(7), day(8)];
+    const id = 'voorbeeld';
+    S.events[id] = normalize(id, {
+      title: 'Voorbeeld: etentje met de vrienden', example: true, sharedAt: Date.now(), createdAt: Date.now(),
+      dates: D.map(d => ({ d, off: false })),
+      people: [
+        { id: 'p1', name: 'Jan', yes: [D[0], D[1], D[3]], maybe: [] },
+        { id: 'p2', name: 'Els', yes: [D[1], D[3]], maybe: [D[0]] },
+        { id: 'p3', name: 'Tom', yes: [D[1], D[2], D[3]], maybe: [] },
+        { id: 'p4', name: 'Sofie', yes: [D[3]], maybe: [D[1]] },
+        { id: 'p5', name: 'Pieter', yes: [D[0], D[1]], maybe: [] },
+      ],
+    });
+    persist(id, 0);
+    openEvent(id);
+  }
+
+  /* ---------- helpers ---------- */
+  const cur = () => S.events[S.currentId];
+  function stats(ev) {
+    const opts = optionsOf(ev);
+    const rows = opts.map(o => {
+      const yes = ev.people.filter(p => p.yes.includes(o.d));
+      const maybe = ev.people.filter(p => !p.yes.includes(o.d) && p.maybe.includes(o.d));
+      return { ...o, yes, maybe, score: yes.length * 2 + maybe.length };
+    });
+    const max = Math.max(0, ...rows.map(r => r.score));
+    const tops = max > 0 ? rows.filter(r => r.score === max) : [];
+    return { opts, rows, tops, n: ev.people.length };
+  }
+  const names = list => list.map(p => p.name).join(', ');
+  function plural(n, one, many) { return n + ' ' + (n === 1 ? one : many); }
+  function dateRange(ev) {
+    const o = optionsOf(ev).map(x => x.d).sort();
+    if (!o.length) return 'nog geen dagen';
+    if (o.length === 1) return shortDate(o[0]);
+    return shortDate(o[0]) + ' tot ' + shortDate(o[o.length - 1]);
+  }
+  function sheet(d, cls) {
+    if (!d) return `<div class="sheet ${cls || ''} empty" aria-hidden="true"><div class="mo">dag</div><div class="dn">?</div><div class="wd">nog open</div></div>`;
+    const t = pd(d);
+    return `<div class="sheet ${cls || ''}" aria-hidden="true"><div class="mo">${MO[t.getMonth()]}</div><div class="dn">${t.getDate()}</div><div class="wd">${WDL[t.getDay()]}</div></div>`;
+  }
+  function locked(ev) { return !!(ev && (ev.sharedAt || ev.people.length)); }
+
+  /* ---------- messages ---------- */
+  function inviteMsg(ev) {
+    const o = optionsOf(ev);
+    const ex = o.slice(0, Math.min(3, o.length)).map(x => x.n).join(' ');
+    const ex2 = (o[1] || o[0] || { n: 1 }).n + '?';
+    const head = '*' + (ev.title.trim() || 'Datum prikken') + '*';
+    const how = o.length > 1
+      ? `Welke dagen kan jij? Antwoord met de nummers, bv. ${ex}\nTwijfel je? Zet er een ? achter, bv. ${ex2}`
+      : `Kan jij op deze dag? Antwoord met ${o[0] ? o[0].n : 1} als het lukt, of ${o[0] ? o[0].n : 1}? als je twijfelt.`;
+    return head + '\n' + how + '\n\n' + o.map(x => `${x.n}. ${shortDate(x.d)}`).join('\n');
+  }
+  function statusMsg(ev) {
+    const st = stats(ev);
+    const head = '*' + (ev.title.trim() || 'Datum prikken') + '*: stand van zaken';
+    let best = '';
+    if (st.tops.length === 1) {
+      const b = st.tops[0];
+      best = `Beste dag tot nu toe: ${shortDate(b.d)} (${b.yes.length} van ${st.n} kunnen${b.maybe.length ? ', ' + b.maybe.length + ' misschien' : ''})`;
+    } else if (st.tops.length > 1) {
+      best = 'Gelijkstand tussen ' + st.tops.map(b => shortDate(b.d)).join(' en ') + ` (${st.tops[0].yes.length} van ${st.n} kunnen)`;
+    }
+    return [head, best, 'Al geantwoord: ' + names(ev.people), '', 'Nog niet geantwoord? Stuur je nummers:', ...st.opts.map(x => `${x.n}. ${shortDate(x.d)}`)].filter((l, i) => l !== '' || i === 3).join('\n');
+  }
+  function decisionMsg(ev) {
+    const d = ev.chosen; if (!d) return '';
+    const yes = ev.people.filter(p => p.yes.includes(d)), maybe = ev.people.filter(p => !p.yes.includes(d) && p.maybe.includes(d));
+    const lines = ['*' + (ev.title.trim() || 'Afspraak') + '*', `Het wordt ${longDate(d)}!`];
+    if (yes.length) lines.push('Erbij: ' + names(yes));
+    if (maybe.length) lines.push('Misschien: ' + names(maybe));
+    return lines.join('\n');
+  }
+
+  /* ---------- views ---------- */
+  function render() {
+    const ae = document.activeElement;
+    const fid = ae && ae.id && app.contains(ae) ? ae.id : null;
+    let sel = null;
+    const typed = fid && ae.classList.contains('nm') ? ae.value : null;
+    if (fid) { try { sel = [ae.selectionStart, ae.selectionEnd]; } catch (e) { sel = null; } }
+    app.innerHTML = topBar() + banners() + body();
+    if (fid) {
+      const el = document.getElementById(fid);
+      if (el) {
+        if (typed !== null) el.value = typed;
+        el.focus({ preventScroll: true });
+        if (sel && sel[0] != null && el.setSelectionRange) { try { el.setSelectionRange(sel[0], sel[1]); } catch (e) {} }
+      }
+    }
+  }
+  function topBar() {
+    const t = new Date();
+    const note = '';
+    return `<header class="top"><button class="brand" data-action="home" aria-label="Naar alle planningen"><span class="sheet-mini" aria-hidden="true"><span>${t.getDate()}</span></span><b>Wie kan wanneer</b></button><span class="spacer"></span>${note}</header>`;
+  }
+  function banners() {
+    return S.error ? `<div class="banner" role="alert">${esc(S.error)}</div>` : '';
+  }
+  function body() {
+    if (!S.loaded) return `<div class="events" aria-busy="true"><div class="skeleton"></div><div class="skeleton"></div><p class="muted small">Planningen laden…</p></div>`;
+    if (S.view === 'edit') return editView();
+    if (S.view === 'event' && cur()) return eventView();
+    return listView();
+  }
+
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  const isStandalone = window.navigator.standalone === true || (window.matchMedia && matchMedia('(display-mode: standalone)').matches);
+
+  function listView() {
+    const evs = Object.values(S.events).sort((a, b) => b.updatedAt - a.updatedAt);
+    const how = `<div class="how">
+      <div class="step"><span class="num">1</span><p><b>Kies de mogelijke dagen</b>Tik ze aan in de kalender. Elke dag krijgt een nummer.</p></div>
+      <div class="step"><span class="num">2</span><p><b>Deel het bericht in de groep</b>Iedereen antwoordt gewoon met de nummers, bv. 1 3 4 of 2?</p></div>
+      <div class="step"><span class="num">3</span><p><b>Plak de antwoorden terug</b>Je ziet meteen welke dag het best past en wie er kan.</p></div>
+    </div>`;
+    const cards = evs.map(ev => {
+      const st = stats(ev);
+      const status = ev.chosen ? `<span class="chip-tag">Geprikt</span>` : '';
+      const right = ev.chosen
+        ? `Gekozen: ${esc(shortDate(ev.chosen))}`
+        : st.tops.length === 1 ? `Beste: ${esc(shortDate(st.tops[0].d))} (${st.tops[0].yes.length}/${st.n})`
+        : st.tops.length > 1 ? `Gelijkstand: ${st.tops.length} dagen` : 'Nog geen antwoorden';
+      return `<button class="ev" data-action="open" data-id="${esc(ev.id)}">
+        ${sheet(ev.chosen || (st.tops.length === 1 ? st.tops[0].d : null))}
+        <span style="min-width:0"><span class="t">${esc(ev.title || 'Naamloze planning')}</span>${ev.example ? '<span class="chip-tag amber">Voorbeeld</span>' : ''}${status}
+          <span class="m" style="display:block">${esc(dateRange(ev))} · ${plural(st.opts.length, 'dag', 'dagen')} · ${plural(st.n, 'antwoord', 'antwoorden')}</span>
+          <span class="m" style="display:block">${right}</span></span>
+        <span class="go" aria-hidden="true">›</span></button>`;
+    }).join('');
+    const empty = `<div class="card empty">${sheet(null)}<h2>Nog geen planningen</h2>
+      <p>Maak er een voor het volgende etentje, de fietstocht of het weekend weg. Je kiest de dagen, de groep antwoordt met nummers.</p>
+      <div class="row" style="justify-content:center"><button class="btn primary" data-action="new">Nieuwe planning</button><button class="btn" data-action="example">Bekijk een voorbeeld</button></div></div>`;
+    const iosTip = isIOS && !isStandalone
+      ? '<p><b>Op een iPhone of iPad?</b> Zet deze pagina op je beginscherm (Deel-knop, dan Zet op beginscherm). Safari kan bewaarde gegevens van een site wissen als je ze 7 dagen niet opent; vanaf het beginscherm gebeurt dat niet. Let op: het beginscherm-icoon heeft zijn eigen opslag, los van Safari.</p>'
+      : '';
+    return `<section class="wrap" style="gap:18px">
+      <div class="list-head"><div><p class="eyebrow">Jouw planningen</p><h1>Welke dag past voor iedereen?</h1></div>
+        <button class="btn primary" data-action="new">Nieuwe planning</button></div>
+      ${evs.length ? `<div class="events">${cards}</div>` : empty}
+      <div class="card">${how}</div>
+      <footer class="foot">
+        <p>Je planningen staan alleen in deze browser, op dit toestel. Er gaat niets naar een server. Wissel je van toestel of browser, neem dan een back-up mee.</p>
+        ${iosTip}
+        <div class="row"><button class="linkbtn" data-action="backup" ${evs.length ? '' : 'disabled'}>Back-up downloaden</button><button class="linkbtn" data-action="restore">Back-up terugzetten</button></div>
+      </footer>
+    </section>`;
+  }
+
+  function editView() {
+    const dr = S.draft;
+    const m = S.calMonth;
+    const y = m.getFullYear(), mo = m.getMonth();
+    const first = new Date(y, mo, 1);
+    const lead = (first.getDay() + 6) % 7;
+    const daysIn = new Date(y, mo + 1, 0).getDate();
+    const today = todayIso();
+    const nowMonth = new Date(); nowMonth.setDate(1); nowMonth.setHours(0, 0, 0, 0);
+    let cells = ['ma', 'di', 'wo', 'do', 'vr', 'za', 'zo'].map(d => `<div class="cal-dow">${d}</div>`).join('');
+    for (let i = 0; i < lead; i++) cells += '<div class="blank"></div>';
+    for (let d = 1; d <= daysIn; d++) {
+      const dt = new Date(y, mo, d), s = iso(dt);
+      const idx = dr.dates.findIndex(x => x.d === s);
+      const it = dr.dates[idx];
+      const past = s < today;
+      const cls = ['day'];
+      if (dt.getDay() === 0 || dt.getDay() === 6) cls.push('we');
+      if (s === today) cls.push('today');
+      if (it && !it.off) cls.push('sel');
+      if (it && it.off) cls.push('off');
+      const label = longDate(s) + (it ? (it.off ? ', geschrapt' : ', gekozen als nummer ' + (idx + 1)) : '');
+      cells += `<button class="${cls.join(' ')}" data-action="toggle-day" data-d="${s}" ${past && !it ? 'disabled' : ''} aria-pressed="${it && !it.off ? 'true' : 'false'}" aria-label="${esc(label)}">${d}${it ? `<span class="badge">${idx + 1}</span>` : ''}</button>`;
+    }
+    const picks = dr.dates.map((x, i) => `<span class="pick ${x.off ? 'off' : ''}"><span class="n">${i + 1}</span>${esc(shortDate(x.d))}<button data-action="toggle-day" data-d="${x.d}" aria-label="${x.off ? 'Zet terug' : 'Haal weg'}: ${esc(longDate(x.d))}">${x.off ? '↺' : '×'}</button></span>`).join('');
+    const active = dr.dates.filter(x => !x.off).length;
+    const monthName = MOL[mo] + (y !== new Date().getFullYear() ? ' ' + y : '');
+    return `<section class="wrap" style="gap:16px">
+      <button class="back" data-action="${dr.id ? 'open' : 'home'}" data-id="${esc(dr.id || '')}">‹ ${dr.id ? 'Terug naar de planning' : 'Alle planningen'}</button>
+      <h1>${dr.id ? 'Dagen aanpassen' : 'Nieuwe planning'}</h1>
+      <div class="card">
+        <div><label class="lbl" for="title">Waarvoor?</label><input class="input" id="title" maxlength="80" placeholder="bv. Etentje met de vrienden" value="${esc(dr.title)}" autocomplete="off"></div>
+        <div class="cal">
+          <div class="cal-head"><button class="cal-nav" data-action="month" data-dir="-1" aria-label="Vorige maand" ${m <= nowMonth ? 'disabled' : ''}>‹</button><b>${esc(monthName)}</b><button class="cal-nav" data-action="month" data-dir="1" aria-label="Volgende maand">›</button></div>
+          <div class="cal-grid">${cells}</div>
+          <div class="quick"><span>Snel alle</span>
+            <button class="btn small" data-action="bulk" data-wd="5">vrijdagen</button>
+            <button class="btn small" data-action="bulk" data-wd="6">zaterdagen</button>
+            <button class="btn small" data-action="bulk" data-wd="0">zondagen</button>
+            <span>van ${esc(MOL[mo])}</span></div>
+        </div>
+        <div style="display:grid;gap:8px">
+          <h3>Gekozen dagen <span class="muted">(${active})</span></h3>
+          ${dr.dates.length ? `<div class="picked">${picks}</div>` : '<p class="muted small">Tik hierboven de dagen aan die voor jou kunnen.</p>'}
+          ${dr.locked ? '<p class="muted small">Het bericht is al gedeeld, dus de nummers liggen vast. Nieuwe dagen krijgen het volgende nummer; een geschrapte dag houdt zijn nummer.</p>' : ''}
+        </div>
+        ${S.draftErr ? `<p class="err" role="alert">${esc(S.draftErr)}</p>` : ''}
+        <div class="row"><button class="btn primary" data-action="save-draft">${dr.id ? 'Opslaan' : 'Maak het bericht'}</button><button class="btn ghost" data-action="${dr.id ? 'open' : 'home'}" data-id="${esc(dr.id || '')}">Annuleer</button></div>
+      </div>
+    </section>`;
+  }
+
+  function eventView() {
+    const ev = cur();
+    const st = stats(ev);
+    const tabs = [['result', 'Resultaat'], ['answers', 'Antwoorden'], ['msgs', 'Berichten']];
+    const tabHtml = tabs.map(([k, l]) => `<button class="tab" role="tab" id="tab-${k}" aria-selected="${S.tab === k}" data-action="tab" data-tab="${k}">${l}${k === 'result' ? `<span class="cnt">${st.n}</span>` : ''}</button>`).join('');
+    let content = '';
+    if (S.tab === 'result') content = resultTab(ev, st);
+    else if (S.tab === 'answers') content = answersTab(ev, st);
+    else content = msgsTab(ev, st);
+    const del = S.confirmDelete
+      ? `<div class="confirm"><span>Deze planning en alle antwoorden verwijderen?</span><button class="btn small danger" data-action="delete-yes">Verwijderen</button><button class="btn small ghost" data-action="delete-no">Toch niet</button></div>`
+      : '';
+    return `<section class="wrap" style="gap:16px">
+      <button class="back" data-action="home">‹ Alle planningen</button>
+      <div class="ev-head">
+        ${ev.example ? '<p class="banner">Dit is een voorbeeld zodat je ziet hoe het werkt. Verwijder het gerust als je zelf een planning maakt.</p>' : ''}
+        <h1>${esc(ev.title || 'Naamloze planning')}</h1>
+        <p class="meta">${esc(dateRange(ev))} · ${plural(st.opts.length, 'dag', 'dagen')} · ${plural(st.n, 'antwoord', 'antwoorden')}</p>
+        ${S.readOnly ? '' : `<div class="row"><button class="btn small" data-action="edit">Dagen of titel aanpassen</button><button class="btn small ghost danger" data-action="delete">Verwijderen</button></div>`}
+        ${del}
+      </div>
+      <div class="tabs" role="tablist" aria-label="Onderdelen">${tabHtml}</div>
+      ${content}
+    </section>`;
+  }
+
+  function resultTab(ev, st) {
+    if (!st.n) {
+      return `<div class="card empty">${sheet(null, 'big')}<h2>Nog geen antwoorden</h2><p>Deel het bericht in de groep. Komen de antwoorden binnen, plak ze dan bij <b>Antwoorden toevoegen</b>.</p><div class="row" style="justify-content:center"><button class="btn primary" data-action="tab" data-tab="msgs">Naar het bericht</button><button class="btn" data-action="tab" data-tab="answers">Antwoorden toevoegen</button></div></div>`;
+    }
+    // headline
+    let head;
+    if (ev.chosen) {
+      const r = st.rows.find(x => x.d === ev.chosen);
+      head = `<div class="card best">${sheet(ev.chosen, 'big')}<div class="txt"><p class="eyebrow">Geprikt</p><p class="big"><span class="hl">${esc(longDate(ev.chosen))}</span></p>
+        <p class="muted">${r ? `${r.yes.length} van ${st.n} kunnen${r.maybe.length ? ', ' + r.maybe.length + ' misschien' : ''}` : 'Deze dag staat niet meer in de lijst.'}</p>
+        <div class="row">${S.readOnly ? '' : `<button class="btn primary" data-action="copy" data-msg="decision">Kopieer de aankondiging</button><button class="btn ghost" data-action="unchoose">Andere dag kiezen</button>`}</div></div></div>`;
+    } else if (st.tops.length === 1) {
+      const b = st.tops[0];
+      head = `<div class="card best">${sheet(b.d, 'big')}<div class="txt"><p class="eyebrow">Beste dag tot nu toe</p><p class="big"><span class="hl">${esc(longDate(b.d))}</span></p>
+        <p class="muted">${b.yes.length} van ${st.n} kunnen${b.maybe.length ? ', ' + b.maybe.length + ' misschien' : ''}${b.yes.length === st.n ? '. Iedereen kan!' : b.yes.length + b.maybe.length === st.n ? '. Niemand zegt nee.' : '. Kan niet: ' + esc(names(ev.people.filter(p => !b.yes.includes(p) && !b.maybe.includes(p))))}</p>
+        ${S.readOnly ? '' : `<div class="row"><button class="btn primary" data-action="choose" data-d="${b.d}">Prik deze dag</button></div>`}</div></div>`;
+    } else if (st.tops.length > 1) {
+      head = `<div class="card best">${sheet(null, 'big')}<div class="txt"><p class="eyebrow">Gelijkstand</p><p class="big">${st.tops.map(b => `<span class="hl">${esc(shortDate(b.d))}</span>`).join(' of ')}</p>
+        <p class="muted">Telkens ${st.tops[0].yes.length} van ${st.n} kunnen. Kies er zelf een of wacht op meer antwoorden.</p>
+        ${S.readOnly ? '' : `<div class="row">${st.tops.map(b => `<button class="btn" data-action="choose" data-d="${b.d}">Prik ${esc(shortDate(b.d))}</button>`).join('')}</div>`}</div></div>`;
+    } else {
+      head = `<div class="card best">${sheet(null, 'big')}<div class="txt"><p class="eyebrow">Geen overlap</p><p class="big">Nog geen enkele dag past</p><p class="muted">Niemand kan op de gekozen dagen. Voeg extra dagen toe en deel het bericht opnieuw.</p></div></div>`;
+    }
+    const topSet = new Set(st.tops.map(t => t.d));
+    const rows = st.rows.slice();
+    if (S.sortMode === 'best') rows.sort((a, b) => b.score - a.score || a.d.localeCompare(b.d));
+    else rows.sort((a, b) => a.d.localeCompare(b.d));
+    const n = Math.max(1, st.n);
+    const rank = rows.map(r => {
+      const t = pd(r.d);
+      const noList = ev.people.filter(p => !r.yes.includes(p) && !r.maybe.includes(p));
+      return `<div class="rank-row ${topSet.has(r.d) ? 'top' : ''}">
+        <span class="n" title="Nummer in het bericht">${r.n}</span>
+        <span class="dl">${WD[t.getDay()]}<span class="dnum">${t.getDate()}</span>${MO[t.getMonth()]}${ev.chosen === r.d ? ' <span class="chip-tag">Geprikt</span>' : ''}</span>
+        <div style="min-width:0"><div class="bar" role="img" aria-label="${r.yes.length} kunnen, ${r.maybe.length} misschien, van ${st.n}"><i class="y" style="width:${r.yes.length / n * 100}%"></i><i class="m" style="width:${r.maybe.length / n * 100}%"></i></div>
+          <div class="who">${r.yes.length ? esc(names(r.yes)) : '<span style="color:var(--ink-3)">Niemand zeker</span>'}${r.maybe.length ? ` <span class="mb">· misschien ${esc(names(r.maybe))}</span>` : ''}${noList.length && noList.length <= 4 ? ` <span style="color:var(--ink-3)">· niet ${esc(names(noList))}</span>` : ''}</div></div>
+        <span class="score">${r.yes.length}<small>/${st.n}</small>${r.maybe.length ? `<span class="q">+${r.maybe.length} misschien</span>` : ''}</span>
+      </div>`;
+    }).join('');
+
+    const ro = S.readOnly ? 'disabled' : '';
+    const head2 = st.opts.map(o => { const t = pd(o.d); return `<th class="${topSet.has(o.d) ? 'top-col' : ''}" scope="col"><span class="n">${o.n}</span>${WD[t.getDay()]} ${t.getDate()}/${t.getMonth() + 1}</th>`; }).join('');
+    const body = ev.people.map(p => `<tr><th class="name" scope="row"><input class="nm" id="nm-${esc(p.id)}" data-pid="${esc(p.id)}" value="${esc(p.name)}" aria-label="Naam" ${ro}></th>${st.opts.map(o => {
+      const s = p.yes.includes(o.d) ? 'yes' : p.maybe.includes(o.d) ? 'maybe' : 'no';
+      const txt = s === 'yes' ? '✓' : s === 'maybe' ? '?' : '–';
+      const lab = `${p.name}, ${shortDate(o.d)}: ${s === 'yes' ? 'kan' : s === 'maybe' ? 'misschien' : 'kan niet'}`;
+      return `<td><button class="cell ${s}" data-action="cell" data-pid="${esc(p.id)}" data-d="${o.d}" aria-label="${esc(lab)}" ${ro}>${txt}</button></td>`;
+    }).join('')}<td>${S.readOnly ? '' : `<button class="x" data-action="remove-person" data-pid="${esc(p.id)}" aria-label="Verwijder ${esc(p.name)}">×</button>`}</td></tr>`).join('');
+    const foot = st.rows.map(r => `<td>${r.yes.length}${r.maybe.length ? `<span style="font-size:12px;color:var(--ink-3)">+${r.maybe.length}</span>` : ''}</td>`).join('');
+
+    return `${head}
+      <div class="card">
+        <div class="row" style="justify-content:space-between"><h2>Alle dagen</h2>
+          <div class="seg" role="group" aria-label="Sorteren"><button data-action="sort" data-s="best" aria-pressed="${S.sortMode === 'best'}">Beste eerst</button><button data-action="sort" data-s="date" aria-pressed="${S.sortMode === 'date'}">Op datum</button></div></div>
+        <div class="rank">${rank}</div>
+        <div class="legend"><span><i class="y"></i>kan</span><span><i class="m"></i>misschien</span><span>Nummer links = nummer in het bericht</span></div>
+      </div>
+      <div class="card">
+        <div><h2>Per persoon</h2><p class="muted small">${S.readOnly ? 'Overzicht van alle antwoorden.' : 'Tik op een vakje om te wisselen tussen kan, misschien en kan niet. Tik op een naam om die aan te passen.'}</p></div>
+        <div class="tablewrap"><table class="grid"><thead><tr><th class="name" scope="col">Naam</th>${head2}<th><span class="sr" style="position:absolute;left:-9999px">Acties</span></th></tr></thead>
+        <tbody>${body}</tbody><tfoot><tr><th class="name">Kunnen</th>${foot}<td></td></tr></tfoot></table></div>
+      </div>`;
+  }
+
+  function chipRow(opts, yes, maybe, action, extra) {
+    return `<div class="chips">${opts.map(o => {
+      const s = yes.includes(o.d) ? 'yes' : maybe.includes(o.d) ? 'maybe' : 'no';
+      const lab = `${o.n}, ${shortDate(o.d)}: ${s === 'yes' ? 'kan' : s === 'maybe' ? 'misschien' : 'kan niet'}`;
+      return `<button class="cell ${s}" data-action="${action}" data-d="${o.d}" ${extra || ''} aria-label="${esc(lab)}" title="${esc(shortDate(o.d))}">${o.n}${s === 'maybe' ? '?' : ''}</button>`;
+    }).join('')}</div>`;
+  }
+
+  function answersTab(ev, st) {
+    if (S.readOnly) return `<div class="card"><p class="muted">Alleen de eigenaar kan antwoorden toevoegen.</p></div>`;
+    const existing = new Set(ev.people.map(p => nameKey(p.name)));
+    let pv = '';
+    if (S.preview) {
+      const rows = S.preview.rows;
+      const count = rows.filter(r => r.include && r.name.trim()).length;
+      pv = `<div class="pv">
+        <h3>Gevonden: ${plural(rows.length, 'antwoord', 'antwoorden')}</h3>
+        ${rows.map((r, i) => {
+          const notes = [];
+          if (!r.name.trim()) notes.push('Vul een naam in.');
+          else if (existing.has(nameKey(r.name))) notes.push('Vervangt het eerdere antwoord van ' + r.name + '.');
+          if (!r.yes.length && !r.maybe.length) notes.push('Kan op geen enkele dag.');
+          if (r.ignored && r.ignored.length) notes.push('Genegeerd: ' + r.ignored.join(', ') + ' (geen nummer uit het bericht).');
+          return `<div class="pv-row ${r.include ? '' : 'skip'}">
+            <input type="checkbox" id="pv-inc-${i}" data-action="pv-inc" data-i="${i}" ${r.include ? 'checked' : ''} aria-label="Neem dit antwoord mee">
+            <input class="input" style="min-height:38px;padding:6px 10px" id="pv-name-${i}" data-i="${i}" value="${esc(r.name)}" placeholder="Naam" aria-label="Naam">
+            ${chipRow(st.opts, r.yes, r.maybe, 'pv-chip', `data-i="${i}"`)}
+            <div class="raw">“${esc(r.raw.join(' / '))}”</div>
+            ${notes.length ? `<div class="note">${esc(notes.join(' '))}</div>` : ''}
+          </div>`;
+        }).join('')}
+        ${S.preview.unrecognized.length ? `<details class="unrec"><summary>${plural(S.preview.unrecognized.length, 'bericht', 'berichten')} zonder dagen overgeslagen</summary><ul>${S.preview.unrecognized.map(m => `<li>${esc(m.name ? m.name + ': ' : '')}${esc(m.text)}</li>`).join('')}</ul></details>` : ''}
+        <div class="row"><button class="btn primary" data-action="import" ${count ? '' : 'disabled'}>Voeg ${plural(count, 'antwoord', 'antwoorden')} toe</button><button class="btn ghost" data-action="clear-preview">Wis</button></div>
+      </div>`;
+    } else if (S.paste.trim() && S.previewEmpty) {
+      pv = `<p class="err">Er stonden geen nummers of dagen in die tekst. Controleer of je de antwoorden kopieerde, of voeg ze hieronder één voor één toe.</p>`;
+    }
+    const q = S.quick;
+    return `<div class="card">
+        <div style="display:grid;gap:4px"><h2>Plak de antwoorden uit de groep</h2>
+        <p class="muted small">Selecteer in WhatsApp de berichten met antwoorden, kopieer ze en plak ze hieronder. Op een computer (WhatsApp Web of de app) gaat dat het vlotst. Namen en nummers worden er automatisch uitgehaald; je kijkt alles na voor je het toevoegt. Antwoordt iemand opnieuw, dan vervangt dat zijn vorige antwoord.</p></div>
+        <textarea class="input" id="paste" placeholder="[14:03, 26/10/2026] Jan: 1 3 4&#10;[14:05, 26/10/2026] Els: alles behalve 2&#10;[14:06, 26/10/2026] Tom: 2 en 3?">${esc(S.paste)}</textarea>
+        <div class="row"><button class="btn primary" data-action="parse">Lees de antwoorden</button><span class="muted small">Begrijpt ook: alles, alles behalve 2, 1-3, zaterdag, 14/11, 2 misschien</span></div>
+        ${pv}
+      </div>
+      <div class="card">
+        <div style="display:grid;gap:4px"><h2>Eén antwoord toevoegen</h2><p class="muted small">Voor wie privé of mondeling antwoordde. Typ de nummers of tik de dagen aan.</p></div>
+        <div class="quickadd">
+          <div><label class="lbl" for="q-name">Naam</label><input class="input" id="q-name" value="${esc(q.name)}" placeholder="bv. Sofie" autocomplete="off"></div>
+          <div><label class="lbl" for="q-text">Antwoord</label><input class="input" id="q-text" value="${esc(q.text)}" placeholder="bv. 1 3 4?" autocomplete="off"></div>
+        </div>
+        <div id="q-chips">${chipRow(st.opts, q.yes, q.maybe, 'q-chip')}</div>
+        ${S.quickErr ? `<p class="err" role="alert">${esc(S.quickErr)}</p>` : ''}
+        <div class="row"><button class="btn primary" data-action="quick-add">Voeg toe</button></div>
+      </div>`;
+  }
+
+  function msgsTab(ev, st) {
+    const card = (key, title, sub, text, wa) => `<div class="card msg-card">
+      <div style="display:grid;gap:4px"><h2>${title}</h2>${sub ? `<p class="muted small">${sub}</p>` : ''}</div>
+      <pre class="msg" id="msg-${key}" tabindex="0">${esc(text)}</pre>
+      <div class="row"><button class="btn primary" data-action="copy" data-msg="${key}">Kopieer</button>
+      ${navigator.share ? `<button class="btn" data-action="share" data-msg="${key}">Delen…</button>` : ''}
+      ${wa ? `<a class="btn" href="https://wa.me/?text=${encodeURIComponent(text)}" target="_blank" rel="noopener" data-action="wa" data-msg="${key}">Open in WhatsApp</a>` : ''}</div>
+    </div>`;
+    let out = card('invite', 'Uitnodiging', 'Plak dit in de groep. De nummers horen bij de dagen; iedereen antwoordt gewoon met nummers.', inviteMsg(ev), true);
+    if (st.n) out += card('status', 'Herinnering met stand van zaken', 'Handig om nog wat antwoorden los te krijgen.', statusMsg(ev), true);
+    if (ev.chosen) out += card('decision', 'Aankondiging', 'De knoop is doorgehakt.', decisionMsg(ev), true);
+    else if (st.n) out += `<div class="card"><p class="muted small">Prik je in <b>Resultaat</b> een dag, dan staat hier ook een kant-en-klare aankondiging.</p></div>`;
+    return out;
+  }
+
+  /* ---------- actions ---------- */
+  let toastTimer = null;
+  function toast(text, undo) {
+    toastEl.innerHTML = '';
+    const s = document.createElement('span'); s.textContent = text; toastEl.appendChild(s);
+    if (undo) { const b = document.createElement('button'); b.textContent = 'Ongedaan maken'; b.addEventListener('click', () => { undo(); hideToast(); }); toastEl.appendChild(b); }
+    toastEl.hidden = false;
+    clearTimeout(toastTimer); toastTimer = setTimeout(hideToast, undo ? 6000 : 2600);
+  }
+  function hideToast() { toastEl.hidden = true; }
+
+  function selectNode(el) {
+    try { const r = document.createRange(); r.selectNodeContents(el); const s = getSelection(); s.removeAllRanges(); s.addRange(r); } catch (e) {}
+  }
+  function msgText(key) {
+    const ev = cur(); if (!ev) return '';
+    return key === 'invite' ? inviteMsg(ev) : key === 'status' ? statusMsg(ev) : decisionMsg(ev);
+  }
+  function markShared(key) {
+    const ev = cur();
+    if (key === 'invite' && ev && !ev.sharedAt && !S.readOnly) { ev.sharedAt = Date.now(); persist(ev.id); }
+  }
+  function copy(key) {
+    const text = msgText(key);
+    const done = () => { markShared(key); toast('Gekopieerd. Plak het in de groep.'); };
+    const fail = () => {
+      if (S.tab !== 'msgs' && key === 'decision') { S.tab = 'msgs'; render(); }
+      const el = document.getElementById('msg-' + key);
+      if (el) { el.scrollIntoView({ block: 'center' }); selectNode(el); }
+      markShared(key);
+      toast('Automatisch kopiëren lukte niet. De tekst is geselecteerd: kopieer hem zelf.');
+    };
+    try {
+      const p = navigator.clipboard && navigator.clipboard.writeText(text);
+      if (p && p.then) p.then(done, fail); else fail();
+    } catch (e) { fail(); }
+  }
+
+  function openNew() {
+    S.draft = { id: null, title: '', dates: [], locked: false, orig: [] };
+    const m = new Date(); m.setDate(1); m.setHours(0, 0, 0, 0); S.calMonth = m;
+    S.draftErr = ''; S.view = 'edit'; render();
+    setTimeout(() => { const t = document.getElementById('title'); if (t) t.focus(); }, 0);
+  }
+  function openEdit() {
+    const ev = cur(); if (!ev) return;
+    S.draft = { id: ev.id, title: ev.title, dates: clone(ev.dates), locked: locked(ev), orig: ev.dates.map(x => x.d) };
+    const firstOpen = (ev.dates.find(x => !x.off && x.d >= todayIso()) || {}).d;
+    const m = firstOpen ? pd(firstOpen) : new Date(); m.setDate(1); m.setHours(0, 0, 0, 0);
+    const now = new Date(); now.setDate(1); now.setHours(0, 0, 0, 0);
+    S.calMonth = m < now ? now : m;
+    S.draftErr = ''; S.view = 'edit'; render();
+  }
+  function toggleDay(d) {
+    const dr = S.draft;
+    const i = dr.dates.findIndex(x => x.d === d);
+    if (i < 0) {
+      dr.dates.push({ d, off: false });
+      if (!dr.locked) dr.dates.sort((a, b) => a.d.localeCompare(b.d));
+    } else if (!dr.locked || !dr.orig.includes(d)) {
+      dr.dates.splice(i, 1);
+    } else {
+      dr.dates[i].off = !dr.dates[i].off;
+    }
+    S.draftErr = '';
+    render();
+  }
+  function bulk(wd) {
+    const dr = S.draft, m = S.calMonth, today = todayIso();
+    const y = m.getFullYear(), mo = m.getMonth(), n = new Date(y, mo + 1, 0).getDate();
+    const days = [];
+    for (let d = 1; d <= n; d++) { const dt = new Date(y, mo, d); if (dt.getDay() === wd && iso(dt) >= today) days.push(iso(dt)); }
+    const allIn = days.length && days.every(s => dr.dates.some(x => x.d === s && !x.off));
+    if (allIn) { days.forEach(s => { if (dr.dates.some(x => x.d === s)) toggleDayQuiet(s); }); }
+    else days.forEach(s => { const it = dr.dates.find(x => x.d === s); if (!it) { dr.dates.push({ d: s, off: false }); } else if (it.off) it.off = false; });
+    if (!dr.locked) dr.dates.sort((a, b) => a.d.localeCompare(b.d));
+    render();
+  }
+  function toggleDayQuiet(d) {
+    const dr = S.draft, i = dr.dates.findIndex(x => x.d === d);
+    if (i < 0) return;
+    if (!dr.locked || !dr.orig.includes(d)) dr.dates.splice(i, 1); else dr.dates[i].off = !dr.dates[i].off;
+  }
+  function saveDraft() {
+    const dr = S.draft;
+    const t = document.getElementById('title'); if (t) dr.title = t.value;
+    if (!dr.dates.some(x => !x.off)) { S.draftErr = 'Kies minstens één dag in de kalender.'; render(); return; }
+    let ev;
+    if (dr.id && S.events[dr.id]) {
+      ev = S.events[dr.id];
+      ev.title = dr.title.trim(); ev.dates = clone(dr.dates);
+      const open = new Set(ev.dates.filter(x => !x.off).map(x => x.d));
+      if (ev.chosen && !open.has(ev.chosen)) ev.chosen = null;
+      const all = new Set(ev.dates.map(x => x.d));
+      ev.people.forEach(p => { p.yes = p.yes.filter(d => all.has(d)); p.maybe = p.maybe.filter(d => all.has(d)); });
+    } else {
+      if (navigator.storage && navigator.storage.persist) { try { navigator.storage.persist().catch(() => {}); } catch (e) {} }
+      const id = newId();
+      ev = normalize(id, { title: dr.title.trim(), dates: clone(dr.dates), people: [], createdAt: Date.now() });
+      S.events[id] = ev;
+    }
+    persist(ev.id, 0);
+    S.currentId = ev.id; S.view = 'event'; S.tab = ev.people.length ? 'result' : 'msgs'; S.draft = null;
+    S.paste = ''; S.preview = null; S.previewEmpty = false; S.confirmDelete = false;
+    render(); window.scrollTo({ top: 0 });
+  }
+  function openEvent(id) {
+    if (!S.events[id]) return;
+    S.currentId = id; S.view = 'event'; S.confirmDelete = false;
+    S.tab = S.events[id].people.length ? 'result' : 'msgs';
+    S.paste = ''; S.preview = null; S.previewEmpty = false;
+    S.quick = { name: '', text: '', yes: [], maybe: [] }; S.quickErr = '';
+    render(); window.scrollTo({ top: 0 });
+  }
+  function cycle(yes, maybe, d) {
+    if (yes.includes(d)) return { yes: yes.filter(x => x !== d), maybe: maybe.concat(d) };
+    if (maybe.includes(d)) return { yes, maybe: maybe.filter(x => x !== d) };
+    return { yes: yes.concat(d), maybe: maybe.filter(x => x !== d) };
+  }
+  function upsertPerson(ev, name, yes, maybe) {
+    const key = nameKey(name);
+    const p = ev.people.find(x => nameKey(x.name) === key);
+    if (p) { p.yes = yes.slice(); p.maybe = maybe.slice(); p.name = cleanName(name); }
+    else ev.people.push({ id: newId(), name: cleanName(name), yes: yes.slice(), maybe: maybe.slice() });
+  }
+
+  app.addEventListener('click', e => {
+    const el = e.target.closest('[data-action]');
+    if (!el || !app.contains(el)) return;
+    const a = el.dataset.action;
+    const ev = cur();
+    switch (a) {
+      case 'home': S.view = 'list'; S.currentId = null; S.draft = null; render(); window.scrollTo({ top: 0 }); break;
+      case 'new': openNew(); break;
+      case 'open': if (el.dataset.id) openEvent(el.dataset.id); else { S.view = 'list'; render(); } break;
+      case 'edit': openEdit(); break;
+      case 'month': { const m = new Date(S.calMonth); m.setMonth(m.getMonth() + +el.dataset.dir); S.calMonth = m; render(); break; }
+      case 'toggle-day': toggleDay(el.dataset.d); break;
+      case 'bulk': bulk(+el.dataset.wd); break;
+      case 'save-draft': saveDraft(); break;
+      case 'tab': S.tab = el.dataset.tab; S.confirmDelete = false; render(); break;
+      case 'sort': S.sortMode = el.dataset.s; render(); break;
+      case 'delete': S.confirmDelete = true; render(); break;
+      case 'delete-no': S.confirmDelete = false; render(); break;
+      case 'delete-yes': if (ev) { const t = ev.title; removeEvent(ev.id); S.view = 'list'; S.currentId = null; S.confirmDelete = false; render(); toast('“' + (t || 'Planning') + '” verwijderd.'); } break;
+      case 'choose': if (ev) { ev.chosen = el.dataset.d; persist(ev.id); render(); } break;
+      case 'unchoose': if (ev) { ev.chosen = null; persist(ev.id); render(); } break;
+      case 'copy': copy(el.dataset.msg); break;
+      case 'wa': markShared(el.dataset.msg); break;
+      case 'share': {
+        const key = el.dataset.msg;
+        try { navigator.share({ text: msgText(key) }).then(() => markShared(key), () => {}); } catch (e) {}
+        break;
+      }
+      case 'example': addExample(); break;
+      case 'backup': backup(); break;
+      case 'restore': document.getElementById('restore-file').click(); break;
+      case 'cell': if (ev && !S.readOnly) {
+        const p = ev.people.find(x => x.id === el.dataset.pid); if (!p) break;
+        const r = cycle(p.yes, p.maybe, el.dataset.d); p.yes = r.yes; p.maybe = r.maybe; persist(ev.id, 600); render();
+      } break;
+      case 'remove-person': if (ev) {
+        const i = ev.people.findIndex(x => x.id === el.dataset.pid); if (i < 0) break;
+        const [p] = ev.people.splice(i, 1); persist(ev.id); render();
+        const evId = ev.id;
+        toast(p.name + ' verwijderd.', () => { const e2 = S.events[evId]; if (!e2) return; e2.people.splice(Math.min(i, e2.people.length), 0, p); persist(evId); render(); });
+      } break;
+      case 'parse': {
+        const ta = document.getElementById('paste'); S.paste = ta ? ta.value : S.paste;
+        if (!ev) break;
+        const res = parsePaste(S.paste, optionsOf(ev));
+        S.preview = res.rows.length ? res : null; S.previewEmpty = !res.rows.length;
+        render();
+        break;
+      }
+      case 'clear-preview': S.preview = null; S.previewEmpty = false; S.paste = ''; render(); break;
+      case 'pv-chip': { const r = S.preview && S.preview.rows[+el.dataset.i]; if (!r) break; const c = cycle(r.yes, r.maybe, el.dataset.d); r.yes = c.yes; r.maybe = c.maybe; render(); break; }
+      case 'pv-inc': { const r = S.preview && S.preview.rows[+el.dataset.i]; if (r) { r.include = el.checked; render(); } break; }
+      case 'import': if (ev && S.preview) {
+        let n = 0;
+        S.preview.rows.forEach(r => { if (r.include && r.name.trim()) { upsertPerson(ev, r.name, r.yes, r.maybe); n++; } });
+        persist(ev.id, 0);
+        S.preview = null; S.previewEmpty = false; S.paste = ''; S.tab = 'result'; render(); window.scrollTo({ top: 0 });
+        toast(plural(n, 'antwoord', 'antwoorden') + ' toegevoegd.');
+      } break;
+      case 'q-chip': { const q = S.quick; const c = cycle(q.yes, q.maybe, el.dataset.d); q.yes = c.yes; q.maybe = c.maybe; render(); break; }
+      case 'quick-add': if (ev) {
+        const q = S.quick;
+        if (!q.name.trim()) { S.quickErr = 'Vul een naam in.'; render(); break; }
+        upsertPerson(ev, q.name, q.yes, q.maybe); persist(ev.id, 0);
+        const nm = q.name.trim();
+        S.quick = { name: '', text: '', yes: [], maybe: [] }; S.quickErr = '';
+        render(); toast('Antwoord van ' + nm + ' toegevoegd.');
+        const f = document.getElementById('q-name'); if (f) f.focus();
+      } break;
+    }
+  });
+
+  app.addEventListener('input', e => {
+    const t = e.target;
+    if (t.id === 'title' && S.draft) { S.draft.title = t.value; return; }
+    if (t.id === 'paste') { S.paste = t.value; return; }
+    if (t.id === 'q-name') { S.quick.name = t.value; if (S.quickErr) { S.quickErr = ''; } return; }
+    if (t.id === 'q-text') {
+      S.quick.text = t.value;
+      const ev = cur(); if (!ev) return;
+      const r = parseAnswer(t.value, optionsOf(ev));
+      S.quick.yes = r.yes; S.quick.maybe = r.maybe;
+      const box = document.getElementById('q-chips');
+      if (box) box.innerHTML = chipRow(optionsOf(ev), S.quick.yes, S.quick.maybe, 'q-chip');
+      return;
+    }
+    if (t.id && t.id.startsWith('pv-name-') && S.preview) { const r = S.preview.rows[+t.dataset.i]; if (r) r.name = t.value; return; }
+  });
+  app.addEventListener('change', e => {
+    const t = e.target;
+    if (t.classList.contains('nm')) {
+      const ev = cur(); if (!ev) return;
+      const p = ev.people.find(x => x.id === t.dataset.pid); if (!p) return;
+      const v = cleanName(t.value);
+      if (v && v !== p.name) { p.name = v; persist(ev.id); }
+      render();
+    }
+    if (t.id && t.id.startsWith('pv-name-') && S.preview) render();
+  });
+  document.getElementById('restore-file').addEventListener('change', e => {
+    const f = e.target.files && e.target.files[0];
+    if (f) restore(f);
+    e.target.value = '';
+  });
+  app.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && (e.target.id === 'q-name' || e.target.id === 'q-text')) { e.preventDefault(); const b = app.querySelector('[data-action="quick-add"]'); if (b) b.click(); }
+    if (e.key === 'Enter' && e.target.id === 'title') { e.preventDefault(); saveDraft(); }
+  });
+
+  /* ---------- boot ---------- */
+  S.events = loadAll(); S.loaded = true;
+  if (!canStore) S.error = 'Je browser laat deze pagina niets bewaren (bijvoorbeeld in een privévenster). Je kan alles gebruiken, maar je planningen verdwijnen als je de pagina sluit.';
+  render();
+})();
+</script>
+</body>
+</html>
