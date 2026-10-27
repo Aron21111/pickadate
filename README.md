@@ -1,26 +1,50 @@
 # Wie kan wanneer
 
-Een kleine webapp om met een WhatsApp-groep een datum te prikken, zonder dat iemand iets moet installeren.
+Een kleine webapp om met je vrienden, familie of ploeg een datum te prikken. Iedereen zit samen in een groep, duidt zelf aan wanneer het past en ziet live wanneer de anderen kunnen. Niemand moet iets installeren of een account maken.
 
 ## Hoe het werkt
 
-1. **Kies de mogelijke dagen** in de kalender. Elke dag krijgt een nummer.
-2. **Deel het bericht** in de groep (kopiëren, "Delen…" of "Open in WhatsApp"). Iedereen antwoordt met nummers, bijvoorbeeld `1 3 4`, of `2?` als ze twijfelen.
-3. **Plak de antwoorden terug** in de app. Die haalt namen en nummers uit de berichten en laat zien welke dag het best past.
+1. **Maak een groep** en geef ze een naam. Je krijgt een uitnodigingslink.
+2. **Zet de link in jullie WhatsApp-groep.** Wie hem opent en een naam invult, zit in de groep.
+3. **Maak een planning**: kies in de kalender de mogelijke dagen. Elk lid ziet ze in de app en duidt per dag aan: *kan*, *misschien* of *niet*.
+4. **Iedereen ziet live** welke dag het best past, wie wanneer kan en wie nog niet antwoordde. Wie de planning maakte, prikt de dag en kopieert een aankondiging voor de groep.
 
-De app begrijpt ook antwoorden als `alles`, `alles behalve 2`, `1-3`, `zaterdag`, `14/11` en `2 misschien`. Je kijkt alles na voor je het toevoegt.
+Antwoordt iemand toch liever in de chat (bv. `1 3 4` of `2?`), dan plak je die berichten bij **Voor anderen**. De app haalt er namen en nummers uit, net zoals vroeger. Ze begrijpt ook `alles`, `alles behalve 2`, `1-3`, `zaterdag`, `14/11` en `2 misschien`.
 
-## Privacy
+Op de startpagina staat een voorbeeldgroep om alles uit te proberen zonder dat er iets bewaard wordt.
 
-- Planningen worden alleen in de browser van de gebruiker bewaard (`localStorage`). Er is geen server en geen database.
-- De pagina laadt niets van andere websites: de lettertypes staan mee in de map `fonts/`. Er zijn geen cookies en geen tracking.
-- Iedereen die de link opent, krijgt een eigen, lege planner.
+## Toegang en privacy
+
+- Groepen, planningen en antwoorden staan in een Firestore-database van **jouw eigen** Firebase-project (Google). Kies bij het aanmaken een Europese locatie.
+- **Alleen leden** kunnen een groep lezen. Lid word je alleen met de uitnodigingslink: die bevat een geheime code. De beveiligingsregels in `firestore.rules` dwingen dat af in de database zelf.
+- Elk toestel krijgt automatisch een anoniem account. Er is geen e-mail, wachtwoord of telefoonnummer nodig.
+- Binnen een groep vertrouwen de leden elkaar: iedereen kan antwoorden invullen voor wie zonder app meedoet en mensen toevoegen. Titel en dagen van een planning past alleen aan wie ze maakte of de beheerder.
+- De **beheerder** (wie de groep maakte) kan leden verwijderen en een **nieuwe uitnodigingslink** maken. De oude link werkt dan niet meer; wie al lid is, blijft lid.
+- De pagina laadt de Firebase-bibliotheek van `www.gstatic.com` en praat met Firebase. Er zijn geen advertenties, geen analytics en geen tracking.
+
+## Eenmalig instellen: een gratis Firebase-project
+
+Dit doe je één keer, als beheerder van de site. Het gratis Spark-abonnement is ruim voldoende; je hebt geen kredietkaart nodig. De knoppen in de Firebase-console staan meestal in het Engels.
+
+1. **Project maken.** Ga naar <https://console.firebase.google.com>, klik **Create a project** (of *Add project*), kies een naam zoals `wie-kan-wanneer` en zet Google Analytics uit.
+2. **Anoniem aanmelden aanzetten.** Ga links naar **Build → Authentication → Get started**. Kies in het tabblad **Sign-in method** de provider **Anonymous**, zet hem aan en klik **Save**.
+   Ga daarna naar **Settings → Authorized domains → Add domain** en voeg `<jouw-gebruikersnaam>.github.io` toe (bijvoorbeeld `aron21111.github.io`).
+3. **Database maken.** Ga naar **Build → Firestore Database → Create database**. Kies een Europese locatie (bijvoorbeeld `eur3 (Europe)` of `europe-west1 (Belgium)`) en **production mode**.
+   Open daarna het tabblad **Rules**, vervang alles door de inhoud van `firestore.rules` uit deze map en klik **Publish**.
+4. **De app koppelen.** Klik bovenaan links op het tandwiel → **Project settings**. Kies onderaan bij *Your apps* het web-icoon **`</>`**, geef de app een naam en klik **Register app** (Firebase Hosting is niet nodig). Firebase toont een blok `firebaseConfig = { apiKey: ..., ... }`.
+   Open `config.js` en vervang het blok tussen de accolades achter `firebase:` door die waarden.
+   Die gegevens zijn niet geheim; ze mogen in een publieke repository staan. Wat iemand mag lezen of schrijven, staat in de regels van stap 3.
+5. **Online zetten** (zie hieronder) en de site openen. Maak een groep en test de uitnodigingslink in een privévenster of op je gsm.
+
+Krijg je een melding in de app, dan zegt die meestal welke stap ontbreekt: *Anonymous* staat niet aan (stap 2), de regels zijn niet gepubliceerd (stap 3) of `config.js` klopt niet (stap 4).
 
 ## Bestanden
 
 | Bestand | Waarvoor |
 | --- | --- |
 | `index.html` | De volledige app (HTML, CSS en JavaScript in één bestand) |
+| `config.js` | De koppeling met jouw Firebase-project |
+| `firestore.rules` | De beveiligingsregels voor de database (plak je in de Firebase-console) |
 | `manifest.webmanifest` en `icons/` | Icoon en naam als je de site op je beginscherm zet |
 | `fonts/` | Barlow Condensed en Hanken Grotesk, onder de SIL Open Font License (zie de `OFL-*.txt`-bestanden) |
 
@@ -33,12 +57,16 @@ De app begrijpt ook antwoorden als `alles`, `alles behalve 2`, `1-3`, `zaterdag`
 
 ## Aanpassen
 
-Upload een nieuwe `index.html` (die vervangt de oude). GitHub zet de nieuwe versie binnen een paar minuten online. Wat gebruikers al bewaard hadden, blijft staan.
+Upload een nieuwe `index.html` (die vervangt de oude). GitHub zet de nieuwe versie binnen een paar minuten online. Groepen en antwoorden staan in Firebase en blijven dus gewoon bestaan.
 
-Verhuis je de site later naar een eigen domeinnaam, dan zien bestaande gebruikers hun planningen daar niet: browsers bewaren gegevens per website-adres. Ze kunnen dan een back-up downloaden op het oude adres en terugzetten op het nieuwe.
+Pas je `firestore.rules` aan, publiceer de nieuwe versie dan ook in de Firebase-console (stap 3).
+
+Verhuis je de site naar een ander adres, voeg dat domein dan toe bij *Authorized domains* (stap 2). Wie al lid was, opent op het nieuwe adres gewoon opnieuw de uitnodigingslink en kiest zijn naam; de app vraagt dan "Ben jij dat?".
 
 ## Goed om te weten
 
-- **Ander toestel of andere browser:** gebruik *Back-up downloaden* en *Back-up terugzetten* onderaan de startpagina.
-- **iPhone/iPad:** Safari kan opgeslagen gegevens van een site wissen als je die 7 dagen niet opent. Zet de site op je beginscherm (Deel-knop → Zet op beginscherm); dan gebeurt dat niet. Het beginscherm-icoon heeft wel zijn eigen opslag, los van Safari.
-- **Privévenster:** daar wordt niets bewaard; de app meldt dat bovenaan.
+- **Ander toestel of andere browser:** open de uitnodigingslink opnieuw en vul dezelfde naam in. De app vraagt of jij dat bent en neemt je antwoorden over.
+- **iPhone/iPad:** Safari kan na 7 dagen zonder bezoek vergeten dat je in een groep zit. Dan werkt hetzelfde: de link opnieuw openen en je naam kiezen.
+- **Meldingen:** de app stuurt zelf geen meldingen. Laat de groep weten dat er een nieuwe planning is met de knop *Open in WhatsApp*.
+- **Oude planningen:** planningen uit de vorige versie (alleen in je browser bewaard) worden niet overgenomen.
+- **Testen zonder echt project:** `config.js` kan ook verwijzen naar de lokale Firebase Emulator Suite, met `emulator: { auth: "http://127.0.0.1:9099", host: "127.0.0.1", port: 8080 }` naast `firebase` en een `projectId` die met `demo-` begint.
