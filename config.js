@@ -3,11 +3,11 @@
    Deze gegevens zijn niet geheim: wat iemand mag lezen of schrijven, staat in firestore.rules. */
 window.WKW_CONFIG = {
   firebase: {
-    apiKey: "VUL-IN",
-    authDomain: "VUL-IN.firebaseapp.com",
-    projectId: "VUL-IN",
-    storageBucket: "VUL-IN.firebasestorage.app",
-    messagingSenderId: "VUL-IN",
-    appId: "VUL-IN"
+    apiKey: "AIzaSyBRhdJH4Xmk038lLtcSFZTH8Pf8rh5K_MY",
+    authDomain: "wie-kan-wanneer.firebaseapp.com",
+    projectId: "wie-kan-wanneer",
+    storageBucket: "wie-kan-wanneer.firebasestorage.app",
+    messagingSenderId: "469233824507",
+    appId: "1:469233824507:web:496a672ec5e5942fc3b65e"
   }
 };
