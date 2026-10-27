@@ -5,7 +5,7 @@ rules_version = '2';
 //
 // - Lid worden kan alleen met de uitnodigingscode van de groep (die zit in de uitnodigingslink).
 // - Alleen leden kunnen een groep, haar leden en haar planningen lezen.
-// - Elk lid mag antwoorden invullen en mensen toevoegen. Titel, dagen en de geprikte dag
+// - Elk lid mag antwoorden invullen en mensen toevoegen. De titel en de geprikte dag
 //   van een planning past alleen aan wie ze maakte, of de beheerder van de groep.
 // - Alleen de beheerder kan de groep hernoemen, leden verwijderen, een nieuwe link maken
 //   of de groep verwijderen.
@@ -34,7 +34,8 @@ service cloud.firestore {
     function validEvent(d) {
       return d.keys().hasOnly(['title', 'dates', 'chosen', 'createdBy', 'createdAt', 'updatedAt', 'sharedAt', 'answers'])
         && d.title is string && d.title.size() <= 80
-        && d.dates is list && d.dates.size() > 0 && d.dates.size() <= 62
+        // 'dates' only exists on plannings made with an earlier version (fixed days).
+        && (!('dates' in d) || d.dates is list)
         && (d.chosen == null || d.chosen is string)
         && d.createdBy is string
         && d.answers is map && d.answers.size() <= 300;

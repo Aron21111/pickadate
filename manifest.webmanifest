@@ -1,7 +1,7 @@
 {
   "name": "Wie kan wanneer",
   "short_name": "Wie kan?",
-  "description": "Prik een datum met je groep: iedereen duidt zelf aan wanneer het past en je ziet live welke dag voor iedereen past.",
+  "description": "Prik een datum met je groep: iedereen tikt in een gedeelde kalender aan wanneer het past en je ziet live welke dag voor iedereen past.",
   "lang": "nl",
   "start_url": "./",
   "scope": "./",

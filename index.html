@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Wie kan wanneer</title>
-<meta name="description" content="Prik een datum met je groep: nodig iedereen uit met een link, iedereen duidt zelf aan wanneer het past en je ziet live welke dag voor iedereen past.">
+<meta name="description" content="Prik een datum met je groep: nodig iedereen uit met een link, iedereen duidt in de kalender aan wanneer het past en je ziet live welke dag voor iedereen past.">
 <meta name="theme-color" content="#F2F3EE" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#111513" media="(prefers-color-scheme: dark)">
 <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
@@ -138,7 +138,7 @@ button, input, textarea { font: inherit; color: inherit; }
 .pchip { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px 3px 3px; border-radius: 999px; background: var(--card); border: 1px solid var(--line); font-size: 13px; font-weight: 600; }
 button.pchip { cursor: pointer; min-height: 34px; }
 button.pchip:hover { border-color: var(--cobalt); }
-.pchip.me { border-color: var(--cobalt); }
+.pchip.me, button.pchip[aria-pressed="true"] { border-color: var(--cobalt); box-shadow: 0 0 0 1px var(--cobalt); }
 .av { width: 32px; height: 32px; border-radius: 999px; background: var(--cobalt-soft); color: var(--cobalt); display: grid; place-items: center; font-family: var(--f-display); font-weight: 700; font-size: 15px; flex: none; line-height: 1; }
 .av.noapp { background: transparent; border: 1.5px dashed var(--line); color: var(--ink-3); }
 .pchip .av { width: 24px; height: 24px; font-size: 12px; }
@@ -172,11 +172,10 @@ button.pchip:hover { border-color: var(--cobalt); }
 label.lbl { font-weight: 600; font-size: 14px; display: block; margin-bottom: 6px; }
 .input { width: 100%; min-height: 46px; padding: 10px 14px; border-radius: var(--r); border: 1.5px solid var(--line); background: var(--paper); }
 .input:focus { border-color: var(--cobalt); outline: none; }
-textarea.input { min-height: 140px; resize: vertical; font-size: 14px; line-height: 1.45; }
 .err { color: var(--danger); font-size: 14px; font-weight: 600; }
 
-/* calendar */
-.cal { display: grid; gap: 10px; max-width: 420px; }
+/* shared calendar: your own days solid, other people's days tinted with a count */
+.cal { display: grid; gap: 10px; max-width: 440px; }
 .cal-head { display: flex; align-items: center; justify-content: space-between; }
 .cal-head b { font-family: var(--f-display); font-size: 22px; font-weight: 700; text-transform: capitalize; }
 .cal-nav { width: 38px; height: 38px; border-radius: 999px; border: 1.5px solid var(--line); background: var(--card); cursor: pointer; font-size: 18px; line-height: 1; }
@@ -188,18 +187,17 @@ textarea.input { min-height: 140px; resize: vertical; font-size: 14px; line-heig
 .day.we { color: var(--ink-2); }
 .day.today { border-color: var(--ink); }
 .day[disabled] { opacity: .3; cursor: default; }
-.day.sel { background: var(--cobalt); color: var(--on-cobalt); }
-.day.off { background: var(--paper); color: var(--ink-3); text-decoration: line-through; border-color: var(--line); border-style: dashed; }
-.day .badge { position: absolute; top: 2px; right: 4px; font-family: var(--f-body); font-size: 10px; font-weight: 700; opacity: .85; }
+.day.others { background: var(--cobalt-soft); color: var(--ink); }
+.day.yes { background: var(--cobalt); color: var(--on-cobalt); }
+.day.maybe { background: repeating-linear-gradient(135deg, var(--amber-soft) 0 4px, var(--card) 4px 8px); border-color: var(--amber); color: color-mix(in srgb, var(--amber) 70%, var(--ink)); }
+.day.best::after { content: ""; position: absolute; left: 22%; right: 22%; bottom: 4px; height: 4px; border-radius: 2px; background: var(--marker); }
+.day.chosen { box-shadow: 0 0 0 3px var(--marker); }
+.day .badge { position: absolute; top: 2px; right: 4px; font-family: var(--f-body); font-size: 10px; font-weight: 700; line-height: 1.3; opacity: .9; }
+.day.others .badge { color: var(--cobalt); opacity: 1; }
 .blank { aspect-ratio: 1; }
 .quick { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 13px; color: var(--ink-2); }
-
-.picked { display: flex; flex-wrap: wrap; gap: 6px; }
-.pick { display: inline-flex; align-items: center; gap: 6px; padding: 5px 6px 5px 10px; border-radius: 999px; background: var(--cobalt-soft); font-size: 14px; font-weight: 600; }
-.pick .n { font-family: var(--f-display); font-weight: 700; color: var(--cobalt); }
-.pick button { border: 0; background: transparent; width: 24px; height: 24px; border-radius: 999px; cursor: pointer; color: var(--ink-2); font-size: 15px; line-height: 1; }
-.pick button:hover { background: var(--card); color: var(--ink); }
-.pick.off { background: transparent; border: 1px dashed var(--line); color: var(--ink-3); text-decoration: line-through; }
+.mydays { font-size: 13px; color: var(--ink-2); overflow-wrap: anywhere; }
+.mydays b { color: var(--ink); }
 
 /* event view */
 .ev-head { display: grid; gap: 6px; }
@@ -209,21 +207,6 @@ textarea.input { min-height: 140px; resize: vertical; font-size: 14px; line-heig
 .tab[aria-selected="true"] { background: var(--ink); color: var(--paper); }
 .tab .cnt { font-variant-numeric: tabular-nums; opacity: .7; margin-left: 4px; }
 
-/* your own answer */
-.avail { display: grid; }
-.av-row { display: flex; align-items: center; justify-content: space-between; gap: 8px 12px; flex-wrap: wrap; padding: 8px 0; }
-.av-row + .av-row { border-top: 1px solid var(--line); }
-.av-row.chosen { background: color-mix(in srgb, var(--hl) 35%, transparent); border-radius: 10px; padding: 8px; }
-.av-d { display: flex; align-items: center; gap: 10px; font-weight: 600; }
-.av-d .av-n { font-family: var(--f-display); font-weight: 700; font-size: 16px; color: var(--ink-3); min-width: 16px; text-align: center; }
-.av-d .dnum { font-family: var(--f-display); font-weight: 700; font-size: 22px; margin: 0 1px; }
-.seg3 { display: inline-flex; gap: 2px; border: 1.5px solid var(--line); border-radius: 999px; padding: 3px; background: var(--paper); }
-.seg3 button { border: 0; background: transparent; min-height: 36px; padding: 0 14px; border-radius: 999px; font-weight: 600; font-size: 14px; color: var(--ink-2); cursor: pointer; }
-.seg3 button:hover { color: var(--ink); }
-.seg3 button[aria-pressed="true"][data-v="yes"] { background: var(--cobalt); color: var(--on-cobalt); }
-.seg3 button[aria-pressed="true"][data-v="maybe"] { background: repeating-linear-gradient(135deg, var(--amber-soft) 0 4px, var(--card) 4px 8px); box-shadow: inset 0 0 0 1.5px var(--amber); color: color-mix(in srgb, var(--amber) 70%, var(--ink)); }
-.seg3 button[aria-pressed="true"][data-v="no"] { background: var(--ink); color: var(--paper); }
-
 /* best day */
 .best { display: flex; gap: 18px; align-items: center; flex-wrap: wrap; }
 .best .txt { display: grid; gap: 6px; min-width: 0; flex: 1 1 220px; }
@@ -232,10 +215,9 @@ textarea.input { min-height: 140px; resize: vertical; font-size: 14px; line-heig
 
 /* ranking */
 .rank { display: grid; gap: 2px; }
-.rank-row { display: grid; grid-template-columns: 30px 92px minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 10px 8px; border-radius: 10px; }
+.rank-row { display: grid; grid-template-columns: 92px minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 10px 8px; border-radius: 10px; }
 .rank-row + .rank-row { border-top: 1px solid var(--line); }
 .rank-row.top { background: color-mix(in srgb, var(--hl) 40%, transparent); }
-.rank-row .n { font-family: var(--f-display); font-weight: 700; font-size: 18px; color: var(--ink-3); text-align: center; }
 .rank-row .dl { font-weight: 600; white-space: nowrap; }
 .rank-row .dl .dnum { font-family: var(--f-display); font-weight: 700; font-size: 22px; margin: 0 2px; }
 .bar { height: 10px; border-radius: 999px; background: var(--paper); border: 1px solid var(--line); overflow: hidden; display: flex; }
@@ -249,10 +231,12 @@ textarea.input { min-height: 140px; resize: vertical; font-size: 14px; line-heig
 .seg { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; padding: 2px; background: var(--paper); }
 .seg button { border: 0; background: transparent; padding: 5px 12px; border-radius: 999px; font-size: 13px; font-weight: 600; color: var(--ink-2); cursor: pointer; }
 .seg button[aria-pressed="true"] { background: var(--card); color: var(--ink); box-shadow: var(--shadow); }
-.legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 13px; color: var(--ink-2); align-items: center; }
+.legend { display: flex; gap: 6px 14px; flex-wrap: wrap; font-size: 13px; color: var(--ink-2); align-items: center; }
 .legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; vertical-align: -1px; margin-right: 5px; border: 1px solid var(--line); }
 .legend i.y { background: var(--cobalt); border-color: var(--cobalt); }
 .legend i.m { background: repeating-linear-gradient(135deg, var(--amber) 0 2px, transparent 2px 4px); border-color: var(--amber); }
+.legend i.o { background: var(--cobalt-soft); border-color: var(--cobalt-soft); }
+.legend i.b { background: var(--marker); border-color: var(--marker); height: 4px; vertical-align: 3px; }
 
 /* matrix */
 .tablewrap { overflow-x: auto; margin: 0 -4px; padding: 0 4px; }
@@ -279,19 +263,6 @@ th.top-col { background: color-mix(in srgb, var(--hl) 50%, transparent); border-
 .msg { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; font-family: var(--f-body); font-size: 14.5px; line-height: 1.5; background: var(--paper); border: 1px solid var(--line); border-radius: 4px 14px 14px 14px; padding: 12px 14px; max-width: 460px; }
 .msg-card { display: grid; gap: 12px; }
 
-/* paste preview */
-.pv { display: grid; gap: 8px; }
-.pv-row { display: grid; grid-template-columns: auto minmax(110px, 180px) 1fr; gap: 8px 12px; align-items: center; padding: 10px; border: 1px solid var(--line); border-radius: 10px; background: var(--paper); }
-.pv-row.skip { opacity: .5; }
-.pv-row .raw { grid-column: 2 / -1; font-size: 13px; color: var(--ink-2); overflow-wrap: anywhere; }
-.pv-row .note { grid-column: 2 / -1; font-size: 12px; font-weight: 600; color: color-mix(in srgb, var(--amber) 70%, var(--ink)); }
-.pv-row input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--cobalt); }
-.chips { display: flex; flex-wrap: wrap; gap: 4px; }
-.chips .cell { width: 34px; height: 34px; font-family: var(--f-display); font-size: 16px; }
-.unrec { font-size: 13px; color: var(--ink-2); }
-.unrec li { overflow-wrap: anywhere; }
-.quickadd { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px; }
-
 .empty { text-align: center; padding: 28px 16px; display: grid; gap: 10px; justify-items: center; }
 .empty p { max-width: 46ch; color: var(--ink-2); }
 
@@ -304,18 +275,12 @@ th.top-col { background: color-mix(in srgb, var(--hl) 50%, transparent); border-
 
 @media (max-width: 560px) {
   h1 { font-size: 30px; }
-  .rank-row { grid-template-columns: 24px 74px minmax(0, 1fr) auto; gap: 8px; }
+  .rank-row { grid-template-columns: 74px minmax(0, 1fr) auto; gap: 8px; }
   .rank-row .dl { font-size: 13px; }
   .rank-row .dl .dnum { font-size: 19px; }
-  .quickadd { grid-template-columns: 1fr; }
-  .pv-row { grid-template-columns: auto 1fr; }
-  .pv-row .chips, .pv-row .raw, .pv-row .note { grid-column: 1 / -1; }
   .card { padding: 14px; }
   .sheet.big { width: 88px; }
   .sheet.big .dn { font-size: 46px; }
-  .av-row { display: grid; grid-template-columns: minmax(0, 1fr); gap: 6px; }
-  .seg3 { display: flex; }
-  .seg3 button { flex: 1; padding: 0 8px; }
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
 </style>
@@ -335,153 +300,15 @@ const pad = n => String(n).padStart(2, '0');
 function pd(s) { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); }
 function iso(dt) { return dt.getFullYear() + '-' + pad(dt.getMonth() + 1) + '-' + pad(dt.getDate()); }
 function todayIso() { return iso(new Date()); }
+function monthStart(dt) { return new Date(dt.getFullYear(), dt.getMonth(), 1); }
 function yearSuffix(t) { return t.getFullYear() !== new Date().getFullYear() ? ' ' + t.getFullYear() : ''; }
 function shortDate(s) { const t = pd(s); return WD[t.getDay()] + ' ' + t.getDate() + ' ' + MO[t.getMonth()] + yearSuffix(t); }
 function longDate(s) { const t = pd(s); return WDL[t.getDay()] + ' ' + t.getDate() + ' ' + MOL[t.getMonth()] + yearSuffix(t); }
 
-/* Options = the numbered days that are still open. Numbers stay fixed once shared. */
-function optionsOf(ev) {
-  return ev.dates.map((x, i) => ({ n: i + 1, d: x.d, off: !!x.off })).filter(o => !o.off);
-}
-
-/* ---------- answer parsing ---------- */
-const MAYBE_WORDS = new Set(['?', 'misschien', 'mss', 'misch', 'evt', 'evt.', 'eventueel', 'wss', 'waarschijnlijk', 'twijfel', 'onzeker', 'vermoedelijk', 'misschiens', 'normaal']);
-const EXCEPT_WORDS = new Set(['behalve', 'buiten', 'uitgezonderd', 'except', 'zonder']);
-const RE_ALL = /\b(alles|allemaal|overal|altijd|elke dag|alle dagen|om het even|maakt niet uit|eender wanneer|eender welke)\b/;
-const RE_NONE = /\b(geen enkele|geen enkel|niks|niets|nergens|kan niet|lukt niet|helaas niet|ben er niet|kan er niet)\b/;
-const RE_NEG = /\b(niet|geen|nee|neen)\b/;
-
-function parseAnswer(text, opts) {
-  const byN = new Map(opts.map(o => [o.n, o.d]));
-  let t = ' ' + String(text).toLowerCase().replace(/[\u2019\u2018]/g, "'").replace(/\u00a0/g, ' ') + ' ';
-  // times like 19u, 19:30, 20h, 19.30 are not day numbers
-  t = t.replace(/\b\d{1,2}[:.]\d{2}\b/g, ' ').replace(/\b\d{1,2}\s?(?:u|h|uur)\b/g, ' ');
-  // explicit dates: 14/11, 14/11/2026
-  t = t.replace(/(\d{1,2})\s*\/\s*(\d{1,2})(?:\s*\/\s*\d{2,4})?/g, (m, d, mo) => {
-    const o = opts.find(o => { const x = pd(o.d); return x.getDate() === +d && x.getMonth() + 1 === +mo; });
-    return o ? ' #' + o.n + ' ' : ' ';
-  });
-  // 14 nov, 14 november
-  t = t.replace(/(\d{1,2})\s*(jan|feb|mrt|maa|apr|mei|jun|jul|aug|sep|okt|nov|dec)[a-z.]*/g, (m, d, mon) => {
-    const mi = mon === 'maa' ? 2 : MO.indexOf(mon);
-    const o = opts.find(o => { const x = pd(o.d); return x.getDate() === +d && x.getMonth() === mi; });
-    return o ? ' #' + o.n + ' ' : ' ';
-  });
-  // weekday names (singular or plural), unless a date follows right after
-  t = t.replace(/\b(maandag|dinsdag|woensdag|donderdag|vrijdag|zaterdag|zondag)(?:en)?\b(?!\s*#\d)/g, (m, w) => {
-    const wd = WDL.indexOf(w);
-    const ns = opts.filter(o => pd(o.d).getDay() === wd).map(o => '#' + o.n);
-    return ns.length ? ' ' + ns.join(' ') + ' ' : ' ';
-  });
-
-  const hasAll = RE_ALL.test(t);
-  const toks = t.match(/#\d+|\d+\s*(?:-|–|t\/m|tot)\s*\d+|\d+|[,;\n!]|\?|[a-zà-ÿ.]+/g) || [];
-  const clauses = [[]];
-  const items = [];
-  let pendingMaybe = false, adjacent = null, exceptSeen = false;
-  for (const tok of toks) {
-    if (/^[,;\n!]$/.test(tok) || tok === 'maar') {
-      if (pendingMaybe) markClauseMaybe();
-      clauses.push([]); adjacent = null; pendingMaybe = false; continue;
-    }
-    const clause = clauses.length - 1;
-    if (/^#?\d/.test(tok)) {
-      let ns;
-      const r = tok.match(/^(\d+)\s*(?:-|–|t\/m|tot)\s*(\d+)$/);
-      if (r) {
-        const a = +r[1], b = +r[2];
-        ns = [];
-        if (a <= b && b - a <= 40) for (let k = a; k <= b; k++) ns.push(k); else ns.push(a, b);
-      } else ns = [+tok.replace('#', '')];
-      const it = { ns, maybe: pendingMaybe, clause, except: exceptSeen };
-      pendingMaybe = false;
-      items.push(it); adjacent = it;
-      continue;
-    }
-    clauses[clause].push(tok);
-    if (MAYBE_WORDS.has(tok)) {
-      // "2?" or "2 misschien" marks that number; "misschien 2" marks the next one
-      if (adjacent) adjacent.maybe = true; else pendingMaybe = true;
-    } else if (EXCEPT_WORDS.has(tok)) {
-      exceptSeen = true;
-    }
-    adjacent = null;
-  }
-  if (pendingMaybe) markClauseMaybe();
-  function markClauseMaybe() {
-    const c = clauses.length - 1;
-    const inClause = items.filter(i => i.clause === c);
-    if (inClause.length && !inClause.some(i => i.maybe)) inClause.forEach(i => { i.maybe = true; });
-  }
-  const neg = clauses.map(words => RE_NEG.test(' ' + words.join(' ') + ' '));
-
-  const yes = new Set(), maybe = new Set(), ignored = [];
-  if (hasAll) opts.forEach(o => yes.add(o.d));
-  let valid = 0;
-  for (const it of items) {
-    for (const n of it.ns) {
-      const d = byN.get(n);
-      if (!d) { ignored.push(n); continue; }
-      valid++;
-      if (it.except || neg[it.clause]) { yes.delete(d); maybe.delete(d); }
-      else if (it.maybe) { yes.delete(d); maybe.add(d); }
-      else { yes.add(d); maybe.delete(d); }
-    }
-  }
-  const noneWord = RE_NONE.test(t) && !/geen idee/.test(t);
-  const recognized = hasAll || valid > 0 || noneWord;
-  return { yes: [...yes], maybe: [...maybe], recognized, ignored, none: recognized && !yes.size && !maybe.size };
-}
-
-/* ---------- chat paste parsing ---------- */
-const RE_BRACKET = /^\[([^\]]*\d[^\]]*)\]\s*([^:]{1,60}?):\s?(.*)$/;
-const RE_ANDROID = /^\d{1,4}[\/.\-]\d{1,2}[\/.\-]\d{1,4},?\s+\d{1,2}[:.]\d{2}(?:[:.]\d{2})?(?:\s?[ap]\.?\s?m\.?)?\s*[-–]\s*([^:]{1,60}?):\s?(.*)$/i;
-const RE_PLAIN = /^([^\d:\s\[][^:]{0,40}?):\s*(.+)$/;
-
 function cleanName(n) {
-  return String(n).replace(/[\u200e\u200f\u202a-\u202e\u2066-\u2069]/g, '').replace(/^~\s*/, '').replace(/\s+/g, ' ').trim();
+  return String(n).replace(/[‎‏‪-‮⁦-⁩]/g, '').replace(/^~\s*/, '').replace(/\s+/g, ' ').trim();
 }
 function nameKey(n) { return cleanName(n).toLowerCase(); }
-
-function parsePaste(text, opts) {
-  const lines = String(text).replace(/\r/g, '').split('\n')
-    .map(l => l.replace(/[\u200e\u200f\u202a-\u202e\u2066-\u2069]/g, '').trim());
-  const structured = lines.some(l => RE_BRACKET.test(l) || RE_ANDROID.test(l));
-  const msgs = [], orphans = [];
-  for (const l of lines) {
-    if (!l) continue;
-    let m, name = null, body = null;
-    if (structured) {
-      if ((m = l.match(RE_BRACKET))) { name = m[2]; body = m[3]; }
-      else if ((m = l.match(RE_ANDROID))) { name = m[1]; body = m[2]; }
-    } else if ((m = l.match(RE_PLAIN))) { name = m[1]; body = m[2]; }
-    if (name !== null) msgs.push({ name: cleanName(name), text: body });
-    else if (msgs.length) msgs[msgs.length - 1].text += '\n' + l;
-    else orphans.push(l);
-  }
-  if (!msgs.length && orphans.length) msgs.push({ name: '', text: orphans.join('\n') });
-
-  const people = new Map(), unrecognized = [];
-  for (const m of msgs) {
-    const r = parseAnswer(m.text, opts);
-    if (!r.recognized) { unrecognized.push(m); continue; }
-    const key = nameKey(m.name) || '__' + people.size;
-    const prev = people.get(key);
-    const adds = /\b(ook|nog)\b/.test(m.text.toLowerCase()) || /^\s*(en|\+)\s/.test(m.text.toLowerCase());
-    if (prev && adds) {
-      const y = new Set(prev.yes), mb = new Set(prev.maybe);
-      r.yes.forEach(d => { y.add(d); mb.delete(d); });
-      r.maybe.forEach(d => { if (!y.has(d)) mb.add(d); });
-      prev.yes = [...y]; prev.maybe = [...mb]; prev.raw.push(m.text);
-      prev.ignored = prev.ignored.concat(r.ignored);
-    } else {
-      people.set(key, { name: m.name, yes: r.yes, maybe: r.maybe, raw: prev ? prev.raw.concat(m.text) : [m.text], ignored: r.ignored, include: true });
-    }
-  }
-  return { rows: [...people.values()], unrecognized };
-}
-
-
 </script>
 <script>
 (function () {
@@ -507,10 +334,8 @@ function parsePaste(text, opts) {
 
   const S = {
     route: null, g: null, mine: {}, offline: navigator.onLine === false, error: '',
-    tab: 'overview', sortMode: 'best', confirm: null,
-    draft: null, calMonth: null, draftErr: '',
-    paste: '', preview: null, previewEmpty: false,
-    quick: { name: '', text: '', yes: [], maybe: [] }, quickErr: '',
+    tab: 'overview', sortMode: 'best', allDays: false, confirm: null, calMonth: null,
+    draft: null, draftErr: '', proxy: { pid: null, name: '', err: '' },
     ng: null, join: null, who: null, set: null, pendingName: null,
   };
 
@@ -624,20 +449,24 @@ function parsePaste(text, opts) {
       fri.setDate(base.getDate() + ((5 - base.getDay() + 7) % 7));
       if ((fri - base) / 864e5 < 3) fri.setDate(fri.getDate() + 7);
       const day = k => { const x = new Date(fri); x.setDate(fri.getDate() + k); return iso(x); };
-      const D = [day(0), day(1), day(7), day(8)], E = [day(15), day(16), day(22)];
       const now = Date.now();
       const names = { me: 'Jij', p1: 'Jan', p2: 'Els', p3: 'Tom', p4: 'Sofie', p5: 'Pieter' };
       const people = {};
       Object.keys(names).forEach((k, i) => { people[k] = { name: names[k], app: k !== 'p4', at: now - (10 - i) * 1000 }; });
-      const ans = (all, yes, maybe) => ({ yes, maybe: maybe || [], no: all.filter(d => !yes.includes(d) && !(maybe || []).includes(d)), at: now });
+      const ans = (yes, maybe) => ({ yes, maybe: maybe || [], none: false, at: now });
       this.d = {
         member: { pid: 'me' },
         group: { name: 'Voorbeeld: de vrienden', invite: DEMO, ownerPid: 'me', people, createdAt: now, updatedAt: now },
         events: {
-          e1: { title: 'Etentje', dates: D.map(d => ({ d, off: false })), chosen: null, createdBy: 'p1', createdAt: now, updatedAt: now, sharedAt: now,
-            answers: { p1: ans(D, [D[0], D[1], D[3]]), p2: ans(D, [D[1], D[3]], [D[0]]), p3: ans(D, [D[1], D[2], D[3]]), p4: ans(D, [D[3]], [D[1]]) } },
-          e2: { title: 'Fietstocht naar zee', dates: E.map(d => ({ d, off: false })), chosen: E[0], createdBy: 'me', createdAt: now - 1, updatedAt: now, sharedAt: now,
-            answers: { me: ans(E, [E[0], E[1]]), p1: ans(E, [E[0]]), p2: ans(E, [E[0], E[2]]), p3: ans(E, [E[1]], [E[0]]), p5: ans(E, [E[0], E[1], E[2]]) } },
+          e1: { title: 'Etentje', chosen: null, createdBy: 'p1', createdAt: now, updatedAt: now, sharedAt: now,
+            answers: {
+              p1: ans([day(0), day(1), day(8), day(14)]),
+              p2: ans([day(1), day(8), day(9)], [day(0)]),
+              p3: ans([day(1), day(7), day(8)]),
+              p4: ans([day(8)], [day(1)]),
+            } },
+          e2: { title: 'Fietstocht naar zee', chosen: day(15), createdBy: 'me', createdAt: now - 1, updatedAt: now, sharedAt: now,
+            answers: { me: ans([day(15), day(16)]), p1: ans([day(15)]), p2: ans([day(15), day(22)]), p3: ans([day(16)], [day(15)]), p5: ans([day(15), day(16), day(22)]) } },
         },
       };
     },
@@ -695,16 +524,19 @@ function parsePaste(text, opts) {
   function closeGroup() { if (S.g && S.g.unsub) S.g.unsub(); S.g = null; }
   function changed() { autoClaim(); scheduleRender(); }
 
+  // Answers are plain lists of ISO dates; "none" means "I checked and no day works".
   function normEvent(id, d) {
     d = d || {};
-    const arr = v => Array.isArray(v) ? v.filter(x => typeof x === 'string') : [];
+    const arr = v => Array.isArray(v) ? v.filter(x => typeof x === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(x)) : [];
     const answers = {};
     if (d.answers && typeof d.answers === 'object') {
-      for (const k of Object.keys(d.answers)) { const a = d.answers[k] || {}; answers[k] = { yes: arr(a.yes), maybe: arr(a.maybe), no: arr(a.no), at: +a.at || 0 }; }
+      for (const k of Object.keys(d.answers)) {
+        const a = d.answers[k] || {}, yes = arr(a.yes);
+        answers[k] = { yes, maybe: arr(a.maybe).filter(x => !yes.includes(x)), none: !!a.none, at: +a.at || 0 };
+      }
     }
     return {
       id, title: typeof d.title === 'string' ? d.title : '',
-      dates: Array.isArray(d.dates) ? d.dates.filter(x => x && typeof x.d === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(x.d)).map(x => ({ d: x.d, off: !!x.off })) : [],
       chosen: typeof d.chosen === 'string' ? d.chosen : null,
       createdBy: typeof d.createdBy === 'string' ? d.createdBy : '',
       createdAt: +d.createdAt || 0, updatedAt: +d.updatedAt || 0, sharedAt: +d.sharedAt || null,
@@ -727,22 +559,27 @@ function parsePaste(text, opts) {
   }
   const isOwner = () => !!myPid() && S.g.group.ownerPid === myPid();
   const canManage = ev => !!ev && (isOwner() || ev.createdBy === myPid());
-  const answerOf = (ev, pid) => ev.answers[pid] || { yes: [], maybe: [], no: [] };
-  const hasAnswer = a => !!a && (a.yes.length + a.maybe.length + a.no.length > 0);
-  function stateOf(a, d) { return a.yes.includes(d) ? 'yes' : a.maybe.includes(d) ? 'maybe' : a.no.includes(d) ? 'no' : 'unset'; }
+  // You fill in your own days, and those of people who take part without the app.
+  function canEditFor(pid) { const p = people().find(x => x.pid === pid); return !!p && (pid === myPid() || !p.app); }
+  const answerOf = (ev, pid) => ev.answers[pid] || { yes: [], maybe: [], none: false };
+  const hasAnswer = a => !!a && (a.yes.length + a.maybe.length > 0 || a.none);
+  function stateOf(a, d) { return a.yes.includes(d) ? 'yes' : a.maybe.includes(d) ? 'maybe' : ''; }
+  const isMeName = p => nameKey(p.name) === 'jij';
+  // Every upcoming day that someone marked, with who can, who maybe and who not.
   function stats(ev, ps) {
-    const opts = optionsOf(ev);
-    const answered = [], pending = [];
+    const today = todayIso(), answered = [], pending = [];
     ps.forEach(p => { const a = ev.answers[p.pid]; if (hasAnswer(a)) answered.push(Object.assign({}, p, a)); else pending.push(p); });
-    const rows = opts.map(o => {
-      const yes = answered.filter(p => p.yes.includes(o.d));
-      const maybe = answered.filter(p => !p.yes.includes(o.d) && p.maybe.includes(o.d));
-      const no = answered.filter(p => !p.yes.includes(o.d) && !p.maybe.includes(o.d));
-      return Object.assign({}, o, { yes, maybe, no, score: yes.length * 2 + maybe.length });
+    const days = new Set(ev.chosen ? [ev.chosen] : []);
+    answered.forEach(p => p.yes.concat(p.maybe).forEach(d => { if (d >= today) days.add(d); }));
+    const rows = [...days].sort().map(d => {
+      const yes = answered.filter(p => p.yes.includes(d));
+      const maybe = answered.filter(p => p.maybe.includes(d));
+      const no = answered.filter(p => !p.yes.includes(d) && !p.maybe.includes(d));
+      return { d, yes, maybe, no, score: yes.length * 2 + maybe.length };
     });
     const max = Math.max(0, ...rows.map(r => r.score));
     const tops = max > 0 ? rows.filter(r => r.score === max) : [];
-    return { opts, rows, tops, n: answered.length, total: ps.length, answered, pending };
+    return { rows, tops, byDay: new Map(rows.map(r => [r.d, r])), n: answered.length, total: ps.length, answered, pending };
   }
   const names = list => list.map(p => p.name).join(', ');
   function plural(n, one, many) { return n + ' ' + (n === 1 ? one : many); }
@@ -750,18 +587,11 @@ function parsePaste(text, opts) {
     const w = String(name).replace(/^voorbeeld:\s*/i, '').split(/\s+/).filter(Boolean);
     return ((w[0] || '?')[0] + (w.length > 1 ? w[w.length - 1][0] : '')).toUpperCase();
   }
-  function dateRange(ev) {
-    const o = optionsOf(ev).map(x => x.d).sort();
-    if (!o.length) return 'nog geen dagen';
-    if (o.length === 1) return shortDate(o[0]);
-    return shortDate(o[0]) + ' tot ' + shortDate(o[o.length - 1]);
-  }
   function sheet(d, cls) {
     if (!d) return `<div class="sheet ${cls || ''} empty" aria-hidden="true"><div class="mo">dag</div><div class="dn">?</div><div class="wd">nog open</div></div>`;
     const t = pd(d);
     return `<div class="sheet ${cls || ''}" aria-hidden="true"><div class="mo">${MO[t.getMonth()]}</div><div class="dn">${t.getDate()}</div><div class="wd">${WDL[t.getDay()]}</div></div>`;
   }
-  function locked(ev) { return !!(ev && (ev.sharedAt || Object.keys(ev.answers).some(k => hasAnswer(ev.answers[k])))); }
   function errText(e) {
     const c = String(e && e.code || '');
     if (c === 'auth/admin-restricted-operation' || c === 'auth/operation-not-allowed') return 'Aanmelden lukte niet: zet "Anonymous" aan bij Authentication in Firebase (README, stap 2).';
@@ -780,34 +610,32 @@ function parsePaste(text, opts) {
     if (g.gid === DEMO) return baseUrl() + '#/g/' + DEMO + (eid ? '/e/' + eid : '');
     return baseUrl() + '#/j/' + g.gid + '/' + g.group.invite + (eid ? '/' + eid : '');
   }
+  const titleOf = ev => ev.title.trim() || 'Datum prikken';
+  function bestLine(st) {
+    if (st.tops.length === 1) {
+      const b = st.tops[0];
+      return `Beste dag tot nu toe: ${shortDate(b.d)} (${b.yes.length} van ${st.n} kunnen${b.maybe.length ? ', ' + b.maybe.length + ' misschien' : ''})`;
+    }
+    if (st.tops.length > 1) return 'Gelijkstand tussen ' + st.tops.slice(0, 3).map(b => shortDate(b.d)).join(', ') + (st.tops.length > 3 ? ' en nog ' + (st.tops.length - 3) : '');
+    return '';
+  }
   function groupMsg() {
     return `Doe mee in onze groep *${S.g.group.name}* op Wie kan wanneer. Daar prikken we samen een datum en zie je meteen wie wanneer kan:\n${groupLink()}`;
   }
   function inviteMsg(ev) {
-    const o = optionsOf(ev);
-    const ex = o.slice(0, Math.min(2, o.length)).map(x => x.n).join(' ');
-    const ex2 = (o[1] || o[0] || { n: 1 }).n + '?';
-    const head = '*' + (ev.title.trim() || 'Datum prikken') + '*';
-    return head + '\nDuid hier aan wanneer je kan:\n' + groupLink(ev.id) + '\n\n' + o.map(x => `${x.n}. ${shortDate(x.d)}`).join('\n')
-      + `\n\nLiever niet via de link? Antwoord dan hier met de nummers, bv. ${ex} (of ${ex2} als je twijfelt).`;
+    return '*' + titleOf(ev) + '*\nDuid in de kalender aan wanneer je kan:\n' + groupLink(ev.id);
   }
   function statusMsg(ev) {
     const st = stats(ev, people());
-    const lines = ['*' + (ev.title.trim() || 'Datum prikken') + '*: stand van zaken'];
-    if (st.tops.length === 1) {
-      const b = st.tops[0];
-      lines.push(`Beste dag tot nu toe: ${shortDate(b.d)} (${b.yes.length} van ${st.n} kunnen${b.maybe.length ? ', ' + b.maybe.length + ' misschien' : ''})`);
-    } else if (st.tops.length > 1) {
-      lines.push('Gelijkstand tussen ' + st.tops.map(b => shortDate(b.d)).join(' en ') + ` (${st.tops[0].yes.length} van ${st.n} kunnen)`);
-    }
+    const lines = ['*' + titleOf(ev) + '*: stand van zaken', bestLine(st)];
     if (st.answered.length) lines.push('Al geantwoord: ' + names(st.answered));
     if (st.pending.length) lines.push('Nog niet: ' + names(st.pending));
     lines.push('', 'Duid aan wanneer je kan: ' + groupLink(ev.id));
-    return lines.join('\n');
+    return lines.filter((l, i) => l || i > 1).join('\n');
   }
   function decisionMsg(ev) {
     const d = ev.chosen; if (!d) return '';
-    const st = stats(ev, people()), r = st.rows.find(x => x.d === d);
+    const r = stats(ev, people()).byDay.get(d);
     const lines = ['*' + (ev.title.trim() || 'Afspraak') + '*', `Het wordt ${longDate(d)}!`];
     if (r && r.yes.length) lines.push('Erbij: ' + names(r.yes));
     if (r && r.maybe.length) lines.push('Misschien: ' + names(r.maybe));
@@ -910,7 +738,7 @@ function parsePaste(text, opts) {
     const how = `<div class="how">
       <div class="step"><span class="num">1</span><p><b>Maak een groep</b>Voor je vrienden, familie of ploeg. Je krijgt een uitnodigingslink.</p></div>
       <div class="step"><span class="num">2</span><p><b>Zet de link in WhatsApp</b>Wie hem opent en een naam invult, zit erin. Niemand heeft een account nodig.</p></div>
-      <div class="step"><span class="num">3</span><p><b>Iedereen duidt zelf aan</b>Je ziet live wie wanneer kan en welke dag het best past.</p></div>
+      <div class="step"><span class="num">3</span><p><b>Iedereen tikt zijn dagen aan</b>In één gedeelde kalender. Je ziet live wie wanneer kan en welke dag het best past.</p></div>
     </div>`;
     const list = gs.map(x => `<a class="ev" href="#/g/${esc(x.gid)}"><span class="gicon" aria-hidden="true">${esc(initials(x.name))}</span><span style="min-width:0"><span class="t">${esc(x.name)}</span></span><span class="go" aria-hidden="true">›</span></a>`).join('');
     const empty = `<div class="card empty">${sheet(null)}<h2>Nog geen groepen</h2>
@@ -952,7 +780,7 @@ function parsePaste(text, opts) {
     return `<section class="wrap" style="gap:16px">
       <div class="card">
         <div style="display:grid;gap:6px"><p class="eyebrow">Uitnodiging</p><h1>Je bent uitgenodigd</h1>
-          <p class="muted">Iemand nodigde je uit in een groep op Wie kan wanneer. Daar duid je aan wanneer je kan en zie je meteen wanneer de anderen kunnen.</p></div>
+          <p class="muted">Iemand nodigde je uit in een groep op Wie kan wanneer. Daar duid je in een kalender aan wanneer je kan en zie je meteen wanneer de anderen kunnen.</p></div>
         <div><label class="lbl" for="join-name">Hoe heet je?</label><input class="input" id="join-name" type="text" maxlength="40" placeholder="bv. Sofie" value="${esc(j.name)}" autocomplete="off"></div>
         ${j.err ? `<p class="err" role="alert">${esc(j.err)}</p>` : ''}
         <div class="row"><button class="btn primary" data-action="join" ${j.state === 'busy' ? 'disabled' : ''}>${j.state === 'busy' ? 'Even geduld…' : 'Doe mee'}</button></div>
@@ -962,10 +790,10 @@ function parsePaste(text, opts) {
   }
 
   const avatar = p => `<span class="av${p.app ? '' : ' noapp'}" aria-hidden="true">${esc(initials(p.name))}</span>`;
-  function personChip(p, mp, action) {
-    const inner = `${avatar(p)}${esc(p.name)}${p.pid === mp && nameKey(p.name) !== 'jij' ? ' (jij)' : ''}`;
+  function personChip(p, mp, action, pressed) {
+    const inner = `${avatar(p)}${esc(p.name)}${p.pid === mp && !isMeName(p) ? ' (jij)' : ''}`;
     return action
-      ? `<button class="pchip" data-action="${action}" data-pid="${esc(p.pid)}">${inner}</button>`
+      ? `<button class="pchip" data-action="${action}" data-pid="${esc(p.pid)}"${pressed == null ? '' : ` aria-pressed="${pressed}"`}>${inner}</button>`
       : `<span class="pchip${p.pid === mp ? ' me' : ''}"${p.app ? '' : ' title="Doet mee zonder de app"'}>${inner}</span>`;
   }
 
@@ -1006,7 +834,7 @@ function parsePaste(text, opts) {
       : st.n ? 'Nog geen dag die past' : 'Nog geen antwoorden';
     return `<a class="ev" href="#/g/${esc(S.g.gid)}/e/${esc(ev.id)}">${sheet(ev.chosen || (st.tops.length === 1 ? st.tops[0].d : null))}
       <span style="min-width:0"><span class="t">${esc(ev.title || 'Naamloze planning')}</span>${tags}
-        <span class="m" style="display:block">${esc(dateRange(ev))} · ${plural(st.opts.length, 'dag', 'dagen')} · ${st.n} van ${st.total} geantwoord</span>
+        <span class="m" style="display:block">${st.n} van ${st.total} geantwoord</span>
         <span class="m" style="display:block">${right}</span></span>
       <span class="go" aria-hidden="true">›</span></a>`;
   }
@@ -1016,7 +844,7 @@ function parsePaste(text, opts) {
     const evs = Object.values(g.events).sort((a, b) => (!!a.chosen - !!b.chosen) || b.createdAt - a.createdAt);
     const fresh = ps.length <= 1;
     const empty = `<div class="card empty">${sheet(null)}<h2>Nog geen planningen</h2>
-      <p>Maak er een voor het volgende etentje, de fietstocht of het weekend weg. Kies de mogelijke dagen; daarna duidt iedereen zelf aan wat past.</p>
+      <p>Maak er een voor het volgende etentje, de fietstocht of het weekend weg. Iedereen tikt daarna in de kalender de dagen aan waarop het past.</p>
       <div class="row" style="justify-content:center"><a class="btn primary" href="#/g/${gid}/nieuw">Nieuwe planning</a></div></div>`;
     return `<section class="wrap" style="gap:18px">
       <a class="back" href="#/">‹ Je groepen</a>
@@ -1037,8 +865,8 @@ function parsePaste(text, opts) {
     const gName = f.name != null ? f.name : grp.name;
     const confirmBox = (text, yes, label, pid) => `<div class="confirm"><span>${text}</span><button class="btn small danger" data-action="${yes}"${pid ? ` data-pid="${esc(pid)}"` : ''}>${label}</button><button class="btn small ghost" data-action="confirm-no">Toch niet</button></div>`;
     const rows = ps.map(p => `<div><div class="mrow">${avatar(p)}
-        <span style="min-width:0"><b>${esc(p.name)}</b>${p.pid === mp && nameKey(p.name) !== 'jij' ? ' <span class="chip-tag">jij</span>' : ''}${p.pid === grp.ownerPid ? ' <span class="chip-tag amber">beheerder</span>' : ''}
-          <span class="m">${p.app ? 'Gebruikt de app' : 'Zonder app: anderen vullen de antwoorden in'}</span></span>
+        <span style="min-width:0"><b>${esc(p.name)}</b>${p.pid === mp && !isMeName(p) ? ' <span class="chip-tag">jij</span>' : ''}${p.pid === grp.ownerPid ? ' <span class="chip-tag amber">beheerder</span>' : ''}
+          <span class="m">${p.app ? 'Gebruikt de app' : 'Zonder app: anderen vullen de dagen in'}</span></span>
         ${owner && p.pid !== mp ? `<button class="x" data-action="confirm" data-what="rm:${esc(p.pid)}" aria-label="Verwijder ${esc(p.name)}">×</button>` : '<span></span>'}</div>
         ${S.confirm === 'rm:' + p.pid ? confirmBox(`${esc(p.name)} uit de groep verwijderen? De antwoorden van ${esc(p.name)} verdwijnen ook.`, 'rm-yes', 'Verwijderen', p.pid) : ''}</div>`).join('');
     const danger = owner
@@ -1066,59 +894,21 @@ function parsePaste(text, opts) {
   }
 
   function editView() {
-    const g = S.g, ev = curEv();
+    const g = S.g, gid = esc(g.gid), ev = curEv();
     if (S.route.name === 'edit') {
-      if (!ev) return messageView('Deze planning bestaat niet meer', 'Iemand heeft ze verwijderd.', `<a class="btn" href="#/g/${esc(g.gid)}">Naar de groep</a>`);
-      if (!canManage(ev)) return messageView('Alleen voor wie de planning maakte', 'Wie de planning maakte of de beheerder van de groep kan de dagen aanpassen.', `<a class="btn" href="#/g/${esc(g.gid)}/e/${esc(ev.id)}">Terug naar de planning</a>`);
-      if (!S.draft) initEditDraft(ev);
+      if (!ev) return messageView('Deze planning bestaat niet meer', 'Iemand heeft ze verwijderd.', `<a class="btn" href="#/g/${gid}">Naar de groep</a>`);
+      if (!canManage(ev)) return messageView('Alleen voor wie de planning maakte', 'Wie de planning maakte of de beheerder van de groep kan de titel aanpassen.', `<a class="btn" href="#/g/${gid}/e/${esc(ev.id)}">Terug naar de planning</a>`);
+      if (!S.draft) S.draft = { eid: ev.id, title: ev.title };
     }
     const dr = S.draft;
-    const back = dr.eid ? `#/g/${esc(g.gid)}/e/${esc(dr.eid)}` : `#/g/${esc(g.gid)}`;
-    const m = S.calMonth;
-    const y = m.getFullYear(), mo = m.getMonth();
-    const first = new Date(y, mo, 1);
-    const lead = (first.getDay() + 6) % 7;
-    const daysIn = new Date(y, mo + 1, 0).getDate();
-    const today = todayIso();
-    const nowMonth = new Date(); nowMonth.setDate(1); nowMonth.setHours(0, 0, 0, 0);
-    let cells = ['ma', 'di', 'wo', 'do', 'vr', 'za', 'zo'].map(d => `<div class="cal-dow">${d}</div>`).join('');
-    for (let i = 0; i < lead; i++) cells += '<div class="blank"></div>';
-    for (let d = 1; d <= daysIn; d++) {
-      const dt = new Date(y, mo, d), s = iso(dt);
-      const idx = dr.dates.findIndex(x => x.d === s);
-      const it = dr.dates[idx];
-      const past = s < today;
-      const cls = ['day'];
-      if (dt.getDay() === 0 || dt.getDay() === 6) cls.push('we');
-      if (s === today) cls.push('today');
-      if (it && !it.off) cls.push('sel');
-      if (it && it.off) cls.push('off');
-      const label = longDate(s) + (it ? (it.off ? ', geschrapt' : ', gekozen als nummer ' + (idx + 1)) : '');
-      cells += `<button class="${cls.join(' ')}" data-action="toggle-day" data-d="${s}" ${past && !it ? 'disabled' : ''} aria-pressed="${it && !it.off ? 'true' : 'false'}" aria-label="${esc(label)}">${d}${it ? `<span class="badge">${idx + 1}</span>` : ''}</button>`;
-    }
-    const picks = dr.dates.map((x, i) => `<span class="pick ${x.off ? 'off' : ''}"><span class="n">${i + 1}</span>${esc(shortDate(x.d))}<button data-action="toggle-day" data-d="${x.d}" aria-label="${x.off ? 'Zet terug' : 'Haal weg'}: ${esc(longDate(x.d))}">${x.off ? '↺' : '×'}</button></span>`).join('');
-    const active = dr.dates.filter(x => !x.off).length;
-    const monthName = MOL[mo] + (y !== new Date().getFullYear() ? ' ' + y : '');
+    const back = dr.eid ? `#/g/${gid}/e/${esc(dr.eid)}` : `#/g/${gid}`;
     return `<section class="wrap" style="gap:16px">
       <a class="back" href="${back}">‹ ${dr.eid ? 'Terug naar de planning' : esc(g.group.name)}</a>
       ${demoBanner()}
-      <h1>${dr.eid ? 'Dagen aanpassen' : 'Nieuwe planning'}</h1>
+      <h1>${dr.eid ? 'Titel aanpassen' : 'Nieuwe planning'}</h1>
       <div class="card">
-        <div><label class="lbl" for="title">Waarvoor?</label><input class="input" id="title" type="text" maxlength="80" placeholder="bv. Etentje" value="${esc(dr.title)}" autocomplete="off"></div>
-        <div class="cal">
-          <div class="cal-head"><button class="cal-nav" data-action="month" data-dir="-1" aria-label="Vorige maand" ${m <= nowMonth ? 'disabled' : ''}>‹</button><b>${esc(monthName)}</b><button class="cal-nav" data-action="month" data-dir="1" aria-label="Volgende maand">›</button></div>
-          <div class="cal-grid">${cells}</div>
-          <div class="quick"><span>Snel alle</span>
-            <button class="btn small" data-action="bulk" data-wd="5">vrijdagen</button>
-            <button class="btn small" data-action="bulk" data-wd="6">zaterdagen</button>
-            <button class="btn small" data-action="bulk" data-wd="0">zondagen</button>
-            <span>van ${esc(MOL[mo])}</span></div>
-        </div>
-        <div style="display:grid;gap:8px">
-          <h3>Gekozen dagen <span class="muted">(${active})</span></h3>
-          ${dr.dates.length ? `<div class="picked">${picks}</div>` : '<p class="muted small">Tik hierboven de dagen aan die voor jou kunnen.</p>'}
-          ${dr.locked ? '<p class="muted small">Er is al geantwoord of het bericht is gedeeld, dus de nummers liggen vast. Nieuwe dagen krijgen het volgende nummer; een geschrapte dag houdt zijn nummer.</p>' : ''}
-        </div>
+        <div><label class="lbl" for="title">Waarvoor?</label><input class="input" id="title" type="text" maxlength="80" placeholder="bv. Etentje, fietstocht, weekendje weg" value="${esc(dr.title)}" autocomplete="off"></div>
+        ${dr.eid ? '' : '<p class="muted small">Daarna tik je in de kalender de dagen aan waarop jij kan. De anderen doen hetzelfde in de app, en jullie zien meteen welke dag het best past.</p>'}
         ${S.draftErr ? `<p class="err" role="alert">${esc(S.draftErr)}</p>` : ''}
         <div class="row"><button class="btn primary" data-action="save-draft">${dr.eid ? 'Opslaan' : 'Maak de planning'}</button><a class="btn ghost" href="${back}">Annuleer</a></div>
       </div>
@@ -1141,8 +931,8 @@ function parsePaste(text, opts) {
       ${demoBanner()}
       <div class="ev-head">
         <h1>${esc(ev.title || 'Naamloze planning')}</h1>
-        <p class="meta">${esc(dateRange(ev))} · ${plural(st.opts.length, 'dag', 'dagen')}${creator ? ' · gemaakt door ' + esc(creator.pid === mp ? 'jou' : creator.name) : ''}</p>
-        ${canManage(ev) ? `<div class="row"><a class="btn small" href="#/g/${gid}/e/${esc(ev.id)}/aanpassen">Dagen of titel aanpassen</a><button class="btn small ghost danger" data-action="confirm" data-what="delete-event">Verwijderen</button></div>` : ''}
+        <p class="meta">${st.n} van ${st.total} geantwoord${creator ? ' · gemaakt door ' + esc(creator.pid === mp ? 'jou' : creator.name) : ''}</p>
+        ${canManage(ev) ? `<div class="row"><a class="btn small" href="#/g/${gid}/e/${esc(ev.id)}/aanpassen">Titel aanpassen</a><button class="btn small ghost danger" data-action="confirm" data-what="delete-event">Verwijderen</button></div>` : ''}
         ${del}
       </div>
       <div class="tabs" role="tablist" aria-label="Onderdelen">${tabHtml}</div>
@@ -1150,29 +940,72 @@ function parsePaste(text, opts) {
     </section>`;
   }
 
+  // Opens on the chosen day, else on the earliest day someone can, else this month.
+  function calMonth(st) {
+    if (!S.calMonth) {
+      const first = st.rows.find(r => r.d >= todayIso());
+      S.calMonth = monthStart(first ? pd(first.d) : new Date());
+    }
+    return S.calMonth;
+  }
+  function calendar(ev, st, pid, who) {
+    const a = answerOf(ev, pid), today = todayIso(), m = calMonth(st);
+    const y = m.getFullYear(), mo = m.getMonth();
+    const lead = (new Date(y, mo, 1).getDay() + 6) % 7;
+    const daysIn = new Date(y, mo + 1, 0).getDate();
+    const tops = new Set(st.tops.map(t => t.d));
+    let cells = ['ma', 'di', 'wo', 'do', 'vr', 'za', 'zo'].map(d => `<div class="cal-dow">${d}</div>`).join('');
+    for (let i = 0; i < lead; i++) cells += '<div class="blank"></div>';
+    for (let d = 1; d <= daysIn; d++) {
+      const dt = new Date(y, mo, d), s = iso(dt), r = st.byDay.get(s);
+      const mine = stateOf(a, s), cnt = r ? r.yes.length + r.maybe.length : 0;
+      const cls = ['day'];
+      if (dt.getDay() === 0 || dt.getDay() === 6) cls.push('we');
+      if (s === today) cls.push('today');
+      if (mine) cls.push(mine); else if (cnt) cls.push('others');
+      if (tops.has(s)) cls.push('best');
+      if (ev.chosen === s) cls.push('chosen');
+      const label = longDate(s) + ': ' + who + (mine === 'yes' ? ' kan' : mine === 'maybe' ? ' misschien' : ' niet aangeduid')
+        + (r ? `. ${r.yes.length} ${r.yes.length === 1 ? 'kan' : 'kunnen'}${r.maybe.length ? ', ' + r.maybe.length + ' misschien' : ''}` : '')
+        + (ev.chosen === s ? '. Geprikt' : tops.has(s) ? '. Beste dag' : '');
+      cells += `<button class="${cls.join(' ')}" id="cal-${esc(pid)}-${s}" data-action="mark" data-pid="${esc(pid)}" data-d="${s}" ${s < today ? 'disabled' : ''} aria-pressed="${mine ? 'true' : 'false'}" aria-label="${esc(label)}">${d}${cnt ? `<span class="badge">${cnt}</span>` : ''}</button>`;
+    }
+    const nowMonth = monthStart(new Date());
+    const monthName = MOL[mo] + (y !== new Date().getFullYear() ? ' ' + y : '');
+    const wd = (n, l) => `<button class="btn small" data-action="bulk" data-pid="${esc(pid)}" data-wd="${n}">${l}</button>`;
+    return `<div class="cal">
+        <div class="cal-head"><button class="cal-nav" data-action="month" data-dir="-1" aria-label="Vorige maand" ${m <= nowMonth ? 'disabled' : ''}>‹</button><b>${esc(monthName)}</b><button class="cal-nav" data-action="month" data-dir="1" aria-label="Volgende maand">›</button></div>
+        <div class="cal-grid">${cells}</div>
+        <div class="quick"><span>Snel alle</span>${wd(5, 'vrijdagen')}${wd(6, 'zaterdagen')}${wd(0, 'zondagen')}<span>van ${esc(MOL[mo])}</span></div>
+        <div class="legend"><span><i class="y"></i>kan</span><span><i class="m"></i>misschien</span><span><i class="o"></i>anderen kunnen (aantal)</span><span><i class="b"></i>beste dag</span></div>
+      </div>`;
+  }
+  function daysList(a) {
+    const today = todayIso();
+    const ds = a.yes.concat(a.maybe).filter(d => d >= today).sort();
+    return ds.map(d => esc(shortDate(d)) + (a.maybe.includes(d) ? ' (misschien)' : '')).join(', ');
+  }
+
   function myCard(ev, st, mine) {
-    const a = answerOf(ev, myPid());
-    const rows = st.opts.map(o => {
-      const s = stateOf(a, o.d), t = pd(o.d);
-      const b = (v, l) => `<button id="ans-${o.d}-${v}" data-action="ans" data-d="${o.d}" data-v="${v}" aria-pressed="${s === v}">${l}</button>`;
-      return `<div class="av-row${ev.chosen === o.d ? ' chosen' : ''}"><span class="av-d"><span class="av-n" title="Nummer in het bericht">${o.n}</span><span>${WD[t.getDay()]}<span class="dnum"> ${t.getDate()} </span>${MO[t.getMonth()]}${yearSuffix(t)}</span>${ev.chosen === o.d ? '<span class="chip-tag">Geprikt</span>' : ''}</span>
-        <div class="seg3" role="group" aria-label="${esc(longDate(o.d))}">${b('yes', 'Kan')}${b('maybe', 'Misschien')}${b('no', 'Niet')}</div></div>`;
-    }).join('');
-    const open = st.opts.filter(o => stateOf(a, o.d) === 'unset').length;
-    const sub = !mine ? 'Duid per dag aan of je kan. Elke keuze wordt meteen bewaard en is zichtbaar voor de groep.'
-      : open ? `Bewaard. Nog ${plural(open, 'dag', 'dagen')} niet aangeduid; die tellen als "kan niet".`
-      : 'Bewaard. Iedereen in de groep ziet je antwoord. Je kan het altijd nog aanpassen.';
+    const mp = myPid(), a = answerOf(ev, mp), list = daysList(a);
+    const sub = mine
+      ? 'Bewaard: iedereen in de groep ziet je dagen. Dagen die je niet aanduidt, tellen als "kan niet".'
+      : 'Tik de dagen aan waarop je kan. Nog een keer tikken is "misschien", een derde keer haalt de dag weg. Het cijfertje toont hoeveel mensen die dag kunnen.';
+    const foot = list
+      ? `<p class="mydays"><b>Jouw dagen:</b> ${list}</p>`
+      : a.none
+        ? '<p class="mydays">Je gaf aan dat je op geen enkele dag kan. Tik een dag aan als dat verandert.</p>'
+        : '<div class="row"><button class="linkbtn" data-action="none">Ik kan op geen enkele dag</button></div>';
     return `<div class="card${mine ? '' : ' focus'}" id="mine"><div style="display:grid;gap:4px"><h2>Wanneer kan jij?</h2><p class="muted small">${sub}</p></div>
-      <div class="avail">${rows}</div>
-      <div class="row"><button class="linkbtn" data-action="ans-none">Ik kan op geen enkele dag</button></div></div>`;
+      ${calendar(ev, st, mp, 'jij')}${foot}</div>`;
   }
 
   function headline(ev, st) {
     const manage = canManage(ev);
     if (ev.chosen) {
-      const r = st.rows.find(x => x.d === ev.chosen);
+      const r = st.byDay.get(ev.chosen);
       return `<div class="card best">${sheet(ev.chosen, 'big')}<div class="txt"><p class="eyebrow">Geprikt</p><p class="big"><span class="hl">${esc(longDate(ev.chosen))}</span></p>
-        <p class="muted">${r ? `${r.yes.length} van ${st.n} kunnen${r.maybe.length ? ', ' + r.maybe.length + ' misschien' : ''}` : 'Deze dag staat niet meer in de lijst.'}</p>
+        <p class="muted">${r ? `${r.yes.length} van ${st.n} kunnen${r.maybe.length ? ', ' + r.maybe.length + ' misschien' : ''}` : ''}</p>
         <div class="row"><button class="btn primary" data-action="copy" data-msg="decision">Kopieer de aankondiging</button>${manage ? '<button class="btn ghost" data-action="unchoose">Andere dag kiezen</button>' : ''}</div></div></div>`;
     }
     const who = manage ? '' : '<p class="muted small">Wie de planning maakte, prikt de definitieve dag.</p>';
@@ -1184,23 +1017,23 @@ function parsePaste(text, opts) {
         ${manage ? `<div class="row"><button class="btn primary" data-action="choose" data-d="${b.d}">Prik deze dag</button></div>` : who}</div></div>`;
     }
     if (st.tops.length > 1) {
-      return `<div class="card best">${sheet(null, 'big')}<div class="txt"><p class="eyebrow">Gelijkstand</p><p class="big">${st.tops.map(b => `<span class="hl">${esc(shortDate(b.d))}</span>`).join(' of ')}</p>
+      const shown = st.tops.slice(0, 3), rest = st.tops.length - shown.length;
+      return `<div class="card best">${sheet(null, 'big')}<div class="txt"><p class="eyebrow">Gelijkstand</p><p class="big">${shown.map(b => `<span class="hl">${esc(shortDate(b.d))}</span>`).join(' of ')}${rest ? ` <span class="muted" style="font-size:20px">en nog ${rest}</span>` : ''}</p>
         <p class="muted">Telkens ${st.tops[0].yes.length} van ${st.n} kunnen. Kies er zelf een of wacht op meer antwoorden.</p>
-        ${manage ? `<div class="row">${st.tops.map(b => `<button class="btn" data-action="choose" data-d="${b.d}">Prik ${esc(shortDate(b.d))}</button>`).join('')}</div>` : who}</div></div>`;
+        ${manage ? `<div class="row">${shown.map(b => `<button class="btn" data-action="choose" data-d="${b.d}">Prik ${esc(shortDate(b.d))}</button>`).join('')}</div>` : who}</div></div>`;
     }
-    return `<div class="card best">${sheet(null, 'big')}<div class="txt"><p class="eyebrow">Geen overlap</p><p class="big">Nog geen enkele dag past</p><p class="muted">Niemand kan op de gekozen dagen.${manage ? ' Voeg extra dagen toe en laat het de groep weten.' : ''}</p></div></div>`;
+    return `<div class="card best">${sheet(null, 'big')}<div class="txt"><p class="eyebrow">Geen overlap</p><p class="big">Nog geen enkele dag past</p><p class="muted">Wie al antwoordde, kan op geen enkele komende dag.</p></div></div>`;
   }
 
   function rankCard(ev, st) {
-    const topSet = new Set(st.tops.map(t => t.d));
-    const rows = st.rows.slice();
+    const topSet = new Set(st.tops.map(t => t.d)), n = Math.max(1, st.n), LIMIT = 8;
+    let rows = st.rows.slice();
     if (S.sortMode === 'best') rows.sort((a, b) => b.score - a.score || a.d.localeCompare(b.d));
-    else rows.sort((a, b) => a.d.localeCompare(b.d));
-    const n = Math.max(1, st.n);
+    const more = rows.length > LIMIT;
+    if (more && !S.allDays) rows = rows.slice(0, LIMIT);
     const rank = rows.map(r => {
       const t = pd(r.d);
       return `<div class="rank-row ${topSet.has(r.d) ? 'top' : ''}">
-        <span class="n" title="Nummer in het bericht">${r.n}</span>
         <span class="dl">${WD[t.getDay()]}<span class="dnum">${t.getDate()}</span>${MO[t.getMonth()]}</span>
         <div style="min-width:0"><div class="bar" role="img" aria-label="${r.yes.length} kunnen, ${r.maybe.length} misschien, van ${st.n}"><i class="y" style="width:${r.yes.length / n * 100}%"></i><i class="m" style="width:${r.maybe.length / n * 100}%"></i></div>
           <div class="who">${ev.chosen === r.d ? '<span class="chip-tag" style="margin:0 6px 0 0">Geprikt</span>' : ''}${r.yes.length ? esc(names(r.yes)) : '<span style="color:var(--ink-3)">Niemand zeker</span>'}${r.maybe.length ? ` <span class="mb">· misschien ${esc(names(r.maybe))}</span>` : ''}${r.no.length && r.no.length <= 4 ? ` <span style="color:var(--ink-3)">· niet ${esc(names(r.no))}</span>` : ''}</div></div>
@@ -1208,28 +1041,29 @@ function parsePaste(text, opts) {
       </div>`;
     }).join('');
     return `<div class="card">
-        <div class="row" style="justify-content:space-between"><h2>Alle dagen</h2>
+        <div class="row" style="justify-content:space-between"><h2>${S.sortMode === 'best' ? 'Beste dagen' : 'Alle dagen'}</h2>
           <div class="seg" role="group" aria-label="Sorteren"><button data-action="sort" data-s="best" aria-pressed="${S.sortMode === 'best'}">Beste eerst</button><button data-action="sort" data-s="date" aria-pressed="${S.sortMode === 'date'}">Op datum</button></div></div>
         <div class="rank">${rank}</div>
-        <div class="legend"><span><i class="y"></i>kan</span><span><i class="m"></i>misschien</span><span>Nummer links = nummer in het bericht</span></div>
+        ${more ? `<div class="row"><button class="linkbtn" data-action="all-days">${S.allDays ? 'Toon minder' : 'Toon alle ' + st.rows.length + ' dagen'}</button></div>` : ''}
+        <div class="legend"><span><i class="y"></i>kan</span><span><i class="m"></i>misschien</span></div>
       </div>`;
   }
 
   function matrixCard(ev, st) {
-    const mp = myPid(), topSet = new Set(st.tops.map(t => t.d));
-    const head = st.opts.map(o => { const t = pd(o.d); return `<th class="${topSet.has(o.d) ? 'top-col' : ''}" scope="col"><span class="n">${o.n}</span>${WD[t.getDay()]} ${t.getDate()}/${t.getMonth() + 1}</th>`; }).join('');
+    const mp = myPid(), topSet = new Set(st.tops.map(t => t.d)), MAX = 10;
+    const cols = st.rows.slice().sort((a, b) => b.score - a.score || a.d.localeCompare(b.d)).slice(0, MAX).sort((a, b) => a.d.localeCompare(b.d));
+    const head = cols.map(c => { const t = pd(c.d); return `<th class="${topSet.has(c.d) ? 'top-col' : ''}" scope="col"><span class="n">${t.getDate()}</span>${WD[t.getDay()]} ${MO[t.getMonth()]}</th>`; }).join('');
     const rows = st.answered.map(p => {
       const editable = p.pid === mp || !p.app;
-      return `<tr class="${p.pid === mp ? 'me' : ''}"><th class="name" scope="row">${esc(p.name)}${p.pid === mp && nameKey(p.name) !== 'jij' ? '<span class="chip-tag">jij</span>' : ''}${p.app ? '' : '<span class="noapp-tag" title="Iemand anders vulde dit in">via chat</span>'}</th>${st.opts.map(o => {
-        const s = stateOf(p, o.d);
-        const txt = s === 'yes' ? '✓' : s === 'maybe' ? '?' : '–';
-        const lab = `${p.name}, ${shortDate(o.d)}: ${s === 'yes' ? 'kan' : s === 'maybe' ? 'misschien' : 'kan niet'}`;
-        return `<td><button class="cell ${s}" id="c-${esc(p.pid)}-${o.d}" data-action="cell" data-pid="${esc(p.pid)}" data-d="${o.d}" aria-label="${esc(lab)}" ${editable ? '' : 'disabled'}>${txt}</button></td>`;
+      return `<tr class="${p.pid === mp ? 'me' : ''}"><th class="name" scope="row">${esc(p.name)}${p.pid === mp && !isMeName(p) ? '<span class="chip-tag">jij</span>' : ''}${p.app ? '' : '<span class="noapp-tag" title="Iemand anders vulde dit in">zonder app</span>'}</th>${cols.map(c => {
+        const s = stateOf(p, c.d);
+        const lab = `${p.name}, ${shortDate(c.d)}: ${s === 'yes' ? 'kan' : s === 'maybe' ? 'misschien' : 'kan niet'}`;
+        return `<td><button class="cell ${s}" id="c-${esc(p.pid)}-${c.d}" data-action="mark" data-pid="${esc(p.pid)}" data-d="${c.d}" aria-label="${esc(lab)}" ${editable ? '' : 'disabled'}>${s === 'yes' ? '✓' : s === 'maybe' ? '?' : '–'}</button></td>`;
       }).join('')}</tr>`;
     }).join('');
-    const foot = st.rows.map(r => `<td>${r.yes.length}${r.maybe.length ? `<span style="font-size:12px;color:var(--ink-3)">+${r.maybe.length}</span>` : ''}</td>`).join('');
+    const foot = cols.map(c => `<td>${c.yes.length}${c.maybe.length ? `<span style="font-size:12px;color:var(--ink-3)">+${c.maybe.length}</span>` : ''}</td>`).join('');
     return `<div class="card">
-        <div><h2>Per persoon</h2><p class="muted small">Je eigen rij kan je hier ook aanpassen: tik op een vakje om te wisselen tussen kan, misschien en kan niet. Rijen met "via chat" vulde iemand anders in; die kan iedereen aanpassen.</p></div>
+        <div><h2>Per persoon</h2><p class="muted small">${st.rows.length > MAX ? `De ${MAX} beste dagen. ` : ''}Je eigen rij kan je hier ook aanpassen. Rijen "zonder app" vulde iemand anders in; die kan iedereen aanpassen.</p></div>
         <div class="tablewrap"><table class="grid"><thead><tr><th class="name" scope="col">Naam</th>${head}</tr></thead>
         <tbody>${rows}</tbody><tfoot><tr><th class="name">Kunnen</th>${foot}</tr></tfoot></table></div>
       </div>`;
@@ -1249,82 +1083,35 @@ function parsePaste(text, opts) {
     const my = myCard(ev, st, mine);
     if (!st.n) return nudge + my + pend;
     const head = headline(ev, st);
-    return (mine ? head + nudge + my : nudge + my + head) + pend + rankCard(ev, st) + matrixCard(ev, st);
+    const more = st.rows.length ? rankCard(ev, st) + matrixCard(ev, st) : '';
+    return (mine ? head + nudge + my : nudge + my + head) + pend + more;
   }
 
   function shareTab(ev, st) {
     const card = (key, title, sub) => `<div class="card msg-card">
       <div style="display:grid;gap:4px"><h2>${title}</h2>${sub ? `<p class="muted small">${sub}</p>` : ''}</div>
       <pre class="msg" id="msg-${key}" tabindex="0">${esc(msgText(key))}</pre>${shareButtons(key)}</div>`;
-    let out = card('invite', 'Bericht voor de groep', 'Met de link duidt iedereen zelf aan wat past. Wie liever in de chat antwoordt, stuurt de nummers; zet die dan bij <b>Voor anderen</b>.');
+    let out = card('invite', 'Bericht voor de groep', 'Met de link opent iedereen de kalender van deze planning en tikt zelf aan wanneer het past.');
     if (st.n) out += card('status', 'Herinnering met stand van zaken', 'Handig om nog wat antwoorden los te krijgen.');
     if (ev.chosen) out += card('decision', 'Aankondiging', 'De knoop is doorgehakt.');
     else if (st.n) out += `<div class="card"><p class="muted small">Is er een dag geprikt, dan staat hier ook een kant-en-klare aankondiging.</p></div>`;
     return out;
   }
 
-  function chipRow(opts, yes, maybe, action, extra) {
-    return `<div class="chips">${opts.map(o => {
-      const s = yes.includes(o.d) ? 'yes' : maybe.includes(o.d) ? 'maybe' : 'no';
-      const lab = `${o.n}, ${shortDate(o.d)}: ${s === 'yes' ? 'kan' : s === 'maybe' ? 'misschien' : 'kan niet'}`;
-      return `<button class="cell ${s}" data-action="${action}" data-d="${o.d}" ${extra || ''} aria-label="${esc(lab)}" title="${esc(shortDate(o.d))}">${o.n}${s === 'maybe' ? '?' : ''}</button>`;
-    }).join('')}</div>`;
-  }
-
   function othersTab(ev, st) {
-    const ps = people();
-    const answeredKeys = new Set(st.answered.map(p => nameKey(p.name)));
-    const known = new Map(ps.map(p => [nameKey(p.name), p]));
-    let pv = '';
-    if (S.preview) {
-      const rows = S.preview.rows;
-      const count = rows.filter(r => r.include && r.name.trim()).length;
-      pv = `<div class="pv">
-        <h3>Gevonden: ${plural(rows.length, 'antwoord', 'antwoorden')}</h3>
-        ${rows.map((r, i) => {
-          const notes = [], k = nameKey(r.name), p = known.get(k);
-          if (!r.name.trim()) notes.push('Vul een naam in.');
-          else {
-            if (p && p.app) notes.push(p.name + ' gebruikt zelf de app.');
-            if (answeredKeys.has(k)) notes.push('Vervangt het eerdere antwoord van ' + r.name + '.');
-            else if (!p) notes.push('Nieuw in de groep, zonder app.');
-          }
-          if (!r.yes.length && !r.maybe.length) notes.push('Kan op geen enkele dag.');
-          if (r.ignored && r.ignored.length) notes.push('Genegeerd: ' + r.ignored.join(', ') + ' (geen nummer uit het bericht).');
-          return `<div class="pv-row ${r.include ? '' : 'skip'}">
-            <input type="checkbox" id="pv-inc-${i}" data-action="pv-inc" data-i="${i}" ${r.include ? 'checked' : ''} aria-label="Neem dit antwoord mee">
-            <input class="input" type="text" style="min-height:38px;padding:6px 10px" id="pv-name-${i}" data-i="${i}" value="${esc(r.name)}" placeholder="Naam" aria-label="Naam">
-            ${chipRow(st.opts, r.yes, r.maybe, 'pv-chip', `data-i="${i}"`)}
-            <div class="raw">“${esc(r.raw.join(' / '))}”</div>
-            ${notes.length ? `<div class="note">${esc(notes.join(' '))}</div>` : ''}
-          </div>`;
-        }).join('')}
-        ${S.preview.unrecognized.length ? `<details class="unrec"><summary>${plural(S.preview.unrecognized.length, 'bericht', 'berichten')} zonder dagen overgeslagen</summary><ul>${S.preview.unrecognized.map(m => `<li>${esc(m.name ? m.name + ': ' : '')}${esc(m.text)}</li>`).join('')}</ul></details>` : ''}
-        <div class="row"><button class="btn primary" data-action="import" ${count ? '' : 'disabled'}>Voeg ${plural(count, 'antwoord', 'antwoorden')} toe</button><button class="btn ghost" data-action="clear-preview">Wis</button></div>
-      </div>`;
-    } else if (S.paste.trim() && S.previewEmpty) {
-      pv = `<p class="err">Er stonden geen nummers of dagen in die tekst. Controleer of je de antwoorden kopieerde, of voeg ze hieronder één voor één toe.</p>`;
-    }
-    const q = S.quick;
-    const noApp = ps.filter(p => !p.app);
+    const ps = people().filter(p => !p.app), pr = S.proxy;
+    const sel = pr.pid && ps.find(p => p.pid === pr.pid);
+    const a = sel ? answerOf(ev, sel.pid) : null, list = a ? daysList(a) : '';
     return `<div class="card">
-        <div style="display:grid;gap:4px"><h2>Antwoorden uit de chat</h2>
-        <p class="muted small">Antwoordde iemand in WhatsApp in plaats van via de link? Selecteer die berichten, kopieer ze en plak ze hieronder. Namen en nummers worden er automatisch uitgehaald; je kijkt alles na voor je het toevoegt. Wie nog niet in de groep zit, komt erbij als lid zonder app.</p></div>
-        <textarea class="input" id="paste" placeholder="[14:03, 26/10/2026] Jan: 1 3 4&#10;[14:05, 26/10/2026] Els: alles behalve 2&#10;[14:06, 26/10/2026] Tom: 2 en 3?">${esc(S.paste)}</textarea>
-        <div class="row"><button class="btn primary" data-action="parse">Lees de antwoorden</button><span class="muted small">Begrijpt ook: alles, alles behalve 2, 1-3, zaterdag, 14/11, 2 misschien</span></div>
-        ${pv}
+        <div style="display:grid;gap:4px"><h2>Voor iemand zonder app</h2>
+          <p class="muted small">Antwoordde iemand in de chat of mondeling? Kies die persoon of voeg de naam toe, en tik de dagen voor die persoon aan. Iedereen in de groep ziet het meteen.</p></div>
+        ${ps.length ? `<div class="people">${ps.map(p => personChip(p, null, 'proxy-pick', !!sel && sel.pid === p.pid)).join('')}</div>` : ''}
+        <div><label class="lbl" for="proxy-name">Iemand toevoegen</label><div class="inrow"><input class="input" id="proxy-name" type="text" maxlength="40" placeholder="bv. Oma" value="${esc(pr.name)}" autocomplete="off"><button class="btn" data-action="proxy-add">Voeg toe</button></div></div>
+        ${pr.err ? `<p class="err" role="alert">${esc(pr.err)}</p>` : ''}
       </div>
-      <div class="card">
-        <div style="display:grid;gap:4px"><h2>Eén antwoord toevoegen</h2><p class="muted small">Voor wie privé of mondeling antwoordde. Typ de nummers of tik de dagen aan.</p></div>
-        <div class="quickadd">
-          <div><label class="lbl" for="q-name">Naam</label><input class="input" id="q-name" type="text" value="${esc(q.name)}" placeholder="bv. Sofie" autocomplete="off" list="people-list"></div>
-          <div><label class="lbl" for="q-text">Antwoord</label><input class="input" id="q-text" type="text" value="${esc(q.text)}" placeholder="bv. 1 3 4?" autocomplete="off"></div>
-        </div>
-        <datalist id="people-list">${noApp.map(p => `<option value="${esc(p.name)}"></option>`).join('')}</datalist>
-        <div id="q-chips">${chipRow(st.opts, q.yes, q.maybe, 'q-chip')}</div>
-        ${S.quickErr ? `<p class="err" role="alert">${esc(S.quickErr)}</p>` : ''}
-        <div class="row"><button class="btn primary" data-action="quick-add">Voeg toe</button></div>
-      </div>`;
+      ${sel ? `<div class="card focus"><div style="display:grid;gap:4px"><h2>Wanneer kan ${esc(sel.name)}?</h2><p class="muted small">Elke tik wordt meteen bewaard.</p></div>
+        ${calendar(ev, st, sel.pid, sel.name)}
+        ${list ? `<p class="mydays"><b>Dagen van ${esc(sel.name)}:</b> ${list}</p>` : ''}</div>` : ''}`;
   }
 
   /* ---------- actions ---------- */
@@ -1379,15 +1166,9 @@ function parsePaste(text, opts) {
     const same = !!prev && prev.name === r.name && prev.gid === r.gid && prev.eid === r.eid;
     S.route = r;
     if (!same) {
-      S.confirm = null; S.draftErr = '';
-      S.paste = ''; S.preview = null; S.previewEmpty = false;
-      S.quick = { name: '', text: '', yes: [], maybe: [] }; S.quickErr = '';
-      if (r.name !== 'event' || !prev || prev.eid !== r.eid) S.tab = 'overview';
-      S.draft = null;
-      if (r.name === 'new') {
-        S.draft = { eid: null, title: '', dates: [], locked: false, orig: [] };
-        const m = new Date(); m.setDate(1); m.setHours(0, 0, 0, 0); S.calMonth = m;
-      }
+      S.confirm = null; S.draftErr = ''; S.draft = null;
+      if (r.name !== 'event' || !prev || prev.eid !== r.eid) { S.tab = 'overview'; S.calMonth = null; S.allDays = false; S.proxy = { pid: null, name: '', err: '' }; }
+      if (r.name === 'new') S.draft = { eid: null, title: '' };
       if (r.name === 'newgroup') S.ng = { name: '', me: savedName(), err: '', busy: false };
       if (r.name === 'settings') S.set = { me: null, name: null };
       if (r.gid && r.name !== 'join' && (!S.who || S.who.gid !== r.gid)) S.who = { gid: r.gid, name: savedName(), err: '', ask: null, busy: false };
@@ -1474,95 +1255,57 @@ function parsePaste(text, opts) {
 
   function putAnswer(ev, pid, a) {
     const g = S.g;
-    write(api(g.gid).updateEvent(g.gid, ev.id, { ['answers.' + pid]: { yes: a.yes, maybe: a.maybe, no: a.no, at: Date.now() }, updatedAt: Date.now() }));
+    write(api(g.gid).updateEvent(g.gid, ev.id, { ['answers.' + pid]: { yes: a.yes, maybe: a.maybe, none: !!a.none, at: Date.now() }, updatedAt: Date.now() }));
   }
-  function setDay(ev, pid, d, v) {
-    const a = answerOf(ev, pid);
-    if (stateOf(a, d) === v) return;
-    const out = { yes: a.yes.filter(x => x !== d), maybe: a.maybe.filter(x => x !== d), no: a.no.filter(x => x !== d) };
-    out[v].push(d);
-    putAnswer(ev, pid, out);
+  // Tap cycle: not marked → kan → misschien → not marked.
+  function markDay(ev, pid, d) {
+    const a = answerOf(ev, pid), s = stateOf(a, d);
+    const yes = a.yes.filter(x => x !== d), maybe = a.maybe.filter(x => x !== d);
+    if (s === '') yes.push(d); else if (s === 'yes') maybe.push(d);
+    putAnswer(ev, pid, { yes, maybe, none: false });
   }
-  // Answers from the chat: unknown names join the group as people without the app.
-  function addAnswers(ev, list) {
-    const g = S.g, gid = g.gid, a = api(gid), now = Date.now(), opts = optionsOf(ev);
-    const known = new Map(people().map(p => [nameKey(p.name), p.pid]));
-    const gp = {}, ep = {};
-    let n = 0;
-    list.forEach(r => {
-      const name = cleanName(r.name).slice(0, 40); if (!name) return;
-      let pid = known.get(nameKey(name));
-      if (!pid) { pid = 'p' + rid(9); known.set(nameKey(name), pid); gp['people.' + pid] = { name, app: false, at: now + n }; }
-      ep['answers.' + pid] = { yes: r.yes.slice(), maybe: r.maybe.slice(), no: opts.map(o => o.d).filter(d => !r.yes.includes(d) && !r.maybe.includes(d)), at: now };
-      n++;
-    });
-    if (!n) return 0;
-    if (Object.keys(gp).length) write(a.updateGroup(gid, Object.assign(gp, { updatedAt: now })));
-    write(a.updateEvent(gid, ev.id, Object.assign(ep, { updatedAt: now })));
-    return n;
-  }
-
-  function initEditDraft(ev) {
-    S.draft = { eid: ev.id, title: ev.title, dates: clone(ev.dates), locked: locked(ev), orig: ev.dates.map(x => x.d) };
-    const firstOpen = (ev.dates.find(x => !x.off && x.d >= todayIso()) || {}).d;
-    const m = firstOpen ? pd(firstOpen) : new Date(); m.setDate(1); m.setHours(0, 0, 0, 0);
-    const now = new Date(); now.setDate(1); now.setHours(0, 0, 0, 0);
-    S.calMonth = m < now ? now : m;
-  }
-  function toggleDay(d) {
-    const dr = S.draft;
-    const i = dr.dates.findIndex(x => x.d === d);
-    if (i < 0) {
-      dr.dates.push({ d, off: false });
-      if (!dr.locked) dr.dates.sort((a, b) => a.d.localeCompare(b.d));
-    } else if (!dr.locked || !dr.orig.includes(d)) {
-      dr.dates.splice(i, 1);
-    } else {
-      dr.dates[i].off = !dr.dates[i].off;
-    }
-    S.draftErr = '';
-    render();
-  }
-  function bulk(wd) {
-    const dr = S.draft, m = S.calMonth, today = todayIso();
-    const y = m.getFullYear(), mo = m.getMonth(), n = new Date(y, mo + 1, 0).getDate();
+  // All Fridays (say) of the shown month: marks them, or clears them when all were already marked.
+  function bulkMark(ev, pid, wd) {
+    const a = answerOf(ev, pid), m = S.calMonth, today = todayIso();
     const days = [];
-    for (let d = 1; d <= n; d++) { const dt = new Date(y, mo, d); if (dt.getDay() === wd && iso(dt) >= today) days.push(iso(dt)); }
-    const allIn = days.length && days.every(s => dr.dates.some(x => x.d === s && !x.off));
-    if (allIn) { days.forEach(s => { if (dr.dates.some(x => x.d === s)) toggleDayQuiet(s); }); }
-    else days.forEach(s => { const it = dr.dates.find(x => x.d === s); if (!it) { dr.dates.push({ d: s, off: false }); } else if (it.off) it.off = false; });
-    if (!dr.locked) dr.dates.sort((a, b) => a.d.localeCompare(b.d));
-    render();
-  }
-  function toggleDayQuiet(d) {
-    const dr = S.draft, i = dr.dates.findIndex(x => x.d === d);
-    if (i < 0) return;
-    if (!dr.locked || !dr.orig.includes(d)) dr.dates.splice(i, 1); else dr.dates[i].off = !dr.dates[i].off;
+    for (let d = 1; d <= new Date(m.getFullYear(), m.getMonth() + 1, 0).getDate(); d++) {
+      const dt = new Date(m.getFullYear(), m.getMonth(), d);
+      if (dt.getDay() === wd && iso(dt) >= today) days.push(iso(dt));
+    }
+    if (!days.length) return;
+    const all = days.every(d => a.yes.includes(d));
+    const yes = a.yes.filter(d => !days.includes(d)).concat(all ? [] : days);
+    putAnswer(ev, pid, { yes, maybe: a.maybe.filter(d => !days.includes(d)), none: false });
   }
   function saveDraft() {
     const dr = S.draft, g = S.g; if (!dr || !g) return;
-    const t = document.getElementById('title'); if (t) dr.title = t.value;
-    if (!dr.dates.some(x => !x.off)) { S.draftErr = 'Kies minstens één dag in de kalender.'; render(); return; }
-    const gid = g.gid, a = api(gid), now = Date.now(), title = dr.title.trim().slice(0, 80);
+    const title = dr.title.trim().replace(/\s+/g, ' ').slice(0, 80);
+    if (!title) { S.draftErr = 'Geef de planning een naam.'; render(); return; }
+    const gid = g.gid, a = api(gid), now = Date.now();
     if (dr.eid) {
-      const ev = g.events[dr.eid]; if (!ev) return;
-      const p = { title, dates: clone(dr.dates), updatedAt: now };
-      const open = new Set(dr.dates.filter(x => !x.off).map(x => x.d));
-      if (ev.chosen && !open.has(ev.chosen)) p.chosen = null;
-      write(a.updateEvent(gid, dr.eid, p));
+      write(a.updateEvent(gid, dr.eid, { title, updatedAt: now }));
       go('#/g/' + gid + '/e/' + dr.eid, true);
     } else {
       const eid = 'e' + rid(11);
-      const data = { title, dates: clone(dr.dates), chosen: null, createdBy: myPid(), createdAt: now, updatedAt: now, sharedAt: null, answers: {} };
+      const data = { title, chosen: null, createdBy: myPid(), createdAt: now, updatedAt: now, sharedAt: null, answers: {} };
       g.events[eid] = normEvent(eid, data); // show it right away; the listener confirms
-      write(a.createEvent(gid, eid, data));
+      a.createEvent(gid, eid, data).catch(e => toast(e && e.code === 'permission-denied'
+        ? 'De database weigerde de planning. Publiceer de nieuwste firestore.rules in Firebase (README, stap 3).' : errText(e)));
       go('#/g/' + gid + '/e/' + eid, true);
     }
   }
-  function cycle(yes, maybe, d) {
-    if (yes.includes(d)) return { yes: yes.filter(x => x !== d), maybe: maybe.concat(d) };
-    if (maybe.includes(d)) return { yes, maybe: maybe.filter(x => x !== d) };
-    return { yes: yes.concat(d), maybe: maybe.filter(x => x !== d) };
+  function addProxy() {
+    const pr = S.proxy, name = cleanName(pr.name).slice(0, 40), g = S.g;
+    if (!name) { pr.err = 'Vul een naam in.'; render(); return; }
+    const p = people().find(x => nameKey(x.name) === nameKey(name));
+    if (p && p.app) { pr.err = p.name + ' gebruikt zelf de app en vult de dagen zelf in.'; render(); return; }
+    let pid = p && p.pid;
+    if (!pid) {
+      pid = 'p' + rid(9);
+      write(api(g.gid).updateGroup(g.gid, { ['people.' + pid]: { name, app: false, at: Date.now() }, updatedAt: Date.now() }));
+    }
+    S.proxy = { pid, name: '', err: '' };
+    render();
   }
   function leaveOrDelete(kind) {
     const gid = S.g.gid, a = api(gid), name = S.g.group.name;
@@ -1586,16 +1329,19 @@ function parsePaste(text, opts) {
       case 'retry': closeGroup(); if (S.route.gid) openGroup(S.route.gid); render(); break;
       case 'tab': S.tab = el.dataset.tab; S.confirm = null; render(); break;
       case 'sort': S.sortMode = el.dataset.s; render(); break;
+      case 'all-days': S.allDays = !S.allDays; render(); break;
       case 'confirm': S.confirm = el.dataset.what; render(); break;
       case 'confirm-no': S.confirm = null; render(); break;
-      case 'ans': if (ev && myPid()) setDay(ev, myPid(), el.dataset.d, el.dataset.v); break;
-      case 'ans-none': if (ev && myPid()) putAnswer(ev, myPid(), { yes: [], maybe: [], no: optionsOf(ev).map(o => o.d) }); break;
-      case 'cell': if (ev) {
-        const pid = el.dataset.pid, p = people().find(x => x.pid === pid);
-        if (!p || (pid !== myPid() && p.app)) break;
-        const s = stateOf(answerOf(ev, pid), el.dataset.d);
-        setDay(ev, pid, el.dataset.d, s === 'yes' ? 'maybe' : s === 'maybe' ? 'no' : 'yes');
-      } break;
+      case 'month': {
+        const m = new Date(S.calMonth || monthStart(new Date())); m.setMonth(m.getMonth() + +el.dataset.dir);
+        const now = monthStart(new Date());
+        S.calMonth = m < now ? now : m; render(); break;
+      }
+      case 'mark': if (ev && canEditFor(el.dataset.pid)) markDay(ev, el.dataset.pid, el.dataset.d); break;
+      case 'bulk': if (ev && canEditFor(el.dataset.pid)) bulkMark(ev, el.dataset.pid, +el.dataset.wd); break;
+      case 'none': if (ev && myPid()) putAnswer(ev, myPid(), { yes: [], maybe: [], none: true }); break;
+      case 'proxy-pick': S.proxy = { pid: el.dataset.pid, name: '', err: '' }; render(); break;
+      case 'proxy-add': addProxy(); break;
       case 'choose': if (canManage(ev)) write(api(gid).updateEvent(gid, ev.id, { chosen: el.dataset.d, updatedAt: Date.now() })); break;
       case 'unchoose': if (canManage(ev)) write(api(gid).updateEvent(gid, ev.id, { chosen: null, updatedAt: Date.now() })); break;
       case 'delete-event-yes': if (canManage(ev)) {
@@ -1611,35 +1357,7 @@ function parsePaste(text, opts) {
         try { navigator.share({ text: msgText(key) }).then(() => markShared(key), () => {}); } catch (x) {}
         break;
       }
-      case 'month': { const m = new Date(S.calMonth); m.setMonth(m.getMonth() + +el.dataset.dir); S.calMonth = m; render(); break; }
-      case 'toggle-day': if (S.draft) toggleDay(el.dataset.d); break;
-      case 'bulk': if (S.draft) bulk(+el.dataset.wd); break;
       case 'save-draft': saveDraft(); break;
-      case 'parse': {
-        const ta = document.getElementById('paste'); S.paste = ta ? ta.value : S.paste;
-        if (!ev) break;
-        const res = parsePaste(S.paste, optionsOf(ev));
-        S.preview = res.rows.length ? res : null; S.previewEmpty = !res.rows.length;
-        render();
-        break;
-      }
-      case 'clear-preview': S.preview = null; S.previewEmpty = false; S.paste = ''; render(); break;
-      case 'pv-chip': { const r = S.preview && S.preview.rows[+el.dataset.i]; if (!r) break; const c = cycle(r.yes, r.maybe, el.dataset.d); r.yes = c.yes; r.maybe = c.maybe; render(); break; }
-      case 'pv-inc': { const r = S.preview && S.preview.rows[+el.dataset.i]; if (r) { r.include = el.checked; render(); } break; }
-      case 'import': if (ev && S.preview) {
-        const n = addAnswers(ev, S.preview.rows.filter(r => r.include));
-        S.preview = null; S.previewEmpty = false; S.paste = ''; S.tab = 'overview'; render(); window.scrollTo({ top: 0 });
-        toast(plural(n, 'antwoord', 'antwoorden') + ' toegevoegd.');
-      } break;
-      case 'q-chip': { const q = S.quick; const c = cycle(q.yes, q.maybe, el.dataset.d); q.yes = c.yes; q.maybe = c.maybe; render(); break; }
-      case 'quick-add': if (ev) {
-        const q = S.quick, nm = cleanName(q.name);
-        if (!nm) { S.quickErr = 'Vul een naam in.'; render(); break; }
-        addAnswers(ev, [{ name: nm, yes: q.yes, maybe: q.maybe }]);
-        S.quick = { name: '', text: '', yes: [], maybe: [] }; S.quickErr = '';
-        render(); toast('Antwoord van ' + nm + ' toegevoegd.');
-        const f = document.getElementById('q-name'); if (f) f.focus();
-      } break;
       case 'save-me': {
         const pid = myPid(), nm = cleanName(S.set.me != null ? S.set.me : '').slice(0, 40);
         if (S.set.me == null) break;
@@ -1682,25 +1400,10 @@ function parsePaste(text, opts) {
       case 'set-me': if (S.set) S.set.me = v; return;
       case 'set-name': if (S.set) S.set.name = v; return;
       case 'title': if (S.draft) S.draft.title = v; return;
-      case 'paste': S.paste = v; return;
-      case 'q-name': S.quick.name = v; S.quickErr = ''; return;
-      case 'q-text': {
-        S.quick.text = v;
-        const ev = curEv(); if (!ev) return;
-        const r = parseAnswer(v, optionsOf(ev));
-        S.quick.yes = r.yes; S.quick.maybe = r.maybe;
-        const box = document.getElementById('q-chips');
-        if (box) box.innerHTML = chipRow(optionsOf(ev), S.quick.yes, S.quick.maybe, 'q-chip');
-        return;
-      }
+      case 'proxy-name': S.proxy.name = v; S.proxy.err = ''; return;
     }
-    if (t.id && t.id.startsWith('pv-name-') && S.preview) { const r = S.preview.rows[+t.dataset.i]; if (r) r.name = v; }
   });
-  app.addEventListener('change', e => {
-    const t = e.target;
-    if (t.id && t.id.startsWith('pv-name-') && S.preview) render();
-  });
-  const ENTER = { 'ng-name': 'create-group', 'ng-me': 'create-group', 'join-name': 'join', 'who-name': 'who-go', 'set-me': 'save-me', 'set-name': 'save-gname', 'q-name': 'quick-add', 'q-text': 'quick-add', 'title': 'save-draft' };
+  const ENTER = { 'ng-name': 'create-group', 'ng-me': 'create-group', 'join-name': 'join', 'who-name': 'who-go', 'set-me': 'save-me', 'set-name': 'save-gname', 'title': 'save-draft', 'proxy-name': 'proxy-add' };
   app.addEventListener('keydown', e => {
     if (e.key !== 'Enter' || !ENTER[e.target.id]) return;
     e.preventDefault();

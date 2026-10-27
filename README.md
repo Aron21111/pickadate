@@ -1,15 +1,16 @@
 # Wie kan wanneer
 
-Een kleine webapp om met je vrienden, familie of ploeg een datum te prikken. Iedereen zit samen in een groep, duidt zelf aan wanneer het past en ziet live wanneer de anderen kunnen. Niemand moet iets installeren of een account maken.
+Een kleine webapp om met je vrienden, familie of ploeg een datum te prikken. Iedereen zit samen in een groep, tikt in één gedeelde kalender de dagen aan waarop het past en ziet live wanneer de anderen kunnen. Niemand moet iets installeren of een account maken.
 
 ## Hoe het werkt
 
 1. **Maak een groep** en geef ze een naam. Je krijgt een uitnodigingslink.
 2. **Zet de link in jullie WhatsApp-groep.** Wie hem opent en een naam invult, zit in de groep.
-3. **Maak een planning**: kies in de kalender de mogelijke dagen. Elk lid ziet ze in de app en duidt per dag aan: *kan*, *misschien* of *niet*.
-4. **Iedereen ziet live** welke dag het best past, wie wanneer kan en wie nog niet antwoordde. Wie de planning maakte, prikt de dag en kopieert een aankondiging voor de groep.
+3. **Maak een planning**: je geeft ze alleen een naam, bijvoorbeeld "Etentje".
+4. **Iedereen tikt zijn dagen aan** in dezelfde kalender, ook wie de planning maakte. Eén keer tikken is *kan*, nog een keer is *misschien*, een derde keer haalt de dag weg. Met *Snel alle vrijdagen/zaterdagen/zondagen* duid je een hele maand in één keer aan.
+5. **Iedereen ziet live** hoeveel mensen elke dag kunnen (het cijfertje in de kalender), welke dag het best past en wie nog niet antwoordde. Wie de planning maakte, prikt de dag en kopieert een aankondiging voor de groep.
 
-Antwoordt iemand toch liever in de chat (bv. `1 3 4` of `2?`), dan plak je die berichten bij **Voor anderen**. De app haalt er namen en nummers uit, net zoals vroeger. Ze begrijpt ook `alles`, `alles behalve 2`, `1-3`, `zaterdag`, `14/11` en `2 misschien`.
+Doet iemand mee zonder de app, bijvoorbeeld omdat die in de chat of mondeling antwoordde, dan voeg je die persoon toe bij **Voor anderen** en tik je de dagen voor die persoon aan.
 
 Op de startpagina staat een voorbeeldgroep om alles uit te proberen zonder dat er iets bewaard wordt.
 
@@ -18,7 +19,7 @@ Op de startpagina staat een voorbeeldgroep om alles uit te proberen zonder dat e
 - Groepen, planningen en antwoorden staan in een Firestore-database van **jouw eigen** Firebase-project (Google). Kies bij het aanmaken een Europese locatie.
 - **Alleen leden** kunnen een groep lezen. Lid word je alleen met de uitnodigingslink: die bevat een geheime code. De beveiligingsregels in `firestore.rules` dwingen dat af in de database zelf.
 - Elk toestel krijgt automatisch een anoniem account. Er is geen e-mail, wachtwoord of telefoonnummer nodig.
-- Binnen een groep vertrouwen de leden elkaar: iedereen kan antwoorden invullen voor wie zonder app meedoet en mensen toevoegen. Titel en dagen van een planning past alleen aan wie ze maakte of de beheerder.
+- Binnen een groep vertrouwen de leden elkaar: iedereen kan dagen invullen voor wie zonder app meedoet en mensen toevoegen. De titel en de geprikte dag van een planning past alleen aan wie ze maakte of de beheerder.
 - De **beheerder** (wie de groep maakte) kan leden verwijderen en een **nieuwe uitnodigingslink** maken. De oude link werkt dan niet meer; wie al lid is, blijft lid.
 - De pagina laadt de Firebase-bibliotheek van `www.gstatic.com` en praat met Firebase. Er zijn geen advertenties, geen analytics en geen tracking.
 
@@ -68,5 +69,5 @@ Verhuis je de site naar een ander adres, voeg dat domein dan toe bij *Authorized
 - **Ander toestel of andere browser:** open de uitnodigingslink opnieuw en vul dezelfde naam in. De app vraagt of jij dat bent en neemt je antwoorden over.
 - **iPhone/iPad:** Safari kan na 7 dagen zonder bezoek vergeten dat je in een groep zit. Dan werkt hetzelfde: de link opnieuw openen en je naam kiezen.
 - **Meldingen:** de app stuurt zelf geen meldingen. Laat de groep weten dat er een nieuwe planning is met de knop *Open in WhatsApp*.
-- **Oude planningen:** planningen uit de vorige versie (alleen in je browser bewaard) worden niet overgenomen.
+- **Oude planningen:** planningen uit de allereerste versie (alleen in je browser bewaard) worden niet overgenomen. Planningen met vaste dagen uit de eerste groepsversie blijven werken: de antwoorden verschijnen gewoon in de kalender.
 - **Testen zonder echt project:** `config.js` kan ook verwijzen naar de lokale Firebase Emulator Suite, met `emulator: { auth: "http://127.0.0.1:9099", host: "127.0.0.1", port: 8080 }` naast `firebase` en een `projectId` die met `demo-` begint.
