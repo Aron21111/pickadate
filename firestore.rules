@@ -1,0 +1,76 @@
+rules_version = '2';
+
+// Beveiligingsregels voor Wie kan wanneer.
+// Plak dit in Firebase: Firestore Database > Rules > Publish (zie README.md, stap 3).
+//
+// - Lid worden kan alleen met de uitnodigingscode van de groep (die zit in de uitnodigingslink).
+// - Alleen leden kunnen een groep, haar leden en haar planningen lezen.
+// - Elk lid mag antwoorden invullen en mensen toevoegen. Titel, dagen en de geprikte dag
+//   van een planning past alleen aan wie ze maakte, of de beheerder van de groep.
+// - Alleen de beheerder kan de groep hernoemen, leden verwijderen, een nieuwe link maken
+//   of de groep verwijderen.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() { return request.auth != null; }
+    function groupPath(gid) { return /databases/$(database)/documents/groups/$(gid); }
+    function memberPath(gid) { return /databases/$(database)/documents/groups/$(gid)/members/$(request.auth.uid); }
+    function isMember(gid) { return signedIn() && exists(memberPath(gid)); }
+    function myPid(gid) { return get(memberPath(gid)).data.pid; }
+    function isOwner(gid) { return isMember(gid) && get(groupPath(gid)).data.ownerPid == myPid(gid); }
+
+    function validGroup(d) {
+      return d.keys().hasOnly(['name', 'invite', 'ownerPid', 'people', 'createdAt', 'updatedAt'])
+        && d.name is string && d.name.size() > 0 && d.name.size() <= 60
+        && d.invite is string && d.invite.size() >= 10 && d.invite.size() <= 64
+        && d.ownerPid is string
+        && d.people is map && d.people.size() <= 150;
+    }
+    function validMember(d) {
+      return d.keys().hasOnly(['pid', 'code', 'at'])
+        && (d.pid == null || d.pid is string)
+        && d.code is string;
+    }
+    function validEvent(d) {
+      return d.keys().hasOnly(['title', 'dates', 'chosen', 'createdBy', 'createdAt', 'updatedAt', 'sharedAt', 'answers'])
+        && d.title is string && d.title.size() <= 80
+        && d.dates is list && d.dates.size() > 0 && d.dates.size() <= 62
+        && (d.chosen == null || d.chosen is string)
+        && d.createdBy is string
+        && d.answers is map && d.answers.size() <= 300;
+    }
+
+    match /groups/{gid} {
+      allow get: if isMember(gid);
+      allow list: if false;
+      // The creator's own member document is written in the same batch.
+      allow create: if signedIn() && validGroup(request.resource.data)
+        && getAfter(memberPath(gid)).data.pid == request.resource.data.ownerPid;
+      allow update: if validGroup(request.resource.data) && (isOwner(gid)
+        || (isMember(gid) && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['people', 'updatedAt'])));
+      allow delete: if isOwner(gid);
+
+      // One document per device (anonymous account) that joined the group.
+      match /members/{uid} {
+        allow get: if signedIn() && (uid == request.auth.uid || isMember(gid));
+        allow list: if isMember(gid);
+        allow create: if signedIn() && uid == request.auth.uid && validMember(request.resource.data)
+          && request.resource.data.code == getAfter(groupPath(gid)).data.invite;
+        allow update: if signedIn() && uid == request.auth.uid && validMember(request.resource.data)
+          && request.resource.data.code == resource.data.code;
+        allow delete: if signedIn() && (uid == request.auth.uid || isOwner(gid));
+      }
+
+      match /events/{eid} {
+        allow read: if isMember(gid);
+        allow create: if isMember(gid) && validEvent(request.resource.data)
+          && request.resource.data.createdBy == myPid(gid);
+        allow update: if isMember(gid) && validEvent(request.resource.data)
+          && request.resource.data.createdBy == resource.data.createdBy
+          && (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['answers', 'sharedAt', 'updatedAt'])
+            || resource.data.createdBy == myPid(gid) || isOwner(gid));
+        allow delete: if isMember(gid) && (resource.data.createdBy == myPid(gid) || isOwner(gid));
+      }
+    }
+  }
+}

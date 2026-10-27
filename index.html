@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Wie kan wanneer</title>
-<meta name="description" content="Prik een datum met je groep: kies dagen, deel een genummerd bericht in WhatsApp, plak de antwoorden terug en zie welke dag voor iedereen past. Alles blijft op je eigen toestel.">
+<meta name="description" content="Prik een datum met je groep: nodig iedereen uit met een link, iedereen duidt zelf aan wanneer het past en je ziet live welke dag voor iedereen past.">
 <meta name="theme-color" content="#F2F3EE" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#111513" media="(prefers-color-scheme: dark)">
 <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
@@ -18,7 +18,7 @@
 <meta property="og:description" content="Prik een datum met je groep zonder gedoe.">
 <link rel="preload" href="fonts/hanken-grotesk-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <style>
-/* Fonts are self-hosted: the page makes no requests to other sites. */
+/* Fonts are self-hosted. */
 @font-face { font-family: "Hanken Grotesk"; src: url("fonts/hanken-grotesk-latin-wght-normal.woff2") format("woff2"); font-weight: 100 900; font-style: normal; font-display: swap; }
 @font-face { font-family: "Barlow Condensed"; src: url("fonts/barlow-condensed-latin-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: swap; }
 @font-face { font-family: "Barlow Condensed"; src: url("fonts/barlow-condensed-latin-600-normal.woff2") format("woff2"); font-weight: 600; font-style: normal; font-display: swap; }
@@ -83,7 +83,7 @@ body {
 .linkbtn { background: none; border: 0; padding: 0; color: var(--cobalt); font-weight: 600; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; font-size: 13px; }
 .wrap { max-width: 880px; margin: 0 auto; display: grid; gap: 20px; }
 h1, h2, h3 { margin: 0; text-wrap: balance; }
-h1 { font-family: var(--f-display); font-weight: 700; font-size: 34px; line-height: 1.05; letter-spacing: .01em; }
+h1 { font-family: var(--f-display); font-weight: 700; font-size: 34px; line-height: 1.05; letter-spacing: .01em; overflow-wrap: anywhere; }
 h2 { font-size: 18px; font-weight: 700; }
 h3 { font-size: 15px; font-weight: 700; }
 p { margin: 0; }
@@ -112,23 +112,43 @@ button, input, textarea { font: inherit; color: inherit; }
 .btn.danger { color: var(--danger); }
 .btn.small { min-height: 34px; padding: 0 12px; font-size: 14px; }
 .btn[disabled] { opacity: .45; cursor: not-allowed; }
-.back { background: none; border: 0; padding: 4px 0; color: var(--ink-2); font-weight: 600; cursor: pointer; justify-self: start; }
+.back { background: none; border: 0; padding: 4px 0; color: var(--ink-2); font-weight: 600; cursor: pointer; justify-self: start; text-decoration: none; }
 .back:hover { color: var(--ink); }
 .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
 
 .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 18px; box-shadow: var(--shadow); display: grid; gap: 14px; min-width: 0; }
+.card.focus { border-color: var(--cobalt); box-shadow: 0 0 0 3px var(--cobalt-soft), var(--shadow); }
 .banner { border-radius: var(--r); padding: 12px 14px; background: var(--amber-soft); border: 1px solid color-mix(in srgb, var(--amber) 40%, transparent); font-size: 14px; }
+.banner a { color: inherit; font-weight: 700; }
 
 /* list */
 .list-head { display: flex; flex-wrap: wrap; gap: 12px; align-items: end; justify-content: space-between; }
 .events { display: grid; gap: 10px; }
-.ev { display: grid; grid-template-columns: auto 1fr auto; gap: 14px; align-items: center; text-align: left; width: 100%; padding: 14px 16px; border-radius: 14px; background: var(--card); border: 1px solid var(--line); box-shadow: var(--shadow); cursor: pointer; }
+.ev { display: grid; grid-template-columns: auto 1fr auto; gap: 14px; align-items: center; text-align: left; width: 100%; padding: 14px 16px; border-radius: 14px; background: var(--card); border: 1px solid var(--line); box-shadow: var(--shadow); cursor: pointer; text-decoration: none; color: inherit; }
 .ev:hover { border-color: var(--ink-3); }
 .ev .t { font-weight: 700; font-size: 16px; overflow-wrap: anywhere; }
 .ev .m { font-size: 13px; color: var(--ink-2); }
 .ev .go { color: var(--ink-3); font-size: 20px; }
 .chip-tag { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; padding: 2px 7px; border-radius: 999px; background: var(--cobalt-soft); color: var(--cobalt); vertical-align: 2px; margin-left: 6px; }
 .chip-tag.amber { background: var(--amber-soft); color: color-mix(in srgb, var(--amber) 70%, var(--ink)); }
+.gicon { width: 52px; height: 52px; border-radius: 12px; background: var(--cobalt-soft); color: var(--cobalt); display: grid; place-items: center; font-family: var(--f-display); font-weight: 700; font-size: 22px; flex: none; }
+
+/* people */
+.people { display: flex; flex-wrap: wrap; gap: 6px; }
+.pchip { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px 3px 3px; border-radius: 999px; background: var(--card); border: 1px solid var(--line); font-size: 13px; font-weight: 600; }
+button.pchip { cursor: pointer; min-height: 34px; }
+button.pchip:hover { border-color: var(--cobalt); }
+.pchip.me { border-color: var(--cobalt); }
+.av { width: 32px; height: 32px; border-radius: 999px; background: var(--cobalt-soft); color: var(--cobalt); display: grid; place-items: center; font-family: var(--f-display); font-weight: 700; font-size: 15px; flex: none; line-height: 1; }
+.av.noapp { background: transparent; border: 1.5px dashed var(--line); color: var(--ink-3); }
+.pchip .av { width: 24px; height: 24px; font-size: 12px; }
+.mrow { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 10px 0; }
+.mlist > * + * { border-top: 1px solid var(--line); }
+.mrow .m { display: block; font-size: 13px; color: var(--ink-2); }
+.mrow b { overflow-wrap: anywhere; }
+.linkbox { margin: 0; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 13px; overflow-wrap: anywhere; background: var(--paper); border: 1px solid var(--line); border-radius: var(--r); padding: 10px 12px; user-select: all; -webkit-user-select: all; }
+.inrow { display: flex; gap: 8px; }
+.inrow .input { flex: 1; min-width: 0; }
 
 /* tear-off sheet */
 .sheet { width: 64px; flex: none; border-radius: 8px; overflow: hidden; background: var(--card); border: 1.5px solid var(--ink); text-align: center; line-height: 1; }
@@ -189,12 +209,26 @@ textarea.input { min-height: 140px; resize: vertical; font-size: 14px; line-heig
 .tab[aria-selected="true"] { background: var(--ink); color: var(--paper); }
 .tab .cnt { font-variant-numeric: tabular-nums; opacity: .7; margin-left: 4px; }
 
+/* your own answer */
+.avail { display: grid; }
+.av-row { display: flex; align-items: center; justify-content: space-between; gap: 8px 12px; flex-wrap: wrap; padding: 8px 0; }
+.av-row + .av-row { border-top: 1px solid var(--line); }
+.av-row.chosen { background: color-mix(in srgb, var(--hl) 35%, transparent); border-radius: 10px; padding: 8px; }
+.av-d { display: flex; align-items: center; gap: 10px; font-weight: 600; }
+.av-d .av-n { font-family: var(--f-display); font-weight: 700; font-size: 16px; color: var(--ink-3); min-width: 16px; text-align: center; }
+.av-d .dnum { font-family: var(--f-display); font-weight: 700; font-size: 22px; margin: 0 1px; }
+.seg3 { display: inline-flex; gap: 2px; border: 1.5px solid var(--line); border-radius: 999px; padding: 3px; background: var(--paper); }
+.seg3 button { border: 0; background: transparent; min-height: 36px; padding: 0 14px; border-radius: 999px; font-weight: 600; font-size: 14px; color: var(--ink-2); cursor: pointer; }
+.seg3 button:hover { color: var(--ink); }
+.seg3 button[aria-pressed="true"][data-v="yes"] { background: var(--cobalt); color: var(--on-cobalt); }
+.seg3 button[aria-pressed="true"][data-v="maybe"] { background: repeating-linear-gradient(135deg, var(--amber-soft) 0 4px, var(--card) 4px 8px); box-shadow: inset 0 0 0 1.5px var(--amber); color: color-mix(in srgb, var(--amber) 70%, var(--ink)); }
+.seg3 button[aria-pressed="true"][data-v="no"] { background: var(--ink); color: var(--paper); }
+
 /* best day */
 .best { display: flex; gap: 18px; align-items: center; flex-wrap: wrap; }
 .best .txt { display: grid; gap: 6px; min-width: 0; flex: 1 1 220px; }
 .best .big { font-family: var(--f-display); font-size: 30px; font-weight: 700; line-height: 1.05; }
 .hl { background: linear-gradient(transparent 48%, var(--hl) 48%, var(--hl) 92%, transparent 92%); color: inherit; padding: 0 2px; }
-.pin-done { display: inline-flex; align-items: center; gap: 6px; font-weight: 700; color: var(--ok); }
 
 /* ranking */
 .rank { display: grid; gap: 2px; }
@@ -226,18 +260,18 @@ table.grid { border-collapse: separate; border-spacing: 0; min-width: 100%; font
 table.grid th, table.grid td { padding: 4px; text-align: center; }
 table.grid thead th { font-weight: 600; font-size: 12px; color: var(--ink-2); vertical-align: bottom; white-space: nowrap; }
 table.grid thead th .n { display: block; font-family: var(--f-display); font-size: 17px; font-weight: 700; color: var(--ink); }
-table.grid th.name { text-align: left; position: sticky; left: 0; background: var(--card); z-index: 1; min-width: 120px; }
+table.grid th.name { text-align: left; position: sticky; left: 0; background: var(--card); z-index: 1; min-width: 110px; padding-right: 10px; font-weight: 600; white-space: nowrap; }
+table.grid tbody th.name .chip-tag { margin-left: 4px; }
+table.grid tbody tr.me th.name { color: var(--cobalt); }
 table.grid tbody tr + tr td, table.grid tbody tr + tr th { border-top: 1px solid var(--line); }
 table.grid tfoot td, table.grid tfoot th { border-top: 1.5px solid var(--ink); font-family: var(--f-display); font-weight: 700; font-size: 17px; font-variant-numeric: tabular-nums; padding-top: 8px; }
 table.grid tfoot th { font-family: var(--f-body); font-size: 13px; text-align: left; }
-.nm { width: 100%; min-width: 110px; border: 1px solid transparent; background: transparent; border-radius: 6px; padding: 6px 6px; font-weight: 600; }
-.nm:hover { border-color: var(--line); }
-.nm:focus { border-color: var(--cobalt); outline: none; background: var(--paper); }
+.noapp-tag { font-size: 11px; font-weight: 600; color: var(--ink-3); margin-left: 4px; }
 .cell { width: 36px; height: 36px; border-radius: 8px; border: 1.5px solid var(--line); background: transparent; cursor: pointer; font-weight: 700; font-size: 15px; display: inline-grid; place-items: center; color: var(--ink-3); }
 .cell.yes { background: var(--cobalt); border-color: var(--cobalt); color: var(--on-cobalt); }
 .cell.maybe { background: repeating-linear-gradient(135deg, var(--amber-soft) 0 4px, transparent 4px 8px); border-color: var(--amber); color: color-mix(in srgb, var(--amber) 70%, var(--ink)); }
 .cell[disabled] { cursor: default; }
-.x { width: 30px; height: 30px; border-radius: 999px; border: 0; background: transparent; color: var(--ink-3); cursor: pointer; font-size: 16px; }
+.x { width: 34px; height: 34px; border-radius: 999px; border: 0; background: transparent; color: var(--ink-3); cursor: pointer; font-size: 18px; }
 .x:hover { background: var(--paper); color: var(--danger); }
 th.top-col { background: color-mix(in srgb, var(--hl) 50%, transparent); border-radius: 8px 8px 0 0; }
 
@@ -265,7 +299,6 @@ th.top-col { background: color-mix(in srgb, var(--hl) 50%, transparent); border-
 
 #toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(18px + env(safe-area-inset-bottom, 0px)); background: var(--ink); color: var(--paper); padding: 10px 14px; border-radius: 12px; font-size: 14px; font-weight: 600; box-shadow: var(--shadow); z-index: 20; display: flex; gap: 12px; align-items: center; max-width: calc(100% - 32px); }
 #toast[hidden] { display: none; }
-#toast button { background: transparent; border: 1px solid currentColor; color: inherit; border-radius: 999px; padding: 3px 10px; font-weight: 700; cursor: pointer; }
 
 .skeleton { height: 64px; border-radius: 14px; background: var(--card); border: 1px solid var(--line); }
 
@@ -280,6 +313,9 @@ th.top-col { background: color-mix(in srgb, var(--hl) 50%, transparent); border-
   .card { padding: 14px; }
   .sheet.big { width: 88px; }
   .sheet.big .dn { font-size: 46px; }
+  .av-row { display: grid; grid-template-columns: minmax(0, 1fr); gap: 6px; }
+  .seg3 { display: flex; }
+  .seg3 button { flex: 1; padding: 0 8px; }
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
 </style>
@@ -287,8 +323,8 @@ th.top-col { background: color-mix(in srgb, var(--hl) 50%, transparent); border-
 <body>
 <main class="wrap" id="app"><noscript><p>Deze pagina heeft JavaScript nodig. Zet JavaScript aan in je browser.</p></noscript></main>
 <div id="toast" role="status" aria-live="polite" hidden></div>
-<input type="file" id="restore-file" accept="application/json,.json" hidden>
 
+<script src="config.js"></script>
 <script>
 /* ---------- dates ---------- */
 const WD = ['zo','ma','di','wo','do','vr','za'];
@@ -453,146 +489,267 @@ function parsePaste(text, opts) {
   const app = document.getElementById('app');
   const toastEl = document.getElementById('toast');
   const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-  const newId = () => (window.crypto && crypto.randomUUID ? crypto.randomUUID().replace(/-/g, '').slice(0, 16) : Math.random().toString(36).slice(2, 10) + Date.now().toString(36));
   const clone = o => JSON.parse(JSON.stringify(o));
+  const B62 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  // Random ids. The invite code is the secret part of an invitation link.
+  function rid(n) {
+    const a = new Uint8Array(n * 2); crypto.getRandomValues(a);
+    let s = '';
+    for (const x of a) { if (x < 248) s += B62[x % 62]; if (s.length === n) break; }
+    return s.length === n ? s : s + rid(n - s.length);
+  }
+
+  /* ---------- config ---------- */
+  const CFG = window.WKW_CONFIG || {};
+  const configured = !!(CFG.firebase && CFG.firebase.apiKey && CFG.firebase.projectId && !/VUL/i.test(CFG.firebase.apiKey));
+  const DEMO = 'voorbeeld';
+  const DEL = { del: true }; // patch value: remove this field
 
   const S = {
-    events: {}, loaded: false, backend: null, readOnly: false, error: '',
-    view: 'list', currentId: null, tab: 'result', sortMode: 'best',
+    route: null, g: null, mine: {}, offline: navigator.onLine === false, error: '',
+    tab: 'overview', sortMode: 'best', confirm: null,
     draft: null, calMonth: null, draftErr: '',
-    paste: '', preview: null,
+    paste: '', preview: null, previewEmpty: false,
     quick: { name: '', text: '', yes: [], maybe: [] }, quickErr: '',
-    confirmDelete: false, lastRemoved: null,
+    ng: null, join: null, who: null, set: null, pendingName: null,
   };
 
-  /* ---------- storage: everything stays in this browser (localStorage) ---------- */
-  const KEY = 'wiekanwanneer-v1';
-  let canStore = true;
-  try { localStorage.setItem('__wkw_test', '1'); localStorage.removeItem('__wkw_test'); } catch (e) { canStore = false; }
+  /* ---------- small things this device remembers ---------- */
+  const LS = {
+    get(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+    set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} },
+  };
+  const K_GROUPS = 'wiekanwanneer-groepen', K_NAME = 'wiekanwanneer-naam';
+  S.mine = LS.get(K_GROUPS, {});
+  if (!S.mine || typeof S.mine !== 'object') S.mine = {};
+  function remember(gid, name) {
+    if (gid === DEMO) return;
+    const o = S.mine[gid];
+    if (o && o.name === name) return;
+    S.mine[gid] = { name, seen: o ? o.seen : Date.now() }; LS.set(K_GROUPS, S.mine);
+  }
+  function forget(gid) { if (S.mine[gid]) { delete S.mine[gid]; LS.set(K_GROUPS, S.mine); } }
+  function savedName() { const n = LS.get(K_NAME, ''); return typeof n === 'string' ? n : ''; }
+  function keepStorage() { try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {}); } catch (e) {} }
 
-  function normalize(id, data) {
-    const ev = data ? clone(data) : {};
-    ev.id = id;
-    ev.title = typeof ev.title === 'string' ? ev.title : '';
-    ev.dates = Array.isArray(ev.dates) ? ev.dates.filter(x => x && typeof x.d === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(x.d)).map(x => ({ d: x.d, off: !!x.off })) : [];
-    ev.people = Array.isArray(ev.people) ? ev.people.filter(p => p && typeof p.name === 'string').map(p => ({
-      id: String(p.id || newId()), name: p.name,
-      yes: Array.isArray(p.yes) ? p.yes.filter(d => typeof d === 'string') : [],
-      maybe: Array.isArray(p.maybe) ? p.maybe.filter(d => typeof d === 'string') : []
-    })) : [];
-    ev.chosen = typeof ev.chosen === 'string' ? ev.chosen : null;
-    ev.createdAt = +ev.createdAt || Date.now();
-    ev.updatedAt = +ev.updatedAt || ev.createdAt;
-    ev.sharedAt = ev.sharedAt || null;
-    ev.example = !!ev.example;
-    return ev;
+  /* ---------- Firebase: anonymous account per device, Firestore for the shared data ---------- */
+  const FB_URL = 'https://www.gstatic.com/firebasejs/12.19.0/';
+  let fb = null, fbInit = null, fbSign = null;
+  function firebase() {
+    if (fb) return Promise.resolve(fb);
+    if (!fbInit) {
+      fbInit = Promise.all(['app', 'auth', 'firestore'].map(m => import(FB_URL + 'firebase-' + m + '.js'))).then(([A, Au, F]) => {
+        const fapp = A.initializeApp(CFG.firebase);
+        const auth = Au.getAuth(fapp);
+        let db;
+        try { db = F.initializeFirestore(fapp, { localCache: F.persistentLocalCache({ tabManager: F.persistentMultipleTabManager() }) }); }
+        catch (e) { db = F.getFirestore(fapp); }
+        if (CFG.emulator) {
+          Au.connectAuthEmulator(auth, CFG.emulator.auth, { disableWarnings: true });
+          F.connectFirestoreEmulator(db, CFG.emulator.host, CFG.emulator.port);
+        }
+        return { Au, F, auth, db };
+      });
+      fbInit.catch(() => { fbInit = null; });
+    }
+    if (!fbSign) {
+      fbSign = fbInit.then(async x => {
+        await x.auth.authStateReady();
+        if (!x.auth.currentUser) await x.Au.signInAnonymously(x.auth);
+        fb = Object.assign({ uid: x.auth.currentUser.uid }, x);
+        if (S.error) { S.error = ''; scheduleRender(); }
+        return fb;
+      });
+      fbSign.catch(() => { fbSign = null; });
+    }
+    return fbSign;
   }
-  function serialize() {
-    const events = {};
-    for (const id of Object.keys(S.events)) { const d = clone(S.events[id]); delete d.id; events[id] = d; }
-    return events;
-  }
-  function loadAll() {
-    if (!canStore) return {};
-    let raw = null;
-    try { raw = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) { raw = null; }
-    const evs = raw && raw.events && typeof raw.events === 'object' ? raw.events : {};
-    const out = {};
-    for (const id of Object.keys(evs)) out[id] = normalize(id, evs[id]);
-    return out;
-  }
-  let saveTimer = null;
-  function saveNow() {
-    clearTimeout(saveTimer); saveTimer = null;
-    if (!canStore) return;
-    try { localStorage.setItem(KEY, JSON.stringify({ version: 1, events: serialize() })); }
-    catch (e) { S.error = 'Opslaan lukte niet: de opslag van je browser zit vol. Verwijder een paar oude planningen.'; render(); }
-  }
-  function persist(id, delay) {
-    const ev = S.events[id]; if (ev) ev.updatedAt = Date.now();
-    clearTimeout(saveTimer);
-    saveTimer = setTimeout(saveNow, delay == null ? 250 : delay);
-  }
-  function removeEvent(id) { delete S.events[id]; saveNow(); }
-  window.addEventListener('pagehide', () => { if (saveTimer) saveNow(); });
-  // The planner is open in another tab and changed something there: show the new state here too.
-  window.addEventListener('storage', e => {
-    if (e.key !== KEY) return;
-    S.events = loadAll();
-    if (S.view === 'event' && !S.events[S.currentId]) { S.view = 'list'; S.currentId = null; }
-    if (S.view !== 'edit') render();
-  });
 
-  /* ---------- back-up ---------- */
-  function backup() {
-    const body = JSON.stringify({ app: 'wie-kan-wanneer', version: 1, exportedAt: new Date().toISOString(), events: serialize() }, null, 2);
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(new Blob([body], { type: 'application/json' }));
-    a.download = 'wie-kan-wanneer-backup-' + todayIso() + '.json';
-    document.body.appendChild(a); a.click();
-    setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
-    toast('Back-up gedownload.');
-  }
-  function restore(file) {
-    const reader = new FileReader();
-    reader.onload = () => {
-      let data = null;
-      try { data = JSON.parse(reader.result); } catch (e) { data = null; }
-      if (!data || data.app !== 'wie-kan-wanneer' || !data.events || typeof data.events !== 'object') {
-        toast('Dit bestand is geen back-up van Wie kan wanneer.'); return;
+  // Patches use dotted keys ("answers.p123") so two people writing at once never overwrite each other.
+  const Remote = {
+    groupRef: gid => fb.F.doc(fb.db, 'groups', gid),
+    memberRef: gid => fb.F.doc(fb.db, 'groups', gid, 'members', fb.uid),
+    eventRef: (gid, eid) => fb.F.doc(fb.db, 'groups', gid, 'events', eid),
+    patch(p) { const out = {}; for (const k of Object.keys(p)) out[k] = p[k] === DEL ? fb.F.deleteField() : p[k]; return out; },
+    watch(gid, h) {
+      const { F, db } = fb;
+      // A missing document read from the local cache only means "not known yet".
+      const one = s => s.exists() ? s.data() : s.metadata.fromCache ? undefined : null;
+      const u = [
+        F.onSnapshot(Remote.memberRef(gid), s => h.member(one(s)), h.error),
+        F.onSnapshot(Remote.groupRef(gid), s => h.group(one(s)), h.error),
+        F.onSnapshot(F.collection(db, 'groups', gid, 'events'), qs => { const m = {}; qs.forEach(d => { m[d.id] = d.data(); }); h.events(m); }, h.error),
+      ];
+      return () => u.forEach(f => f());
+    },
+    createGroup(gid, group, member) {
+      const b = fb.F.writeBatch(fb.db);
+      b.set(Remote.groupRef(gid), group); b.set(Remote.memberRef(gid), member);
+      return b.commit();
+    },
+    getMember: gid => fb.F.getDoc(Remote.memberRef(gid)).then(s => s.exists() ? s.data() : null),
+    join: (gid, member) => fb.F.setDoc(Remote.memberRef(gid), member),
+    updateMember: (gid, p) => fb.F.updateDoc(Remote.memberRef(gid), Remote.patch(p)),
+    updateGroup: (gid, p) => fb.F.updateDoc(Remote.groupRef(gid), Remote.patch(p)),
+    createEvent: (gid, eid, d) => fb.F.setDoc(Remote.eventRef(gid, eid), d),
+    updateEvent: (gid, eid, p) => fb.F.updateDoc(Remote.eventRef(gid, eid), Remote.patch(p)),
+    deleteEvent: (gid, eid) => fb.F.deleteDoc(Remote.eventRef(gid, eid)),
+    async removePerson(gid, pid) {
+      const { F, db } = fb;
+      const s = await F.getDocs(F.query(F.collection(db, 'groups', gid, 'members'), F.where('pid', '==', pid)));
+      const b = F.writeBatch(db);
+      s.forEach(d => { if (d.id !== fb.uid) b.delete(d.ref); });
+      b.update(Remote.groupRef(gid), { ['people.' + pid]: F.deleteField(), updatedAt: Date.now() });
+      return b.commit();
+    },
+    leave: gid => fb.F.deleteDoc(Remote.memberRef(gid)),
+    async deleteGroup(gid) {
+      const { F, db } = fb;
+      const [evs, mem] = await Promise.all([F.getDocs(F.collection(db, 'groups', gid, 'events')), F.getDocs(F.collection(db, 'groups', gid, 'members'))]);
+      const b = F.writeBatch(db);
+      evs.forEach(d => b.delete(d.ref));
+      mem.forEach(d => { if (d.id !== fb.uid) b.delete(d.ref); });
+      b.delete(Remote.groupRef(gid));
+      b.delete(Remote.memberRef(gid));
+      return b.commit();
+    },
+  };
+
+  /* ---------- example group: lives in memory only ---------- */
+  const Demo = {
+    d: null, h: null,
+    seed() {
+      const base = new Date(); base.setHours(0, 0, 0, 0);
+      const fri = new Date(base);
+      fri.setDate(base.getDate() + ((5 - base.getDay() + 7) % 7));
+      if ((fri - base) / 864e5 < 3) fri.setDate(fri.getDate() + 7);
+      const day = k => { const x = new Date(fri); x.setDate(fri.getDate() + k); return iso(x); };
+      const D = [day(0), day(1), day(7), day(8)], E = [day(15), day(16), day(22)];
+      const now = Date.now();
+      const names = { me: 'Jij', p1: 'Jan', p2: 'Els', p3: 'Tom', p4: 'Sofie', p5: 'Pieter' };
+      const people = {};
+      Object.keys(names).forEach((k, i) => { people[k] = { name: names[k], app: k !== 'p4', at: now - (10 - i) * 1000 }; });
+      const ans = (all, yes, maybe) => ({ yes, maybe: maybe || [], no: all.filter(d => !yes.includes(d) && !(maybe || []).includes(d)), at: now });
+      this.d = {
+        member: { pid: 'me' },
+        group: { name: 'Voorbeeld: de vrienden', invite: DEMO, ownerPid: 'me', people, createdAt: now, updatedAt: now },
+        events: {
+          e1: { title: 'Etentje', dates: D.map(d => ({ d, off: false })), chosen: null, createdBy: 'p1', createdAt: now, updatedAt: now, sharedAt: now,
+            answers: { p1: ans(D, [D[0], D[1], D[3]]), p2: ans(D, [D[1], D[3]], [D[0]]), p3: ans(D, [D[1], D[2], D[3]]), p4: ans(D, [D[3]], [D[1]]) } },
+          e2: { title: 'Fietstocht naar zee', dates: E.map(d => ({ d, off: false })), chosen: E[0], createdBy: 'me', createdAt: now - 1, updatedAt: now, sharedAt: now,
+            answers: { me: ans(E, [E[0], E[1]]), p1: ans(E, [E[0]]), p2: ans(E, [E[0], E[2]]), p3: ans(E, [E[1]], [E[0]]), p5: ans(E, [E[0], E[1], E[2]]) } },
+        },
+      };
+    },
+    watch(gid, h) {
+      if (!this.d) this.seed();
+      this.h = h;
+      Promise.resolve().then(() => this.emit());
+      return () => { if (this.h === h) this.h = null; };
+    },
+    emit() { const h = this.h, d = this.d; if (!h || !d) return; h.member(clone(d.member)); h.group(clone(d.group)); h.events(clone(d.events)); },
+    put(obj, p) {
+      for (const k of Object.keys(p)) {
+        const path = k.split('.'), last = path.pop();
+        let o = obj;
+        for (const seg of path) o = o[seg] = o[seg] || {};
+        if (p[k] === DEL) delete o[last]; else o[last] = clone(p[k]);
       }
-      let n = 0;
-      for (const id of Object.keys(data.events)) {
-        const inc = normalize(id, data.events[id]);
-        const have = S.events[id];
-        if (!have || inc.updatedAt > have.updatedAt) { S.events[id] = inc; n++; }
-      }
-      saveNow(); S.view = 'list'; S.currentId = null; render();
-      toast(n ? plural(n, 'planning', 'planningen') + ' teruggezet.' : 'Alles uit deze back-up stond er al.');
+    },
+    done() { this.emit(); return Promise.resolve(); },
+    updateGroup(gid, p) { this.put(this.d.group, p); return this.done(); },
+    updateMember(gid, p) { this.put(this.d.member, p); return this.done(); },
+    createEvent(gid, eid, data) { this.d.events[eid] = clone(data); return this.done(); },
+    updateEvent(gid, eid, p) { if (this.d.events[eid]) this.put(this.d.events[eid], p); return this.done(); },
+    deleteEvent(gid, eid) { delete this.d.events[eid]; return this.done(); },
+    removePerson(gid, pid) { delete this.d.group.people[pid]; return this.done(); },
+    leave() { this.d = null; return Promise.resolve(); },
+    deleteGroup() { this.d = null; return Promise.resolve(); },
+  };
+  const api = gid => gid === DEMO ? Demo : Remote;
+
+  /* ---------- the open group: live data from the listeners ---------- */
+  function openGroup(gid) {
+    if (S.g && S.g.gid === gid) return;
+    closeGroup();
+    const g = S.g = { gid, group: null, events: {}, member: undefined, gotGroup: false, gotEvents: false, error: null, unsub: null };
+    if (S.mine[gid]) { S.mine[gid].seen = Date.now(); LS.set(K_GROUPS, S.mine); }
+    const live = () => S.g === g;
+    const start = () => {
+      if (!live()) return;
+      g.unsub = api(gid).watch(gid, {
+        member: d => { if (!live() || d === undefined) return; g.member = d; if (d === null) forget(gid); changed(); },
+        group: d => { if (!live() || d === undefined) return; g.group = d; g.gotGroup = true; if (d) remember(gid, d.name); else forget(gid); changed(); },
+        events: m => {
+          if (!live()) return;
+          const out = {};
+          for (const id of Object.keys(m)) out[id] = normEvent(id, m[id]);
+          g.events = out; g.gotEvents = true; changed();
+        },
+        error: e => { if (!live()) return; g.error = e; if (e && e.code === 'permission-denied') forget(gid); changed(); },
+      });
     };
-    reader.onerror = () => toast('Dit bestand kon niet gelezen worden.');
-    reader.readAsText(file);
+    if (gid === DEMO) start();
+    else if (configured) firebase().then(start, e => { if (live()) { g.error = e; changed(); } });
   }
+  function closeGroup() { if (S.g && S.g.unsub) S.g.unsub(); S.g = null; }
+  function changed() { autoClaim(); scheduleRender(); }
 
-  /* ---------- example ---------- */
-  function addExample() {
-    const base = new Date(); base.setHours(0, 0, 0, 0);
-    const fri = new Date(base);
-    fri.setDate(base.getDate() + ((5 - base.getDay() + 7) % 7));
-    if ((fri - base) / 864e5 < 3) fri.setDate(fri.getDate() + 7);
-    const day = k => { const x = new Date(fri); x.setDate(fri.getDate() + k); return iso(x); };
-    const D = [day(0), day(1), day(7), day(8)];
-    const id = 'voorbeeld';
-    S.events[id] = normalize(id, {
-      title: 'Voorbeeld: etentje met de vrienden', example: true, sharedAt: Date.now(), createdAt: Date.now(),
-      dates: D.map(d => ({ d, off: false })),
-      people: [
-        { id: 'p1', name: 'Jan', yes: [D[0], D[1], D[3]], maybe: [] },
-        { id: 'p2', name: 'Els', yes: [D[1], D[3]], maybe: [D[0]] },
-        { id: 'p3', name: 'Tom', yes: [D[1], D[2], D[3]], maybe: [] },
-        { id: 'p4', name: 'Sofie', yes: [D[3]], maybe: [D[1]] },
-        { id: 'p5', name: 'Pieter', yes: [D[0], D[1]], maybe: [] },
-      ],
-    });
-    persist(id, 0);
-    openEvent(id);
+  function normEvent(id, d) {
+    d = d || {};
+    const arr = v => Array.isArray(v) ? v.filter(x => typeof x === 'string') : [];
+    const answers = {};
+    if (d.answers && typeof d.answers === 'object') {
+      for (const k of Object.keys(d.answers)) { const a = d.answers[k] || {}; answers[k] = { yes: arr(a.yes), maybe: arr(a.maybe), no: arr(a.no), at: +a.at || 0 }; }
+    }
+    return {
+      id, title: typeof d.title === 'string' ? d.title : '',
+      dates: Array.isArray(d.dates) ? d.dates.filter(x => x && typeof x.d === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(x.d)).map(x => ({ d: x.d, off: !!x.off })) : [],
+      chosen: typeof d.chosen === 'string' ? d.chosen : null,
+      createdBy: typeof d.createdBy === 'string' ? d.createdBy : '',
+      createdAt: +d.createdAt || 0, updatedAt: +d.updatedAt || 0, sharedAt: +d.sharedAt || null,
+      answers,
+    };
+  }
+  function peopleOf(group) {
+    const ps = group && group.people && typeof group.people === 'object' ? group.people : {};
+    return Object.keys(ps).filter(pid => ps[pid] && typeof ps[pid].name === 'string')
+      .map(pid => ({ pid, name: ps[pid].name, app: !!ps[pid].app, at: +ps[pid].at || 0 }))
+      .sort((a, b) => a.at - b.at || a.name.localeCompare(b.name));
   }
 
   /* ---------- helpers ---------- */
-  const cur = () => S.events[S.currentId];
-  function stats(ev) {
+  const people = () => peopleOf(S.g && S.g.group);
+  const curEv = () => S.g && S.route.eid ? S.g.events[S.route.eid] : null;
+  function myPid() {
+    const g = S.g, pid = g && g.member && g.member.pid;
+    return pid && g.group && g.group.people && g.group.people[pid] ? pid : null;
+  }
+  const isOwner = () => !!myPid() && S.g.group.ownerPid === myPid();
+  const canManage = ev => !!ev && (isOwner() || ev.createdBy === myPid());
+  const answerOf = (ev, pid) => ev.answers[pid] || { yes: [], maybe: [], no: [] };
+  const hasAnswer = a => !!a && (a.yes.length + a.maybe.length + a.no.length > 0);
+  function stateOf(a, d) { return a.yes.includes(d) ? 'yes' : a.maybe.includes(d) ? 'maybe' : a.no.includes(d) ? 'no' : 'unset'; }
+  function stats(ev, ps) {
     const opts = optionsOf(ev);
+    const answered = [], pending = [];
+    ps.forEach(p => { const a = ev.answers[p.pid]; if (hasAnswer(a)) answered.push(Object.assign({}, p, a)); else pending.push(p); });
     const rows = opts.map(o => {
-      const yes = ev.people.filter(p => p.yes.includes(o.d));
-      const maybe = ev.people.filter(p => !p.yes.includes(o.d) && p.maybe.includes(o.d));
-      return { ...o, yes, maybe, score: yes.length * 2 + maybe.length };
+      const yes = answered.filter(p => p.yes.includes(o.d));
+      const maybe = answered.filter(p => !p.yes.includes(o.d) && p.maybe.includes(o.d));
+      const no = answered.filter(p => !p.yes.includes(o.d) && !p.maybe.includes(o.d));
+      return Object.assign({}, o, { yes, maybe, no, score: yes.length * 2 + maybe.length });
     });
     const max = Math.max(0, ...rows.map(r => r.score));
     const tops = max > 0 ? rows.filter(r => r.score === max) : [];
-    return { opts, rows, tops, n: ev.people.length };
+    return { opts, rows, tops, n: answered.length, total: ps.length, answered, pending };
   }
   const names = list => list.map(p => p.name).join(', ');
   function plural(n, one, many) { return n + ' ' + (n === 1 ? one : many); }
+  function initials(name) {
+    const w = String(name).replace(/^voorbeeld:\s*/i, '').split(/\s+/).filter(Boolean);
+    return ((w[0] || '?')[0] + (w.length > 1 ? w[w.length - 1][0] : '')).toUpperCase();
+  }
   function dateRange(ev) {
     const o = optionsOf(ev).map(x => x.d).sort();
     if (!o.length) return 'nog geen dagen';
@@ -604,52 +761,97 @@ function parsePaste(text, opts) {
     const t = pd(d);
     return `<div class="sheet ${cls || ''}" aria-hidden="true"><div class="mo">${MO[t.getMonth()]}</div><div class="dn">${t.getDate()}</div><div class="wd">${WDL[t.getDay()]}</div></div>`;
   }
-  function locked(ev) { return !!(ev && (ev.sharedAt || ev.people.length)); }
+  function locked(ev) { return !!(ev && (ev.sharedAt || Object.keys(ev.answers).some(k => hasAnswer(ev.answers[k])))); }
+  function errText(e) {
+    const c = String(e && e.code || '');
+    if (c === 'auth/admin-restricted-operation' || c === 'auth/operation-not-allowed') return 'Aanmelden lukte niet: zet "Anonymous" aan bij Authentication in Firebase (README, stap 2).';
+    if (c.indexOf('api-key') >= 0) return 'De Firebase-gegevens in config.js kloppen niet (README, stap 4).';
+    if (c === 'auth/network-request-failed' || c === 'unavailable' || c === 'deadline-exceeded') return 'Geen verbinding met de database. Controleer je internet en probeer opnieuw.';
+    if (c === 'permission-denied') return 'Dat mag niet: je hebt hier geen toegang (meer) toe.';
+    if (!c && e && /import|fetch|module/i.test(String(e.message))) return 'De app kon de database niet laden. Controleer je internetverbinding.';
+    return 'Er ging iets mis' + (c ? ' (' + c + ')' : '') + '. Probeer het opnieuw.';
+  }
+  function write(p) { p.catch(e => toast(errText(e))); }
 
-  /* ---------- messages ---------- */
+  /* ---------- links and messages ---------- */
+  const baseUrl = () => location.href.split('#')[0].split('?')[0];
+  function groupLink(eid) {
+    const g = S.g;
+    if (g.gid === DEMO) return baseUrl() + '#/g/' + DEMO + (eid ? '/e/' + eid : '');
+    return baseUrl() + '#/j/' + g.gid + '/' + g.group.invite + (eid ? '/' + eid : '');
+  }
+  function groupMsg() {
+    return `Doe mee in onze groep *${S.g.group.name}* op Wie kan wanneer. Daar prikken we samen een datum en zie je meteen wie wanneer kan:\n${groupLink()}`;
+  }
   function inviteMsg(ev) {
     const o = optionsOf(ev);
-    const ex = o.slice(0, Math.min(3, o.length)).map(x => x.n).join(' ');
+    const ex = o.slice(0, Math.min(2, o.length)).map(x => x.n).join(' ');
     const ex2 = (o[1] || o[0] || { n: 1 }).n + '?';
     const head = '*' + (ev.title.trim() || 'Datum prikken') + '*';
-    const how = o.length > 1
-      ? `Welke dagen kan jij? Antwoord met de nummers, bv. ${ex}\nTwijfel je? Zet er een ? achter, bv. ${ex2}`
-      : `Kan jij op deze dag? Antwoord met ${o[0] ? o[0].n : 1} als het lukt, of ${o[0] ? o[0].n : 1}? als je twijfelt.`;
-    return head + '\n' + how + '\n\n' + o.map(x => `${x.n}. ${shortDate(x.d)}`).join('\n');
+    return head + '\nDuid hier aan wanneer je kan:\n' + groupLink(ev.id) + '\n\n' + o.map(x => `${x.n}. ${shortDate(x.d)}`).join('\n')
+      + `\n\nLiever niet via de link? Antwoord dan hier met de nummers, bv. ${ex} (of ${ex2} als je twijfelt).`;
   }
   function statusMsg(ev) {
-    const st = stats(ev);
-    const head = '*' + (ev.title.trim() || 'Datum prikken') + '*: stand van zaken';
-    let best = '';
+    const st = stats(ev, people());
+    const lines = ['*' + (ev.title.trim() || 'Datum prikken') + '*: stand van zaken'];
     if (st.tops.length === 1) {
       const b = st.tops[0];
-      best = `Beste dag tot nu toe: ${shortDate(b.d)} (${b.yes.length} van ${st.n} kunnen${b.maybe.length ? ', ' + b.maybe.length + ' misschien' : ''})`;
+      lines.push(`Beste dag tot nu toe: ${shortDate(b.d)} (${b.yes.length} van ${st.n} kunnen${b.maybe.length ? ', ' + b.maybe.length + ' misschien' : ''})`);
     } else if (st.tops.length > 1) {
-      best = 'Gelijkstand tussen ' + st.tops.map(b => shortDate(b.d)).join(' en ') + ` (${st.tops[0].yes.length} van ${st.n} kunnen)`;
+      lines.push('Gelijkstand tussen ' + st.tops.map(b => shortDate(b.d)).join(' en ') + ` (${st.tops[0].yes.length} van ${st.n} kunnen)`);
     }
-    return [head, best, 'Al geantwoord: ' + names(ev.people), '', 'Nog niet geantwoord? Stuur je nummers:', ...st.opts.map(x => `${x.n}. ${shortDate(x.d)}`)].filter((l, i) => l !== '' || i === 3).join('\n');
+    if (st.answered.length) lines.push('Al geantwoord: ' + names(st.answered));
+    if (st.pending.length) lines.push('Nog niet: ' + names(st.pending));
+    lines.push('', 'Duid aan wanneer je kan: ' + groupLink(ev.id));
+    return lines.join('\n');
   }
   function decisionMsg(ev) {
     const d = ev.chosen; if (!d) return '';
-    const yes = ev.people.filter(p => p.yes.includes(d)), maybe = ev.people.filter(p => !p.yes.includes(d) && p.maybe.includes(d));
+    const st = stats(ev, people()), r = st.rows.find(x => x.d === d);
     const lines = ['*' + (ev.title.trim() || 'Afspraak') + '*', `Het wordt ${longDate(d)}!`];
-    if (yes.length) lines.push('Erbij: ' + names(yes));
-    if (maybe.length) lines.push('Misschien: ' + names(maybe));
+    if (r && r.yes.length) lines.push('Erbij: ' + names(r.yes));
+    if (r && r.maybe.length) lines.push('Misschien: ' + names(r.maybe));
+    lines.push('', 'Alles bekijken: ' + groupLink(ev.id));
     return lines.join('\n');
   }
+  function msgText(key) {
+    const g = S.g; if (!g || !g.group) return '';
+    if (key === 'group') return groupMsg();
+    if (key === 'link') return groupLink();
+    const ev = curEv(); if (!ev) return '';
+    return key === 'invite' ? inviteMsg(ev) : key === 'status' ? statusMsg(ev) : decisionMsg(ev);
+  }
+  const waHref = key => 'https://wa.me/?text=' + encodeURIComponent(msgText(key));
+  function shareButtons(key, small) {
+    const s = small ? ' small' : '';
+    return `<div class="row"><button class="btn primary${s}" data-action="copy" data-msg="${key}">Kopieer</button>${navigator.share ? `<button class="btn${s}" data-action="share" data-msg="${key}">Delen…</button>` : ''}<a class="btn${s}" href="${esc(waHref(key))}" target="_blank" rel="noopener" data-action="wa" data-msg="${key}">Open in WhatsApp</a></div>`;
+  }
 
-  /* ---------- views ---------- */
+  /* ---------- rendering ---------- */
+  // Live updates from others must not interrupt typing: they wait until the field is left.
+  let queued = false, dirty = false;
+  function typing() {
+    const a = document.activeElement;
+    return !!(a && app.contains(a) && (a.tagName === 'TEXTAREA' || (a.tagName === 'INPUT' && a.type === 'text')));
+  }
+  function scheduleRender() {
+    if (queued) return;
+    queued = true;
+    Promise.resolve().then(() => { queued = false; if (typing()) dirty = true; else render(); });
+  }
+  document.addEventListener('click', () => { if (dirty && !typing()) render(); });
+  document.addEventListener('focusout', () => setTimeout(() => { if (dirty && !typing() && !document.querySelector(':active')) render(); }, 250));
+
   function render() {
+    dirty = false;
     const ae = document.activeElement;
     const fid = ae && ae.id && app.contains(ae) ? ae.id : null;
     let sel = null;
-    const typed = fid && ae.classList.contains('nm') ? ae.value : null;
     if (fid) { try { sel = [ae.selectionStart, ae.selectionEnd]; } catch (e) { sel = null; } }
     app.innerHTML = topBar() + banners() + body();
     if (fid) {
       const el = document.getElementById(fid);
       if (el) {
-        if (typed !== null) el.value = typed;
         el.focus({ preventScroll: true });
         if (sel && sel[0] != null && el.setSelectionRange) { try { el.setSelectionRange(sel[0], sel[1]); } catch (e) {} }
       }
@@ -657,64 +859,221 @@ function parsePaste(text, opts) {
   }
   function topBar() {
     const t = new Date();
-    const note = '';
-    return `<header class="top"><button class="brand" data-action="home" aria-label="Naar alle planningen"><span class="sheet-mini" aria-hidden="true"><span>${t.getDate()}</span></span><b>Wie kan wanneer</b></button><span class="spacer"></span>${note}</header>`;
+    return `<header class="top"><a class="brand" href="#/" aria-label="Naar je groepen"><span class="sheet-mini" aria-hidden="true"><span>${t.getDate()}</span></span><b>Wie kan wanneer</b></a><span class="spacer"></span>${S.offline ? '<span class="chip-tag amber">offline</span>' : ''}</header>`;
   }
   function banners() {
-    return S.error ? `<div class="banner" role="alert">${esc(S.error)}</div>` : '';
+    let out = S.error ? `<div class="banner" role="alert">${esc(S.error)}</div>` : '';
+    if (S.offline) out += '<div class="banner">Je bent offline. Wat je aanpast, wordt verstuurd zodra je weer verbinding hebt.</div>';
+    return out;
   }
+  const demoBanner = () => S.g && S.g.gid === DEMO
+    ? `<p class="banner">Dit is een voorbeeld. Probeer gerust alles uit: niets wordt bewaard en niemand anders ziet het.${configured ? ' <a href="#/nieuw">Maak je eigen groep</a>' : ''}</p>` : '';
+  const loadingView = t => `<div class="events" aria-busy="true"><div class="skeleton"></div><div class="skeleton"></div><p class="muted small">${esc(t || 'Laden…')}</p></div>`;
+
   function body() {
-    if (!S.loaded) return `<div class="events" aria-busy="true"><div class="skeleton"></div><div class="skeleton"></div><p class="muted small">Planningen laden…</p></div>`;
-    if (S.view === 'edit') return editView();
-    if (S.view === 'event' && cur()) return eventView();
-    return listView();
+    const r = S.route;
+    if (r.name === 'home') return homeView();
+    if (r.name === 'newgroup') return configured ? newGroupView() : setupView();
+    if (r.name === 'join') return configured ? joinView() : setupView();
+    const gate = groupGate();
+    if (gate) return gate;
+    if (r.name === 'settings') return settingsView();
+    if (r.name === 'new' || r.name === 'edit') return editView();
+    if (r.name === 'event') return eventView();
+    return groupView();
+  }
+  function groupGate() {
+    const r = S.route, g = S.g;
+    if (r.gid !== DEMO && !configured) return setupView();
+    if (!g || g.gid !== r.gid) return loadingView();
+    if (g.error) return g.error.code === 'permission-denied' ? noAccessView() : errorView(g.error);
+    if (g.member === null) return noAccessView();
+    if (g.member === undefined || !g.gotGroup || !g.gotEvents) return loadingView('Groep laden…');
+    if (!g.group) return messageView('Deze groep bestaat niet meer', 'De beheerder heeft de groep verwijderd.');
+    if (!myPid()) return whoView();
+    return '';
+  }
+  function messageView(title, text, extra) {
+    return `<section class="wrap" style="gap:16px"><a class="back" href="#/">‹ Je groepen</a>
+      <div class="card empty">${sheet(null)}<h2>${esc(title)}</h2><p>${text}</p><div class="row" style="justify-content:center">${extra || '<a class="btn" href="#/">Naar je groepen</a>'}</div></div></section>`;
+  }
+  const noAccessView = () => messageView('Geen toegang tot deze groep', 'Je zit niet (meer) in deze groep. Vraag iemand uit de groep om de uitnodigingslink en open die op dit toestel.');
+  const errorView = e => messageView('Laden lukte niet', esc(errText(e)), '<button class="btn primary" data-action="retry">Opnieuw proberen</button>');
+  function setupView() {
+    return messageView('Koppel eerst een database',
+      'Om samen in een groep te zitten, bewaart de app groepen en antwoorden in een gratis Firebase-database. Wie de site beheert, volgt eenmalig de stappen in README.md en vult <b>config.js</b> in.',
+      `<a class="btn" href="#/g/${DEMO}">Bekijk intussen een voorbeeld</a>`);
   }
 
-  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-  const isStandalone = window.navigator.standalone === true || (window.matchMedia && matchMedia('(display-mode: standalone)').matches);
-
-  function listView() {
-    const evs = Object.values(S.events).sort((a, b) => b.updatedAt - a.updatedAt);
+  function homeView() {
+    const gs = Object.keys(S.mine).map(gid => ({ gid, name: (S.mine[gid] && S.mine[gid].name) || 'Groep', seen: +(S.mine[gid] && S.mine[gid].seen) || 0 })).sort((a, b) => b.seen - a.seen);
     const how = `<div class="how">
-      <div class="step"><span class="num">1</span><p><b>Kies de mogelijke dagen</b>Tik ze aan in de kalender. Elke dag krijgt een nummer.</p></div>
-      <div class="step"><span class="num">2</span><p><b>Deel het bericht in de groep</b>Iedereen antwoordt gewoon met de nummers, bv. 1 3 4 of 2?</p></div>
-      <div class="step"><span class="num">3</span><p><b>Plak de antwoorden terug</b>Je ziet meteen welke dag het best past en wie er kan.</p></div>
+      <div class="step"><span class="num">1</span><p><b>Maak een groep</b>Voor je vrienden, familie of ploeg. Je krijgt een uitnodigingslink.</p></div>
+      <div class="step"><span class="num">2</span><p><b>Zet de link in WhatsApp</b>Wie hem opent en een naam invult, zit erin. Niemand heeft een account nodig.</p></div>
+      <div class="step"><span class="num">3</span><p><b>Iedereen duidt zelf aan</b>Je ziet live wie wanneer kan en welke dag het best past.</p></div>
     </div>`;
-    const cards = evs.map(ev => {
-      const st = stats(ev);
-      const status = ev.chosen ? `<span class="chip-tag">Geprikt</span>` : '';
-      const right = ev.chosen
-        ? `Gekozen: ${esc(shortDate(ev.chosen))}`
-        : st.tops.length === 1 ? `Beste: ${esc(shortDate(st.tops[0].d))} (${st.tops[0].yes.length}/${st.n})`
-        : st.tops.length > 1 ? `Gelijkstand: ${st.tops.length} dagen` : 'Nog geen antwoorden';
-      return `<button class="ev" data-action="open" data-id="${esc(ev.id)}">
-        ${sheet(ev.chosen || (st.tops.length === 1 ? st.tops[0].d : null))}
-        <span style="min-width:0"><span class="t">${esc(ev.title || 'Naamloze planning')}</span>${ev.example ? '<span class="chip-tag amber">Voorbeeld</span>' : ''}${status}
-          <span class="m" style="display:block">${esc(dateRange(ev))} · ${plural(st.opts.length, 'dag', 'dagen')} · ${plural(st.n, 'antwoord', 'antwoorden')}</span>
-          <span class="m" style="display:block">${right}</span></span>
-        <span class="go" aria-hidden="true">›</span></button>`;
-    }).join('');
-    const empty = `<div class="card empty">${sheet(null)}<h2>Nog geen planningen</h2>
-      <p>Maak er een voor het volgende etentje, de fietstocht of het weekend weg. Je kiest de dagen, de groep antwoordt met nummers.</p>
-      <div class="row" style="justify-content:center"><button class="btn primary" data-action="new">Nieuwe planning</button><button class="btn" data-action="example">Bekijk een voorbeeld</button></div></div>`;
-    const iosTip = isIOS && !isStandalone
-      ? '<p><b>Op een iPhone of iPad?</b> Zet deze pagina op je beginscherm (Deel-knop, dan Zet op beginscherm). Safari kan bewaarde gegevens van een site wissen als je ze 7 dagen niet opent; vanaf het beginscherm gebeurt dat niet. Let op: het beginscherm-icoon heeft zijn eigen opslag, los van Safari.</p>'
-      : '';
+    const list = gs.map(x => `<a class="ev" href="#/g/${esc(x.gid)}"><span class="gicon" aria-hidden="true">${esc(initials(x.name))}</span><span style="min-width:0"><span class="t">${esc(x.name)}</span></span><span class="go" aria-hidden="true">›</span></a>`).join('');
+    const empty = `<div class="card empty">${sheet(null)}<h2>Nog geen groepen</h2>
+      <p>Maak een groep en stuur de uitnodigingslink in jullie WhatsApp-groep. Kreeg je zelf een link? Open die dan gewoon.</p>
+      <div class="row" style="justify-content:center"><a class="btn primary" href="#/nieuw">Nieuwe groep</a><a class="btn" href="#/g/${DEMO}">Bekijk een voorbeeld</a></div></div>`;
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    const iosTip = isIOS ? '<p><b>Op een iPhone of iPad?</b> Safari kan na 7 dagen zonder bezoek vergeten dat je in een groep zit. Open dan gewoon opnieuw de uitnodigingslink en vul dezelfde naam in.</p>' : '';
     return `<section class="wrap" style="gap:18px">
-      <div class="list-head"><div><p class="eyebrow">Jouw planningen</p><h1>Welke dag past voor iedereen?</h1></div>
-        <button class="btn primary" data-action="new">Nieuwe planning</button></div>
-      ${evs.length ? `<div class="events">${cards}</div>` : empty}
+      <div class="list-head"><div><p class="eyebrow">Jouw groepen</p><h1>Welke dag past voor iedereen?</h1></div>
+        <a class="btn primary" href="#/nieuw">Nieuwe groep</a></div>
+      ${gs.length ? `<div class="events">${list}</div>` : empty}
       <div class="card">${how}</div>
       <footer class="foot">
-        <p>Je planningen staan alleen in deze browser, op dit toestel. Er gaat niets naar een server. Wissel je van toestel of browser, neem dan een back-up mee.</p>
+        <p>Groepen en antwoorden staan in een online database, zodat iedereen in de groep ze ziet. Alleen wie een uitnodigingslink kreeg, kan een groep openen. Er zijn geen accounts, advertenties of tracking.</p>
         ${iosTip}
-        <div class="row"><button class="linkbtn" data-action="backup" ${evs.length ? '' : 'disabled'}>Back-up downloaden</button><button class="linkbtn" data-action="restore">Back-up terugzetten</button></div>
+        ${gs.length ? `<div class="row"><a class="linkbtn" href="#/g/${DEMO}">Bekijk een voorbeeld</a></div>` : ''}
       </footer>
     </section>`;
   }
 
+  function newGroupView() {
+    const f = S.ng;
+    return `<section class="wrap" style="gap:16px">
+      <a class="back" href="#/">‹ Je groepen</a>
+      <h1>Nieuwe groep</h1>
+      <div class="card">
+        <div><label class="lbl" for="ng-name">Naam van de groep</label><input class="input" id="ng-name" type="text" maxlength="60" placeholder="bv. Vrienden van de chiro" value="${esc(f.name)}" autocomplete="off"></div>
+        <div><label class="lbl" for="ng-me">Jouw naam</label><input class="input" id="ng-me" type="text" maxlength="40" placeholder="bv. Aron" value="${esc(f.me)}" autocomplete="off"></div>
+        ${f.err ? `<p class="err" role="alert">${esc(f.err)}</p>` : ''}
+        <div class="row"><button class="btn primary" data-action="create-group" ${f.busy ? 'disabled' : ''}>${f.busy ? 'Even geduld…' : 'Maak de groep'}</button><a class="btn ghost" href="#/">Annuleer</a></div>
+        <p class="muted small">Daarna krijg je een uitnodigingslink voor je WhatsApp-groep. Iedereen met die link kan meedoen en ziet alle planningen en antwoorden.</p>
+      </div>
+    </section>`;
+  }
+
+  function joinView() {
+    const j = S.join;
+    if (!j || j.state === 'checking') return loadingView('Uitnodiging openen…');
+    return `<section class="wrap" style="gap:16px">
+      <div class="card">
+        <div style="display:grid;gap:6px"><p class="eyebrow">Uitnodiging</p><h1>Je bent uitgenodigd</h1>
+          <p class="muted">Iemand nodigde je uit in een groep op Wie kan wanneer. Daar duid je aan wanneer je kan en zie je meteen wanneer de anderen kunnen.</p></div>
+        <div><label class="lbl" for="join-name">Hoe heet je?</label><input class="input" id="join-name" type="text" maxlength="40" placeholder="bv. Sofie" value="${esc(j.name)}" autocomplete="off"></div>
+        ${j.err ? `<p class="err" role="alert">${esc(j.err)}</p>` : ''}
+        <div class="row"><button class="btn primary" data-action="join" ${j.state === 'busy' ? 'disabled' : ''}>${j.state === 'busy' ? 'Even geduld…' : 'Doe mee'}</button></div>
+        <p class="muted small">Je naam en je antwoorden zijn zichtbaar voor iedereen in de groep. Je hebt geen account nodig.</p>
+      </div>
+    </section>`;
+  }
+
+  const avatar = p => `<span class="av${p.app ? '' : ' noapp'}" aria-hidden="true">${esc(initials(p.name))}</span>`;
+  function personChip(p, mp, action) {
+    const inner = `${avatar(p)}${esc(p.name)}${p.pid === mp && nameKey(p.name) !== 'jij' ? ' (jij)' : ''}`;
+    return action
+      ? `<button class="pchip" data-action="${action}" data-pid="${esc(p.pid)}">${inner}</button>`
+      : `<span class="pchip${p.pid === mp ? ' me' : ''}"${p.app ? '' : ' title="Doet mee zonder de app"'}>${inner}</span>`;
+  }
+
+  function whoView() {
+    const g = S.g, ps = people(), w = S.who;
+    const ask = w.ask && ps.find(p => p.pid === w.ask);
+    const inner = ask
+      ? `<p>Er zit al een <b>${esc(ask.name)}</b> in de groep die de app gebruikt. Ben jij dat, op een ander toestel of in een andere browser?</p>
+         <div class="row"><button class="btn primary" data-action="who-yes" ${w.busy ? 'disabled' : ''}>Ja, dat ben ik</button><button class="btn" data-action="who-no">Nee, ik ben iemand anders</button></div>`
+      : `<div><label class="lbl" for="who-name">Hoe heet je?</label><input class="input" id="who-name" type="text" maxlength="40" placeholder="bv. Sofie" value="${esc(w.name)}" autocomplete="off"></div>
+         ${ps.length ? `<div style="display:grid;gap:6px"><p class="muted small">Sta je er al tussen? Tik op je naam.</p><div class="people">${ps.map(p => personChip(p, null, 'who-pick')).join('')}</div></div>` : ''}
+         ${w.err ? `<p class="err" role="alert">${esc(w.err)}</p>` : ''}
+         <div class="row"><button class="btn primary" data-action="who-go" ${w.busy ? 'disabled' : ''}>${w.busy ? 'Even geduld…' : 'Doe mee'}</button></div>`;
+    return `<section class="wrap" style="gap:16px">
+      <a class="back" href="#/">‹ Je groepen</a>
+      <div class="card">
+        <div style="display:grid;gap:6px"><p class="eyebrow">Welkom</p><h1>${esc(g.group.name)}</h1><p class="muted">Iedereen in de groep ziet wie wanneer kan. Kies met welke naam je meedoet.</p></div>
+        ${inner}
+      </div>
+    </section>`;
+  }
+
+  function inviteCard(big) {
+    if (big) {
+      return `<div class="card focus msg-card"><div style="display:grid;gap:4px"><h2>Nodig de groep uit</h2><p class="muted small">Stuur dit bericht in jullie WhatsApp-groep. Wie de link opent en een naam invult, zit erin en ziet alle planningen en antwoorden.</p></div>
+        <pre class="msg" id="msg-group" tabindex="0">${esc(groupMsg())}</pre>${shareButtons('group')}</div>`;
+    }
+    return `<div class="card"><div style="display:grid;gap:4px"><h3>Iemand uitnodigen?</h3><p class="muted small">Stuur de uitnodigingslink door. Wie hem heeft, kan meedoen.</p></div>${shareButtons('group', true)}</div>`;
+  }
+
+  function eventCard(ev, ps, mp) {
+    const st = stats(ev, ps);
+    const mine = hasAnswer(ev.answers[mp]);
+    const tags = (ev.chosen ? '<span class="chip-tag">Geprikt</span>' : '') + (!ev.chosen && !mine ? '<span class="chip-tag amber">Jij nog niet</span>' : '');
+    const right = ev.chosen ? `Het wordt ${esc(longDate(ev.chosen))}`
+      : st.tops.length === 1 ? `Beste dag: ${esc(shortDate(st.tops[0].d))} (${st.tops[0].yes.length} van ${st.n})`
+      : st.tops.length > 1 ? `Gelijkstand tussen ${st.tops.length} dagen`
+      : st.n ? 'Nog geen dag die past' : 'Nog geen antwoorden';
+    return `<a class="ev" href="#/g/${esc(S.g.gid)}/e/${esc(ev.id)}">${sheet(ev.chosen || (st.tops.length === 1 ? st.tops[0].d : null))}
+      <span style="min-width:0"><span class="t">${esc(ev.title || 'Naamloze planning')}</span>${tags}
+        <span class="m" style="display:block">${esc(dateRange(ev))} · ${plural(st.opts.length, 'dag', 'dagen')} · ${st.n} van ${st.total} geantwoord</span>
+        <span class="m" style="display:block">${right}</span></span>
+      <span class="go" aria-hidden="true">›</span></a>`;
+  }
+
+  function groupView() {
+    const g = S.g, gid = esc(g.gid), ps = people(), mp = myPid();
+    const evs = Object.values(g.events).sort((a, b) => (!!a.chosen - !!b.chosen) || b.createdAt - a.createdAt);
+    const fresh = ps.length <= 1;
+    const empty = `<div class="card empty">${sheet(null)}<h2>Nog geen planningen</h2>
+      <p>Maak er een voor het volgende etentje, de fietstocht of het weekend weg. Kies de mogelijke dagen; daarna duidt iedereen zelf aan wat past.</p>
+      <div class="row" style="justify-content:center"><a class="btn primary" href="#/g/${gid}/nieuw">Nieuwe planning</a></div></div>`;
+    return `<section class="wrap" style="gap:18px">
+      <a class="back" href="#/">‹ Je groepen</a>
+      ${demoBanner()}
+      <div class="ev-head"><p class="eyebrow">Groep · ${plural(ps.length, 'lid', 'leden')}</p><h1>${esc(g.group.name)}</h1>
+        <div class="people">${ps.map(p => personChip(p, mp)).join('')}</div></div>
+      ${fresh ? inviteCard(true) : ''}
+      <div class="list-head"><h2>Planningen</h2>${evs.length ? `<a class="btn primary" href="#/g/${gid}/nieuw">Nieuwe planning</a>` : ''}</div>
+      ${evs.length ? `<div class="events">${evs.map(ev => eventCard(ev, ps, mp)).join('')}</div>` : empty}
+      ${fresh ? '' : inviteCard(false)}
+      <footer class="foot"><div class="row"><a class="linkbtn" href="#/g/${gid}/instellingen">Groep en leden beheren</a></div></footer>
+    </section>`;
+  }
+
+  function settingsView() {
+    const g = S.g, gid = esc(g.gid), grp = g.group, ps = people(), mp = myPid(), owner = isOwner(), f = S.set;
+    const meName = f.me != null ? f.me : grp.people[mp].name;
+    const gName = f.name != null ? f.name : grp.name;
+    const confirmBox = (text, yes, label, pid) => `<div class="confirm"><span>${text}</span><button class="btn small danger" data-action="${yes}"${pid ? ` data-pid="${esc(pid)}"` : ''}>${label}</button><button class="btn small ghost" data-action="confirm-no">Toch niet</button></div>`;
+    const rows = ps.map(p => `<div><div class="mrow">${avatar(p)}
+        <span style="min-width:0"><b>${esc(p.name)}</b>${p.pid === mp && nameKey(p.name) !== 'jij' ? ' <span class="chip-tag">jij</span>' : ''}${p.pid === grp.ownerPid ? ' <span class="chip-tag amber">beheerder</span>' : ''}
+          <span class="m">${p.app ? 'Gebruikt de app' : 'Zonder app: anderen vullen de antwoorden in'}</span></span>
+        ${owner && p.pid !== mp ? `<button class="x" data-action="confirm" data-what="rm:${esc(p.pid)}" aria-label="Verwijder ${esc(p.name)}">×</button>` : '<span></span>'}</div>
+        ${S.confirm === 'rm:' + p.pid ? confirmBox(`${esc(p.name)} uit de groep verwijderen? De antwoorden van ${esc(p.name)} verdwijnen ook.`, 'rm-yes', 'Verwijderen', p.pid) : ''}</div>`).join('');
+    const danger = owner
+      ? `<div style="display:grid;gap:4px"><h2>Groep verwijderen</h2><p class="muted small">Alle planningen en antwoorden verdwijnen, voor iedereen.</p></div>
+         ${S.confirm === 'delete-group' ? confirmBox('Deze groep echt verwijderen?', 'delete-group-yes', 'Verwijderen') : '<div class="row"><button class="btn danger" data-action="confirm" data-what="delete-group">Verwijder de groep</button></div>'}`
+      : `<div style="display:grid;gap:4px"><h2>Groep verlaten</h2><p class="muted small">De groep verdwijnt van dit toestel. Je naam en antwoorden blijven staan; de beheerder kan ze verwijderen. Terugkomen kan met de uitnodigingslink.</p></div>
+         ${S.confirm === 'leave' ? confirmBox('Deze groep verlaten?', 'leave-yes', 'Verlaten') : '<div class="row"><button class="btn danger" data-action="confirm" data-what="leave">Verlaat de groep</button></div>'}`;
+    return `<section class="wrap" style="gap:16px">
+      <a class="back" href="#/g/${gid}">‹ ${esc(grp.name)}</a>
+      ${demoBanner()}
+      <h1>Groep beheren</h1>
+      <div class="card">
+        <div><label class="lbl" for="set-me">Jouw naam</label><div class="inrow"><input class="input" id="set-me" type="text" maxlength="40" value="${esc(meName)}" autocomplete="off"><button class="btn" data-action="save-me">Opslaan</button></div></div>
+        ${owner ? `<div><label class="lbl" for="set-name">Naam van de groep</label><div class="inrow"><input class="input" id="set-name" type="text" maxlength="60" value="${esc(gName)}" autocomplete="off"><button class="btn" data-action="save-gname">Opslaan</button></div></div>` : ''}
+      </div>
+      <div class="card"><h2>Leden <span class="muted">(${ps.length})</span></h2><div class="mlist">${rows}</div>
+        ${owner ? '' : '<p class="muted small">Alleen de beheerder kan leden verwijderen.</p>'}</div>
+      <div class="card"><div style="display:grid;gap:4px"><h2>Uitnodigingslink</h2><p class="muted small">Iedereen met deze link kan lid worden en alles in de groep zien.</p></div>
+        <p class="linkbox" id="msg-link">${esc(groupLink())}</p>
+        <div class="row"><button class="btn primary" data-action="copy" data-msg="link">Kopieer de link</button>${owner ? '<button class="btn" data-action="confirm" data-what="invite">Maak een nieuwe link</button>' : ''}</div>
+        ${S.confirm === 'invite' ? confirmBox('De oude link werkt dan niet meer. Wie al lid is, blijft lid.', 'new-invite-yes', 'Nieuwe link maken') : ''}
+      </div>
+      <div class="card">${danger}</div>
+    </section>`;
+  }
+
   function editView() {
+    const g = S.g, ev = curEv();
+    if (S.route.name === 'edit') {
+      if (!ev) return messageView('Deze planning bestaat niet meer', 'Iemand heeft ze verwijderd.', `<a class="btn" href="#/g/${esc(g.gid)}">Naar de groep</a>`);
+      if (!canManage(ev)) return messageView('Alleen voor wie de planning maakte', 'Wie de planning maakte of de beheerder van de groep kan de dagen aanpassen.', `<a class="btn" href="#/g/${esc(g.gid)}/e/${esc(ev.id)}">Terug naar de planning</a>`);
+      if (!S.draft) initEditDraft(ev);
+    }
     const dr = S.draft;
+    const back = dr.eid ? `#/g/${esc(g.gid)}/e/${esc(dr.eid)}` : `#/g/${esc(g.gid)}`;
     const m = S.calMonth;
     const y = m.getFullYear(), mo = m.getMonth();
     const first = new Date(y, mo, 1);
@@ -741,10 +1100,11 @@ function parsePaste(text, opts) {
     const active = dr.dates.filter(x => !x.off).length;
     const monthName = MOL[mo] + (y !== new Date().getFullYear() ? ' ' + y : '');
     return `<section class="wrap" style="gap:16px">
-      <button class="back" data-action="${dr.id ? 'open' : 'home'}" data-id="${esc(dr.id || '')}">‹ ${dr.id ? 'Terug naar de planning' : 'Alle planningen'}</button>
-      <h1>${dr.id ? 'Dagen aanpassen' : 'Nieuwe planning'}</h1>
+      <a class="back" href="${back}">‹ ${dr.eid ? 'Terug naar de planning' : esc(g.group.name)}</a>
+      ${demoBanner()}
+      <h1>${dr.eid ? 'Dagen aanpassen' : 'Nieuwe planning'}</h1>
       <div class="card">
-        <div><label class="lbl" for="title">Waarvoor?</label><input class="input" id="title" maxlength="80" placeholder="bv. Etentje met de vrienden" value="${esc(dr.title)}" autocomplete="off"></div>
+        <div><label class="lbl" for="title">Waarvoor?</label><input class="input" id="title" type="text" maxlength="80" placeholder="bv. Etentje" value="${esc(dr.title)}" autocomplete="off"></div>
         <div class="cal">
           <div class="cal-head"><button class="cal-nav" data-action="month" data-dir="-1" aria-label="Vorige maand" ${m <= nowMonth ? 'disabled' : ''}>‹</button><b>${esc(monthName)}</b><button class="cal-nav" data-action="month" data-dir="1" aria-label="Volgende maand">›</button></div>
           <div class="cal-grid">${cells}</div>
@@ -757,33 +1117,32 @@ function parsePaste(text, opts) {
         <div style="display:grid;gap:8px">
           <h3>Gekozen dagen <span class="muted">(${active})</span></h3>
           ${dr.dates.length ? `<div class="picked">${picks}</div>` : '<p class="muted small">Tik hierboven de dagen aan die voor jou kunnen.</p>'}
-          ${dr.locked ? '<p class="muted small">Het bericht is al gedeeld, dus de nummers liggen vast. Nieuwe dagen krijgen het volgende nummer; een geschrapte dag houdt zijn nummer.</p>' : ''}
+          ${dr.locked ? '<p class="muted small">Er is al geantwoord of het bericht is gedeeld, dus de nummers liggen vast. Nieuwe dagen krijgen het volgende nummer; een geschrapte dag houdt zijn nummer.</p>' : ''}
         </div>
         ${S.draftErr ? `<p class="err" role="alert">${esc(S.draftErr)}</p>` : ''}
-        <div class="row"><button class="btn primary" data-action="save-draft">${dr.id ? 'Opslaan' : 'Maak het bericht'}</button><button class="btn ghost" data-action="${dr.id ? 'open' : 'home'}" data-id="${esc(dr.id || '')}">Annuleer</button></div>
+        <div class="row"><button class="btn primary" data-action="save-draft">${dr.eid ? 'Opslaan' : 'Maak de planning'}</button><a class="btn ghost" href="${back}">Annuleer</a></div>
       </div>
     </section>`;
   }
 
   function eventView() {
-    const ev = cur();
-    const st = stats(ev);
-    const tabs = [['result', 'Resultaat'], ['answers', 'Antwoorden'], ['msgs', 'Berichten']];
-    const tabHtml = tabs.map(([k, l]) => `<button class="tab" role="tab" id="tab-${k}" aria-selected="${S.tab === k}" data-action="tab" data-tab="${k}">${l}${k === 'result' ? `<span class="cnt">${st.n}</span>` : ''}</button>`).join('');
-    let content = '';
-    if (S.tab === 'result') content = resultTab(ev, st);
-    else if (S.tab === 'answers') content = answersTab(ev, st);
-    else content = msgsTab(ev, st);
-    const del = S.confirmDelete
-      ? `<div class="confirm"><span>Deze planning en alle antwoorden verwijderen?</span><button class="btn small danger" data-action="delete-yes">Verwijderen</button><button class="btn small ghost" data-action="delete-no">Toch niet</button></div>`
+    const g = S.g, gid = esc(g.gid), ev = curEv();
+    if (!ev) return messageView('Deze planning bestaat niet meer', 'Iemand heeft ze verwijderd.', `<a class="btn" href="#/g/${gid}">Naar de groep</a>`);
+    const ps = people(), st = stats(ev, ps), mp = myPid();
+    const tabs = [['overview', 'Overzicht'], ['share', 'Delen'], ['others', 'Voor anderen']];
+    const tabHtml = tabs.map(([k, l]) => `<button class="tab" role="tab" id="tab-${k}" aria-selected="${S.tab === k}" data-action="tab" data-tab="${k}">${l}${k === 'overview' ? `<span class="cnt">${st.n}/${st.total}</span>` : ''}</button>`).join('');
+    const content = S.tab === 'share' ? shareTab(ev, st) : S.tab === 'others' ? othersTab(ev, st) : overviewTab(ev, st);
+    const creator = ps.find(p => p.pid === ev.createdBy);
+    const del = S.confirm === 'delete-event'
+      ? `<div class="confirm"><span>Deze planning en alle antwoorden verwijderen?</span><button class="btn small danger" data-action="delete-event-yes">Verwijderen</button><button class="btn small ghost" data-action="confirm-no">Toch niet</button></div>`
       : '';
     return `<section class="wrap" style="gap:16px">
-      <button class="back" data-action="home">‹ Alle planningen</button>
+      <a class="back" href="#/g/${gid}">‹ ${esc(g.group.name)}</a>
+      ${demoBanner()}
       <div class="ev-head">
-        ${ev.example ? '<p class="banner">Dit is een voorbeeld zodat je ziet hoe het werkt. Verwijder het gerust als je zelf een planning maakt.</p>' : ''}
         <h1>${esc(ev.title || 'Naamloze planning')}</h1>
-        <p class="meta">${esc(dateRange(ev))} · ${plural(st.opts.length, 'dag', 'dagen')} · ${plural(st.n, 'antwoord', 'antwoorden')}</p>
-        ${S.readOnly ? '' : `<div class="row"><button class="btn small" data-action="edit">Dagen of titel aanpassen</button><button class="btn small ghost danger" data-action="delete">Verwijderen</button></div>`}
+        <p class="meta">${esc(dateRange(ev))} · ${plural(st.opts.length, 'dag', 'dagen')}${creator ? ' · gemaakt door ' + esc(creator.pid === mp ? 'jou' : creator.name) : ''}</p>
+        ${canManage(ev) ? `<div class="row"><a class="btn small" href="#/g/${gid}/e/${esc(ev.id)}/aanpassen">Dagen of titel aanpassen</a><button class="btn small ghost danger" data-action="confirm" data-what="delete-event">Verwijderen</button></div>` : ''}
         ${del}
       </div>
       <div class="tabs" role="tablist" aria-label="Onderdelen">${tabHtml}</div>
@@ -791,29 +1150,48 @@ function parsePaste(text, opts) {
     </section>`;
   }
 
-  function resultTab(ev, st) {
-    if (!st.n) {
-      return `<div class="card empty">${sheet(null, 'big')}<h2>Nog geen antwoorden</h2><p>Deel het bericht in de groep. Komen de antwoorden binnen, plak ze dan bij <b>Antwoorden toevoegen</b>.</p><div class="row" style="justify-content:center"><button class="btn primary" data-action="tab" data-tab="msgs">Naar het bericht</button><button class="btn" data-action="tab" data-tab="answers">Antwoorden toevoegen</button></div></div>`;
-    }
-    // headline
-    let head;
+  function myCard(ev, st, mine) {
+    const a = answerOf(ev, myPid());
+    const rows = st.opts.map(o => {
+      const s = stateOf(a, o.d), t = pd(o.d);
+      const b = (v, l) => `<button id="ans-${o.d}-${v}" data-action="ans" data-d="${o.d}" data-v="${v}" aria-pressed="${s === v}">${l}</button>`;
+      return `<div class="av-row${ev.chosen === o.d ? ' chosen' : ''}"><span class="av-d"><span class="av-n" title="Nummer in het bericht">${o.n}</span><span>${WD[t.getDay()]}<span class="dnum"> ${t.getDate()} </span>${MO[t.getMonth()]}${yearSuffix(t)}</span>${ev.chosen === o.d ? '<span class="chip-tag">Geprikt</span>' : ''}</span>
+        <div class="seg3" role="group" aria-label="${esc(longDate(o.d))}">${b('yes', 'Kan')}${b('maybe', 'Misschien')}${b('no', 'Niet')}</div></div>`;
+    }).join('');
+    const open = st.opts.filter(o => stateOf(a, o.d) === 'unset').length;
+    const sub = !mine ? 'Duid per dag aan of je kan. Elke keuze wordt meteen bewaard en is zichtbaar voor de groep.'
+      : open ? `Bewaard. Nog ${plural(open, 'dag', 'dagen')} niet aangeduid; die tellen als "kan niet".`
+      : 'Bewaard. Iedereen in de groep ziet je antwoord. Je kan het altijd nog aanpassen.';
+    return `<div class="card${mine ? '' : ' focus'}" id="mine"><div style="display:grid;gap:4px"><h2>Wanneer kan jij?</h2><p class="muted small">${sub}</p></div>
+      <div class="avail">${rows}</div>
+      <div class="row"><button class="linkbtn" data-action="ans-none">Ik kan op geen enkele dag</button></div></div>`;
+  }
+
+  function headline(ev, st) {
+    const manage = canManage(ev);
     if (ev.chosen) {
       const r = st.rows.find(x => x.d === ev.chosen);
-      head = `<div class="card best">${sheet(ev.chosen, 'big')}<div class="txt"><p class="eyebrow">Geprikt</p><p class="big"><span class="hl">${esc(longDate(ev.chosen))}</span></p>
+      return `<div class="card best">${sheet(ev.chosen, 'big')}<div class="txt"><p class="eyebrow">Geprikt</p><p class="big"><span class="hl">${esc(longDate(ev.chosen))}</span></p>
         <p class="muted">${r ? `${r.yes.length} van ${st.n} kunnen${r.maybe.length ? ', ' + r.maybe.length + ' misschien' : ''}` : 'Deze dag staat niet meer in de lijst.'}</p>
-        <div class="row">${S.readOnly ? '' : `<button class="btn primary" data-action="copy" data-msg="decision">Kopieer de aankondiging</button><button class="btn ghost" data-action="unchoose">Andere dag kiezen</button>`}</div></div></div>`;
-    } else if (st.tops.length === 1) {
-      const b = st.tops[0];
-      head = `<div class="card best">${sheet(b.d, 'big')}<div class="txt"><p class="eyebrow">Beste dag tot nu toe</p><p class="big"><span class="hl">${esc(longDate(b.d))}</span></p>
-        <p class="muted">${b.yes.length} van ${st.n} kunnen${b.maybe.length ? ', ' + b.maybe.length + ' misschien' : ''}${b.yes.length === st.n ? '. Iedereen kan!' : b.yes.length + b.maybe.length === st.n ? '. Niemand zegt nee.' : '. Kan niet: ' + esc(names(ev.people.filter(p => !b.yes.includes(p) && !b.maybe.includes(p))))}</p>
-        ${S.readOnly ? '' : `<div class="row"><button class="btn primary" data-action="choose" data-d="${b.d}">Prik deze dag</button></div>`}</div></div>`;
-    } else if (st.tops.length > 1) {
-      head = `<div class="card best">${sheet(null, 'big')}<div class="txt"><p class="eyebrow">Gelijkstand</p><p class="big">${st.tops.map(b => `<span class="hl">${esc(shortDate(b.d))}</span>`).join(' of ')}</p>
-        <p class="muted">Telkens ${st.tops[0].yes.length} van ${st.n} kunnen. Kies er zelf een of wacht op meer antwoorden.</p>
-        ${S.readOnly ? '' : `<div class="row">${st.tops.map(b => `<button class="btn" data-action="choose" data-d="${b.d}">Prik ${esc(shortDate(b.d))}</button>`).join('')}</div>`}</div></div>`;
-    } else {
-      head = `<div class="card best">${sheet(null, 'big')}<div class="txt"><p class="eyebrow">Geen overlap</p><p class="big">Nog geen enkele dag past</p><p class="muted">Niemand kan op de gekozen dagen. Voeg extra dagen toe en deel het bericht opnieuw.</p></div></div>`;
+        <div class="row"><button class="btn primary" data-action="copy" data-msg="decision">Kopieer de aankondiging</button>${manage ? '<button class="btn ghost" data-action="unchoose">Andere dag kiezen</button>' : ''}</div></div></div>`;
     }
+    const who = manage ? '' : '<p class="muted small">Wie de planning maakte, prikt de definitieve dag.</p>';
+    if (st.tops.length === 1) {
+      const b = st.tops[0];
+      const tail = b.yes.length === st.n ? '. Iedereen kan!' : b.no.length ? '. Kan niet: ' + esc(names(b.no)) : '. Niemand zegt nee.';
+      return `<div class="card best">${sheet(b.d, 'big')}<div class="txt"><p class="eyebrow">Beste dag tot nu toe</p><p class="big"><span class="hl">${esc(longDate(b.d))}</span></p>
+        <p class="muted">${b.yes.length} van ${st.n} kunnen${b.maybe.length ? ', ' + b.maybe.length + ' misschien' : ''}${tail}</p>
+        ${manage ? `<div class="row"><button class="btn primary" data-action="choose" data-d="${b.d}">Prik deze dag</button></div>` : who}</div></div>`;
+    }
+    if (st.tops.length > 1) {
+      return `<div class="card best">${sheet(null, 'big')}<div class="txt"><p class="eyebrow">Gelijkstand</p><p class="big">${st.tops.map(b => `<span class="hl">${esc(shortDate(b.d))}</span>`).join(' of ')}</p>
+        <p class="muted">Telkens ${st.tops[0].yes.length} van ${st.n} kunnen. Kies er zelf een of wacht op meer antwoorden.</p>
+        ${manage ? `<div class="row">${st.tops.map(b => `<button class="btn" data-action="choose" data-d="${b.d}">Prik ${esc(shortDate(b.d))}</button>`).join('')}</div>` : who}</div></div>`;
+    }
+    return `<div class="card best">${sheet(null, 'big')}<div class="txt"><p class="eyebrow">Geen overlap</p><p class="big">Nog geen enkele dag past</p><p class="muted">Niemand kan op de gekozen dagen.${manage ? ' Voeg extra dagen toe en laat het de groep weten.' : ''}</p></div></div>`;
+  }
+
+  function rankCard(ev, st) {
     const topSet = new Set(st.tops.map(t => t.d));
     const rows = st.rows.slice();
     if (S.sortMode === 'best') rows.sort((a, b) => b.score - a.score || a.d.localeCompare(b.d));
@@ -821,38 +1199,68 @@ function parsePaste(text, opts) {
     const n = Math.max(1, st.n);
     const rank = rows.map(r => {
       const t = pd(r.d);
-      const noList = ev.people.filter(p => !r.yes.includes(p) && !r.maybe.includes(p));
       return `<div class="rank-row ${topSet.has(r.d) ? 'top' : ''}">
         <span class="n" title="Nummer in het bericht">${r.n}</span>
-        <span class="dl">${WD[t.getDay()]}<span class="dnum">${t.getDate()}</span>${MO[t.getMonth()]}${ev.chosen === r.d ? ' <span class="chip-tag">Geprikt</span>' : ''}</span>
+        <span class="dl">${WD[t.getDay()]}<span class="dnum">${t.getDate()}</span>${MO[t.getMonth()]}</span>
         <div style="min-width:0"><div class="bar" role="img" aria-label="${r.yes.length} kunnen, ${r.maybe.length} misschien, van ${st.n}"><i class="y" style="width:${r.yes.length / n * 100}%"></i><i class="m" style="width:${r.maybe.length / n * 100}%"></i></div>
-          <div class="who">${r.yes.length ? esc(names(r.yes)) : '<span style="color:var(--ink-3)">Niemand zeker</span>'}${r.maybe.length ? ` <span class="mb">· misschien ${esc(names(r.maybe))}</span>` : ''}${noList.length && noList.length <= 4 ? ` <span style="color:var(--ink-3)">· niet ${esc(names(noList))}</span>` : ''}</div></div>
+          <div class="who">${ev.chosen === r.d ? '<span class="chip-tag" style="margin:0 6px 0 0">Geprikt</span>' : ''}${r.yes.length ? esc(names(r.yes)) : '<span style="color:var(--ink-3)">Niemand zeker</span>'}${r.maybe.length ? ` <span class="mb">· misschien ${esc(names(r.maybe))}</span>` : ''}${r.no.length && r.no.length <= 4 ? ` <span style="color:var(--ink-3)">· niet ${esc(names(r.no))}</span>` : ''}</div></div>
         <span class="score">${r.yes.length}<small>/${st.n}</small>${r.maybe.length ? `<span class="q">+${r.maybe.length} misschien</span>` : ''}</span>
       </div>`;
     }).join('');
-
-    const ro = S.readOnly ? 'disabled' : '';
-    const head2 = st.opts.map(o => { const t = pd(o.d); return `<th class="${topSet.has(o.d) ? 'top-col' : ''}" scope="col"><span class="n">${o.n}</span>${WD[t.getDay()]} ${t.getDate()}/${t.getMonth() + 1}</th>`; }).join('');
-    const body = ev.people.map(p => `<tr><th class="name" scope="row"><input class="nm" id="nm-${esc(p.id)}" data-pid="${esc(p.id)}" value="${esc(p.name)}" aria-label="Naam" ${ro}></th>${st.opts.map(o => {
-      const s = p.yes.includes(o.d) ? 'yes' : p.maybe.includes(o.d) ? 'maybe' : 'no';
-      const txt = s === 'yes' ? '✓' : s === 'maybe' ? '?' : '–';
-      const lab = `${p.name}, ${shortDate(o.d)}: ${s === 'yes' ? 'kan' : s === 'maybe' ? 'misschien' : 'kan niet'}`;
-      return `<td><button class="cell ${s}" data-action="cell" data-pid="${esc(p.id)}" data-d="${o.d}" aria-label="${esc(lab)}" ${ro}>${txt}</button></td>`;
-    }).join('')}<td>${S.readOnly ? '' : `<button class="x" data-action="remove-person" data-pid="${esc(p.id)}" aria-label="Verwijder ${esc(p.name)}">×</button>`}</td></tr>`).join('');
-    const foot = st.rows.map(r => `<td>${r.yes.length}${r.maybe.length ? `<span style="font-size:12px;color:var(--ink-3)">+${r.maybe.length}</span>` : ''}</td>`).join('');
-
-    return `${head}
-      <div class="card">
+    return `<div class="card">
         <div class="row" style="justify-content:space-between"><h2>Alle dagen</h2>
           <div class="seg" role="group" aria-label="Sorteren"><button data-action="sort" data-s="best" aria-pressed="${S.sortMode === 'best'}">Beste eerst</button><button data-action="sort" data-s="date" aria-pressed="${S.sortMode === 'date'}">Op datum</button></div></div>
         <div class="rank">${rank}</div>
         <div class="legend"><span><i class="y"></i>kan</span><span><i class="m"></i>misschien</span><span>Nummer links = nummer in het bericht</span></div>
-      </div>
-      <div class="card">
-        <div><h2>Per persoon</h2><p class="muted small">${S.readOnly ? 'Overzicht van alle antwoorden.' : 'Tik op een vakje om te wisselen tussen kan, misschien en kan niet. Tik op een naam om die aan te passen.'}</p></div>
-        <div class="tablewrap"><table class="grid"><thead><tr><th class="name" scope="col">Naam</th>${head2}<th><span class="sr" style="position:absolute;left:-9999px">Acties</span></th></tr></thead>
-        <tbody>${body}</tbody><tfoot><tr><th class="name">Kunnen</th>${foot}<td></td></tr></tfoot></table></div>
       </div>`;
+  }
+
+  function matrixCard(ev, st) {
+    const mp = myPid(), topSet = new Set(st.tops.map(t => t.d));
+    const head = st.opts.map(o => { const t = pd(o.d); return `<th class="${topSet.has(o.d) ? 'top-col' : ''}" scope="col"><span class="n">${o.n}</span>${WD[t.getDay()]} ${t.getDate()}/${t.getMonth() + 1}</th>`; }).join('');
+    const rows = st.answered.map(p => {
+      const editable = p.pid === mp || !p.app;
+      return `<tr class="${p.pid === mp ? 'me' : ''}"><th class="name" scope="row">${esc(p.name)}${p.pid === mp && nameKey(p.name) !== 'jij' ? '<span class="chip-tag">jij</span>' : ''}${p.app ? '' : '<span class="noapp-tag" title="Iemand anders vulde dit in">via chat</span>'}</th>${st.opts.map(o => {
+        const s = stateOf(p, o.d);
+        const txt = s === 'yes' ? '✓' : s === 'maybe' ? '?' : '–';
+        const lab = `${p.name}, ${shortDate(o.d)}: ${s === 'yes' ? 'kan' : s === 'maybe' ? 'misschien' : 'kan niet'}`;
+        return `<td><button class="cell ${s}" id="c-${esc(p.pid)}-${o.d}" data-action="cell" data-pid="${esc(p.pid)}" data-d="${o.d}" aria-label="${esc(lab)}" ${editable ? '' : 'disabled'}>${txt}</button></td>`;
+      }).join('')}</tr>`;
+    }).join('');
+    const foot = st.rows.map(r => `<td>${r.yes.length}${r.maybe.length ? `<span style="font-size:12px;color:var(--ink-3)">+${r.maybe.length}</span>` : ''}</td>`).join('');
+    return `<div class="card">
+        <div><h2>Per persoon</h2><p class="muted small">Je eigen rij kan je hier ook aanpassen: tik op een vakje om te wisselen tussen kan, misschien en kan niet. Rijen met "via chat" vulde iemand anders in; die kan iedereen aanpassen.</p></div>
+        <div class="tablewrap"><table class="grid"><thead><tr><th class="name" scope="col">Naam</th>${head}</tr></thead>
+        <tbody>${rows}</tbody><tfoot><tr><th class="name">Kunnen</th>${foot}</tr></tfoot></table></div>
+      </div>`;
+  }
+
+  function overviewTab(ev, st) {
+    const mp = myPid(), mine = hasAnswer(ev.answers[mp]);
+    // Until someone else answers, the group probably does not know about this planning yet.
+    const nudge = canManage(ev) && !ev.sharedAt && !ev.chosen && !st.answered.some(p => p.pid !== mp)
+      ? `<div class="card"><div style="display:grid;gap:4px"><h2>Laat het de groep weten</h2><p class="muted small">De anderen zien deze planning in de app, maar krijgen geen melding. Stuur even een bericht in jullie WhatsApp-groep.</p></div>${shareButtons('invite')}</div>`
+      : '';
+    const others = st.pending.filter(p => p.pid !== mp);
+    const pend = others.length
+      ? `<div class="card"><p><b>Nog niet geantwoord</b> <span class="muted">(${others.length})</span><br><span class="muted">${esc(names(others))}</span></p>
+          <div class="row"><button class="btn small" data-action="copy" data-msg="status">Kopieer een herinnering</button><a class="btn small" href="${esc(waHref('status'))}" target="_blank" rel="noopener">Herinner via WhatsApp</a></div></div>`
+      : '';
+    const my = myCard(ev, st, mine);
+    if (!st.n) return nudge + my + pend;
+    const head = headline(ev, st);
+    return (mine ? head + nudge + my : nudge + my + head) + pend + rankCard(ev, st) + matrixCard(ev, st);
+  }
+
+  function shareTab(ev, st) {
+    const card = (key, title, sub) => `<div class="card msg-card">
+      <div style="display:grid;gap:4px"><h2>${title}</h2>${sub ? `<p class="muted small">${sub}</p>` : ''}</div>
+      <pre class="msg" id="msg-${key}" tabindex="0">${esc(msgText(key))}</pre>${shareButtons(key)}</div>`;
+    let out = card('invite', 'Bericht voor de groep', 'Met de link duidt iedereen zelf aan wat past. Wie liever in de chat antwoordt, stuurt de nummers; zet die dan bij <b>Voor anderen</b>.');
+    if (st.n) out += card('status', 'Herinnering met stand van zaken', 'Handig om nog wat antwoorden los te krijgen.');
+    if (ev.chosen) out += card('decision', 'Aankondiging', 'De knoop is doorgehakt.');
+    else if (st.n) out += `<div class="card"><p class="muted small">Is er een dag geprikt, dan staat hier ook een kant-en-klare aankondiging.</p></div>`;
+    return out;
   }
 
   function chipRow(opts, yes, maybe, action, extra) {
@@ -863,9 +1271,10 @@ function parsePaste(text, opts) {
     }).join('')}</div>`;
   }
 
-  function answersTab(ev, st) {
-    if (S.readOnly) return `<div class="card"><p class="muted">Alleen de eigenaar kan antwoorden toevoegen.</p></div>`;
-    const existing = new Set(ev.people.map(p => nameKey(p.name)));
+  function othersTab(ev, st) {
+    const ps = people();
+    const answeredKeys = new Set(st.answered.map(p => nameKey(p.name)));
+    const known = new Map(ps.map(p => [nameKey(p.name), p]));
     let pv = '';
     if (S.preview) {
       const rows = S.preview.rows;
@@ -873,14 +1282,18 @@ function parsePaste(text, opts) {
       pv = `<div class="pv">
         <h3>Gevonden: ${plural(rows.length, 'antwoord', 'antwoorden')}</h3>
         ${rows.map((r, i) => {
-          const notes = [];
+          const notes = [], k = nameKey(r.name), p = known.get(k);
           if (!r.name.trim()) notes.push('Vul een naam in.');
-          else if (existing.has(nameKey(r.name))) notes.push('Vervangt het eerdere antwoord van ' + r.name + '.');
+          else {
+            if (p && p.app) notes.push(p.name + ' gebruikt zelf de app.');
+            if (answeredKeys.has(k)) notes.push('Vervangt het eerdere antwoord van ' + r.name + '.');
+            else if (!p) notes.push('Nieuw in de groep, zonder app.');
+          }
           if (!r.yes.length && !r.maybe.length) notes.push('Kan op geen enkele dag.');
           if (r.ignored && r.ignored.length) notes.push('Genegeerd: ' + r.ignored.join(', ') + ' (geen nummer uit het bericht).');
           return `<div class="pv-row ${r.include ? '' : 'skip'}">
             <input type="checkbox" id="pv-inc-${i}" data-action="pv-inc" data-i="${i}" ${r.include ? 'checked' : ''} aria-label="Neem dit antwoord mee">
-            <input class="input" style="min-height:38px;padding:6px 10px" id="pv-name-${i}" data-i="${i}" value="${esc(r.name)}" placeholder="Naam" aria-label="Naam">
+            <input class="input" type="text" style="min-height:38px;padding:6px 10px" id="pv-name-${i}" data-i="${i}" value="${esc(r.name)}" placeholder="Naam" aria-label="Naam">
             ${chipRow(st.opts, r.yes, r.maybe, 'pv-chip', `data-i="${i}"`)}
             <div class="raw">“${esc(r.raw.join(' / '))}”</div>
             ${notes.length ? `<div class="note">${esc(notes.join(' '))}</div>` : ''}
@@ -893,9 +1306,10 @@ function parsePaste(text, opts) {
       pv = `<p class="err">Er stonden geen nummers of dagen in die tekst. Controleer of je de antwoorden kopieerde, of voeg ze hieronder één voor één toe.</p>`;
     }
     const q = S.quick;
+    const noApp = ps.filter(p => !p.app);
     return `<div class="card">
-        <div style="display:grid;gap:4px"><h2>Plak de antwoorden uit de groep</h2>
-        <p class="muted small">Selecteer in WhatsApp de berichten met antwoorden, kopieer ze en plak ze hieronder. Op een computer (WhatsApp Web of de app) gaat dat het vlotst. Namen en nummers worden er automatisch uitgehaald; je kijkt alles na voor je het toevoegt. Antwoordt iemand opnieuw, dan vervangt dat zijn vorige antwoord.</p></div>
+        <div style="display:grid;gap:4px"><h2>Antwoorden uit de chat</h2>
+        <p class="muted small">Antwoordde iemand in WhatsApp in plaats van via de link? Selecteer die berichten, kopieer ze en plak ze hieronder. Namen en nummers worden er automatisch uitgehaald; je kijkt alles na voor je het toevoegt. Wie nog niet in de groep zit, komt erbij als lid zonder app.</p></div>
         <textarea class="input" id="paste" placeholder="[14:03, 26/10/2026] Jan: 1 3 4&#10;[14:05, 26/10/2026] Els: alles behalve 2&#10;[14:06, 26/10/2026] Tom: 2 en 3?">${esc(S.paste)}</textarea>
         <div class="row"><button class="btn primary" data-action="parse">Lees de antwoorden</button><span class="muted small">Begrijpt ook: alles, alles behalve 2, 1-3, zaterdag, 14/11, 2 misschien</span></div>
         ${pv}
@@ -903,61 +1317,39 @@ function parsePaste(text, opts) {
       <div class="card">
         <div style="display:grid;gap:4px"><h2>Eén antwoord toevoegen</h2><p class="muted small">Voor wie privé of mondeling antwoordde. Typ de nummers of tik de dagen aan.</p></div>
         <div class="quickadd">
-          <div><label class="lbl" for="q-name">Naam</label><input class="input" id="q-name" value="${esc(q.name)}" placeholder="bv. Sofie" autocomplete="off"></div>
-          <div><label class="lbl" for="q-text">Antwoord</label><input class="input" id="q-text" value="${esc(q.text)}" placeholder="bv. 1 3 4?" autocomplete="off"></div>
+          <div><label class="lbl" for="q-name">Naam</label><input class="input" id="q-name" type="text" value="${esc(q.name)}" placeholder="bv. Sofie" autocomplete="off" list="people-list"></div>
+          <div><label class="lbl" for="q-text">Antwoord</label><input class="input" id="q-text" type="text" value="${esc(q.text)}" placeholder="bv. 1 3 4?" autocomplete="off"></div>
         </div>
+        <datalist id="people-list">${noApp.map(p => `<option value="${esc(p.name)}"></option>`).join('')}</datalist>
         <div id="q-chips">${chipRow(st.opts, q.yes, q.maybe, 'q-chip')}</div>
         ${S.quickErr ? `<p class="err" role="alert">${esc(S.quickErr)}</p>` : ''}
         <div class="row"><button class="btn primary" data-action="quick-add">Voeg toe</button></div>
       </div>`;
   }
 
-  function msgsTab(ev, st) {
-    const card = (key, title, sub, text, wa) => `<div class="card msg-card">
-      <div style="display:grid;gap:4px"><h2>${title}</h2>${sub ? `<p class="muted small">${sub}</p>` : ''}</div>
-      <pre class="msg" id="msg-${key}" tabindex="0">${esc(text)}</pre>
-      <div class="row"><button class="btn primary" data-action="copy" data-msg="${key}">Kopieer</button>
-      ${navigator.share ? `<button class="btn" data-action="share" data-msg="${key}">Delen…</button>` : ''}
-      ${wa ? `<a class="btn" href="https://wa.me/?text=${encodeURIComponent(text)}" target="_blank" rel="noopener" data-action="wa" data-msg="${key}">Open in WhatsApp</a>` : ''}</div>
-    </div>`;
-    let out = card('invite', 'Uitnodiging', 'Plak dit in de groep. De nummers horen bij de dagen; iedereen antwoordt gewoon met nummers.', inviteMsg(ev), true);
-    if (st.n) out += card('status', 'Herinnering met stand van zaken', 'Handig om nog wat antwoorden los te krijgen.', statusMsg(ev), true);
-    if (ev.chosen) out += card('decision', 'Aankondiging', 'De knoop is doorgehakt.', decisionMsg(ev), true);
-    else if (st.n) out += `<div class="card"><p class="muted small">Prik je in <b>Resultaat</b> een dag, dan staat hier ook een kant-en-klare aankondiging.</p></div>`;
-    return out;
-  }
-
   /* ---------- actions ---------- */
   let toastTimer = null;
-  function toast(text, undo) {
-    toastEl.innerHTML = '';
-    const s = document.createElement('span'); s.textContent = text; toastEl.appendChild(s);
-    if (undo) { const b = document.createElement('button'); b.textContent = 'Ongedaan maken'; b.addEventListener('click', () => { undo(); hideToast(); }); toastEl.appendChild(b); }
+  function toast(text) {
+    toastEl.textContent = text;
     toastEl.hidden = false;
-    clearTimeout(toastTimer); toastTimer = setTimeout(hideToast, undo ? 6000 : 2600);
+    clearTimeout(toastTimer); toastTimer = setTimeout(() => { toastEl.hidden = true; }, 2800);
   }
-  function hideToast() { toastEl.hidden = true; }
-
   function selectNode(el) {
     try { const r = document.createRange(); r.selectNodeContents(el); const s = getSelection(); s.removeAllRanges(); s.addRange(r); } catch (e) {}
   }
-  function msgText(key) {
-    const ev = cur(); if (!ev) return '';
-    return key === 'invite' ? inviteMsg(ev) : key === 'status' ? statusMsg(ev) : decisionMsg(ev);
-  }
   function markShared(key) {
-    const ev = cur();
-    if (key === 'invite' && ev && !ev.sharedAt && !S.readOnly) { ev.sharedAt = Date.now(); persist(ev.id); }
+    const ev = curEv(), g = S.g;
+    if ((key === 'invite' || key === 'status') && ev && !ev.sharedAt) write(api(g.gid).updateEvent(g.gid, ev.id, { sharedAt: Date.now() }));
   }
   function copy(key) {
     const text = msgText(key);
-    const done = () => { markShared(key); toast('Gekopieerd. Plak het in de groep.'); };
+    const done = () => { markShared(key); toast(key === 'link' ? 'Link gekopieerd.' : 'Gekopieerd. Plak het in de groep.'); };
     const fail = () => {
-      if (S.tab !== 'msgs' && key === 'decision') { S.tab = 'msgs'; render(); }
-      const el = document.getElementById('msg-' + key);
+      let el = document.getElementById('msg-' + key);
+      if (!el && /^(invite|status|decision)$/.test(key)) { S.tab = 'share'; render(); el = document.getElementById('msg-' + key); }
       if (el) { el.scrollIntoView({ block: 'center' }); selectNode(el); }
       markShared(key);
-      toast('Automatisch kopiëren lukte niet. De tekst is geselecteerd: kopieer hem zelf.');
+      toast('Automatisch kopiëren lukte niet. ' + (el ? 'De tekst is geselecteerd: kopieer hem zelf.' : 'Probeer "Open in WhatsApp".'));
     };
     try {
       const p = navigator.clipboard && navigator.clipboard.writeText(text);
@@ -965,20 +1357,157 @@ function parsePaste(text, opts) {
     } catch (e) { fail(); }
   }
 
-  function openNew() {
-    S.draft = { id: null, title: '', dates: [], locked: false, orig: [] };
-    const m = new Date(); m.setDate(1); m.setHours(0, 0, 0, 0); S.calMonth = m;
-    S.draftErr = ''; S.view = 'edit'; render();
-    setTimeout(() => { const t = document.getElementById('title'); if (t) t.focus(); }, 0);
+  function parseHash() {
+    const parts = location.hash.replace(/^#\/?/, '').split('/').filter(Boolean).map(s => { try { return decodeURIComponent(s); } catch (e) { return s; } });
+    if (parts[0] === 'j' && parts[1] && parts[2]) return { name: 'join', gid: parts[1], code: parts[2], eid: parts[3] || null };
+    if (parts[0] === 'nieuw') return { name: 'newgroup' };
+    if (parts[0] === 'g' && parts[1]) {
+      const gid = parts[1];
+      if (parts[2] === 'nieuw') return { name: 'new', gid };
+      if (parts[2] === 'instellingen') return { name: 'settings', gid };
+      if (parts[2] === 'e' && parts[3]) return { name: parts[4] === 'aanpassen' ? 'edit' : 'event', gid, eid: parts[3] };
+      return { name: 'group', gid };
+    }
+    return { name: 'home' };
   }
-  function openEdit() {
-    const ev = cur(); if (!ev) return;
-    S.draft = { id: ev.id, title: ev.title, dates: clone(ev.dates), locked: locked(ev), orig: ev.dates.map(x => x.d) };
+  function go(hash, replace) {
+    if (location.hash === hash) { onRoute(); return; }
+    if (replace) { history.replaceState(null, '', hash); onRoute(); } else location.hash = hash;
+  }
+  function onRoute() {
+    const r = parseHash(), prev = S.route;
+    const same = !!prev && prev.name === r.name && prev.gid === r.gid && prev.eid === r.eid;
+    S.route = r;
+    if (!same) {
+      S.confirm = null; S.draftErr = '';
+      S.paste = ''; S.preview = null; S.previewEmpty = false;
+      S.quick = { name: '', text: '', yes: [], maybe: [] }; S.quickErr = '';
+      if (r.name !== 'event' || !prev || prev.eid !== r.eid) S.tab = 'overview';
+      S.draft = null;
+      if (r.name === 'new') {
+        S.draft = { eid: null, title: '', dates: [], locked: false, orig: [] };
+        const m = new Date(); m.setDate(1); m.setHours(0, 0, 0, 0); S.calMonth = m;
+      }
+      if (r.name === 'newgroup') S.ng = { name: '', me: savedName(), err: '', busy: false };
+      if (r.name === 'settings') S.set = { me: null, name: null };
+      if (r.gid && r.name !== 'join' && (!S.who || S.who.gid !== r.gid)) S.who = { gid: r.gid, name: savedName(), err: '', ask: null, busy: false };
+      window.scrollTo(0, 0);
+    }
+    if (r.name === 'join') { closeGroup(); if (!same) startJoin(r); }
+    else if (r.gid) openGroup(r.gid);
+    else closeGroup();
+    render();
+  }
+
+  function createGroup() {
+    const f = S.ng; if (!f || f.busy) return;
+    const name = f.name.trim().replace(/\s+/g, ' ').slice(0, 60), me = cleanName(f.me).slice(0, 40);
+    f.err = !name ? 'Geef de groep een naam.' : !me ? 'Vul je naam in.' : '';
+    if (f.err) { render(); return; }
+    f.busy = true; render();
+    const gid = rid(16), pid = 'p' + rid(9), code = rid(12), now = Date.now();
+    firebase()
+      .then(() => Remote.createGroup(gid, { name, invite: code, ownerPid: pid, people: { [pid]: { name: me, app: true, at: now } }, createdAt: now, updatedAt: now }, { pid, code, at: now }))
+      .then(() => {
+        LS.set(K_NAME, me); keepStorage(); remember(gid, name);
+        if (S.ng === f) go('#/g/' + gid, true);
+      }, e => {
+        f.busy = false;
+        f.err = e && e.code === 'permission-denied' ? 'De database weigerde de nieuwe groep. Staan de regels uit firestore.rules in Firebase (README, stap 3)?' : errText(e);
+        if (S.ng === f) render();
+      });
+  }
+
+  const joinTarget = j => '#/g/' + j.gid + (j.eid ? '/e/' + j.eid : '');
+  function startJoin(r) {
+    const j = S.join = { gid: r.gid, code: r.code, eid: r.eid, state: 'checking', name: savedName(), err: '' };
+    if (!configured) return;
+    firebase().then(() => Remote.getMember(r.gid)).then(m => {
+      if (S.join !== j) return;
+      if (m) { go(joinTarget(j), true); return; }
+      j.state = 'ask'; render();
+    }, e => { if (S.join !== j) return; j.state = 'ask'; j.err = errText(e); render(); });
+  }
+  function doJoin() {
+    const j = S.join; if (!j || j.state === 'busy') return;
+    const name = cleanName(j.name).slice(0, 40);
+    if (!name) { j.err = 'Vul je naam in.'; render(); return; }
+    j.state = 'busy'; j.err = ''; render();
+    firebase().then(() => Remote.join(j.gid, { pid: null, code: j.code, at: Date.now() })).then(() => {
+      if (S.join !== j) return;
+      LS.set(K_NAME, name); keepStorage();
+      S.pendingName = { gid: j.gid, name };
+      go(joinTarget(j), true);
+    }, e => {
+      if (S.join !== j) return;
+      j.state = 'ask';
+      j.err = e && e.code === 'permission-denied' ? 'Deze uitnodiging werkt niet (meer). Misschien maakte de beheerder een nieuwe link. Vraag in de groep om de nieuwste link.' : errText(e);
+      render();
+    });
+  }
+
+  // Right after joining: link this device to a name in the group.
+  function autoClaim() {
+    const g = S.g, pn = S.pendingName;
+    if (!pn || !g || pn.gid !== g.gid || !g.group || !g.member || myPid()) return;
+    S.pendingName = null;
+    S.who = { gid: g.gid, name: pn.name, err: '', ask: null, busy: false };
+    claimByName(pn.name);
+  }
+  function claimByName(raw) {
+    const w = S.who, name = cleanName(raw).slice(0, 40);
+    if (!name) { w.err = 'Vul je naam in.'; scheduleRender(); return; }
+    const match = people().find(p => nameKey(p.name) === nameKey(name));
+    if (match && match.app) { w.ask = match.pid; w.err = ''; scheduleRender(); return; }
+    claim(match ? match.pid : null, match ? match.name : name);
+  }
+  function claim(pid, name) {
+    const g = S.g, gid = g.gid, a = api(gid), now = Date.now(), w = S.who, p = { updatedAt: now };
+    if (pid) p['people.' + pid + '.app'] = true;
+    else { pid = 'p' + rid(9); p['people.' + pid] = { name, app: true, at: now }; }
+    w.busy = true; w.ask = null; w.err = '';
+    LS.set(K_NAME, name);
+    Promise.all([a.updateGroup(gid, p), a.updateMember(gid, { pid })])
+      .then(() => { w.busy = false; scheduleRender(); }, e => { w.busy = false; w.err = errText(e); scheduleRender(); });
+    scheduleRender();
+  }
+
+  function putAnswer(ev, pid, a) {
+    const g = S.g;
+    write(api(g.gid).updateEvent(g.gid, ev.id, { ['answers.' + pid]: { yes: a.yes, maybe: a.maybe, no: a.no, at: Date.now() }, updatedAt: Date.now() }));
+  }
+  function setDay(ev, pid, d, v) {
+    const a = answerOf(ev, pid);
+    if (stateOf(a, d) === v) return;
+    const out = { yes: a.yes.filter(x => x !== d), maybe: a.maybe.filter(x => x !== d), no: a.no.filter(x => x !== d) };
+    out[v].push(d);
+    putAnswer(ev, pid, out);
+  }
+  // Answers from the chat: unknown names join the group as people without the app.
+  function addAnswers(ev, list) {
+    const g = S.g, gid = g.gid, a = api(gid), now = Date.now(), opts = optionsOf(ev);
+    const known = new Map(people().map(p => [nameKey(p.name), p.pid]));
+    const gp = {}, ep = {};
+    let n = 0;
+    list.forEach(r => {
+      const name = cleanName(r.name).slice(0, 40); if (!name) return;
+      let pid = known.get(nameKey(name));
+      if (!pid) { pid = 'p' + rid(9); known.set(nameKey(name), pid); gp['people.' + pid] = { name, app: false, at: now + n }; }
+      ep['answers.' + pid] = { yes: r.yes.slice(), maybe: r.maybe.slice(), no: opts.map(o => o.d).filter(d => !r.yes.includes(d) && !r.maybe.includes(d)), at: now };
+      n++;
+    });
+    if (!n) return 0;
+    if (Object.keys(gp).length) write(a.updateGroup(gid, Object.assign(gp, { updatedAt: now })));
+    write(a.updateEvent(gid, ev.id, Object.assign(ep, { updatedAt: now })));
+    return n;
+  }
+
+  function initEditDraft(ev) {
+    S.draft = { eid: ev.id, title: ev.title, dates: clone(ev.dates), locked: locked(ev), orig: ev.dates.map(x => x.d) };
     const firstOpen = (ev.dates.find(x => !x.off && x.d >= todayIso()) || {}).d;
     const m = firstOpen ? pd(firstOpen) : new Date(); m.setDate(1); m.setHours(0, 0, 0, 0);
     const now = new Date(); now.setDate(1); now.setHours(0, 0, 0, 0);
     S.calMonth = m < now ? now : m;
-    S.draftErr = ''; S.view = 'edit'; render();
   }
   function toggleDay(d) {
     const dr = S.draft;
@@ -1011,89 +1540,81 @@ function parsePaste(text, opts) {
     if (!dr.locked || !dr.orig.includes(d)) dr.dates.splice(i, 1); else dr.dates[i].off = !dr.dates[i].off;
   }
   function saveDraft() {
-    const dr = S.draft;
+    const dr = S.draft, g = S.g; if (!dr || !g) return;
     const t = document.getElementById('title'); if (t) dr.title = t.value;
     if (!dr.dates.some(x => !x.off)) { S.draftErr = 'Kies minstens één dag in de kalender.'; render(); return; }
-    let ev;
-    if (dr.id && S.events[dr.id]) {
-      ev = S.events[dr.id];
-      ev.title = dr.title.trim(); ev.dates = clone(dr.dates);
-      const open = new Set(ev.dates.filter(x => !x.off).map(x => x.d));
-      if (ev.chosen && !open.has(ev.chosen)) ev.chosen = null;
-      const all = new Set(ev.dates.map(x => x.d));
-      ev.people.forEach(p => { p.yes = p.yes.filter(d => all.has(d)); p.maybe = p.maybe.filter(d => all.has(d)); });
+    const gid = g.gid, a = api(gid), now = Date.now(), title = dr.title.trim().slice(0, 80);
+    if (dr.eid) {
+      const ev = g.events[dr.eid]; if (!ev) return;
+      const p = { title, dates: clone(dr.dates), updatedAt: now };
+      const open = new Set(dr.dates.filter(x => !x.off).map(x => x.d));
+      if (ev.chosen && !open.has(ev.chosen)) p.chosen = null;
+      write(a.updateEvent(gid, dr.eid, p));
+      go('#/g/' + gid + '/e/' + dr.eid, true);
     } else {
-      if (navigator.storage && navigator.storage.persist) { try { navigator.storage.persist().catch(() => {}); } catch (e) {} }
-      const id = newId();
-      ev = normalize(id, { title: dr.title.trim(), dates: clone(dr.dates), people: [], createdAt: Date.now() });
-      S.events[id] = ev;
+      const eid = 'e' + rid(11);
+      const data = { title, dates: clone(dr.dates), chosen: null, createdBy: myPid(), createdAt: now, updatedAt: now, sharedAt: null, answers: {} };
+      g.events[eid] = normEvent(eid, data); // show it right away; the listener confirms
+      write(a.createEvent(gid, eid, data));
+      go('#/g/' + gid + '/e/' + eid, true);
     }
-    persist(ev.id, 0);
-    S.currentId = ev.id; S.view = 'event'; S.tab = ev.people.length ? 'result' : 'msgs'; S.draft = null;
-    S.paste = ''; S.preview = null; S.previewEmpty = false; S.confirmDelete = false;
-    render(); window.scrollTo({ top: 0 });
-  }
-  function openEvent(id) {
-    if (!S.events[id]) return;
-    S.currentId = id; S.view = 'event'; S.confirmDelete = false;
-    S.tab = S.events[id].people.length ? 'result' : 'msgs';
-    S.paste = ''; S.preview = null; S.previewEmpty = false;
-    S.quick = { name: '', text: '', yes: [], maybe: [] }; S.quickErr = '';
-    render(); window.scrollTo({ top: 0 });
   }
   function cycle(yes, maybe, d) {
     if (yes.includes(d)) return { yes: yes.filter(x => x !== d), maybe: maybe.concat(d) };
     if (maybe.includes(d)) return { yes, maybe: maybe.filter(x => x !== d) };
     return { yes: yes.concat(d), maybe: maybe.filter(x => x !== d) };
   }
-  function upsertPerson(ev, name, yes, maybe) {
-    const key = nameKey(name);
-    const p = ev.people.find(x => nameKey(x.name) === key);
-    if (p) { p.yes = yes.slice(); p.maybe = maybe.slice(); p.name = cleanName(name); }
-    else ev.people.push({ id: newId(), name: cleanName(name), yes: yes.slice(), maybe: maybe.slice() });
+  function leaveOrDelete(kind) {
+    const gid = S.g.gid, a = api(gid), name = S.g.group.name;
+    closeGroup(); forget(gid);
+    go('#/', true);
+    (kind === 'delete' ? a.deleteGroup(gid) : a.leave(gid))
+      .then(() => toast(kind === 'delete' ? '“' + name + '” verwijderd.' : 'Je hebt “' + name + '” verlaten.'), e => toast(errText(e)));
   }
 
   app.addEventListener('click', e => {
     const el = e.target.closest('[data-action]');
     if (!el || !app.contains(el)) return;
-    const a = el.dataset.action;
-    const ev = cur();
+    const a = el.dataset.action, g = S.g, ev = curEv(), gid = g && g.gid;
     switch (a) {
-      case 'home': S.view = 'list'; S.currentId = null; S.draft = null; render(); window.scrollTo({ top: 0 }); break;
-      case 'new': openNew(); break;
-      case 'open': if (el.dataset.id) openEvent(el.dataset.id); else { S.view = 'list'; render(); } break;
-      case 'edit': openEdit(); break;
-      case 'month': { const m = new Date(S.calMonth); m.setMonth(m.getMonth() + +el.dataset.dir); S.calMonth = m; render(); break; }
-      case 'toggle-day': toggleDay(el.dataset.d); break;
-      case 'bulk': bulk(+el.dataset.wd); break;
-      case 'save-draft': saveDraft(); break;
-      case 'tab': S.tab = el.dataset.tab; S.confirmDelete = false; render(); break;
+      case 'create-group': createGroup(); break;
+      case 'join': doJoin(); break;
+      case 'who-go': claimByName(S.who.name); break;
+      case 'who-pick': { const p = people().find(x => x.pid === el.dataset.pid); if (!p) break; if (p.app) { S.who.ask = p.pid; render(); } else claim(p.pid, p.name); break; }
+      case 'who-yes': { const p = people().find(x => x.pid === S.who.ask); if (p) claim(p.pid, p.name); break; }
+      case 'who-no': S.who.ask = null; S.who.name = ''; S.who.err = 'Kies dan een andere naam, bijvoorbeeld met de eerste letter van je achternaam erbij.'; render(); break;
+      case 'retry': closeGroup(); if (S.route.gid) openGroup(S.route.gid); render(); break;
+      case 'tab': S.tab = el.dataset.tab; S.confirm = null; render(); break;
       case 'sort': S.sortMode = el.dataset.s; render(); break;
-      case 'delete': S.confirmDelete = true; render(); break;
-      case 'delete-no': S.confirmDelete = false; render(); break;
-      case 'delete-yes': if (ev) { const t = ev.title; removeEvent(ev.id); S.view = 'list'; S.currentId = null; S.confirmDelete = false; render(); toast('“' + (t || 'Planning') + '” verwijderd.'); } break;
-      case 'choose': if (ev) { ev.chosen = el.dataset.d; persist(ev.id); render(); } break;
-      case 'unchoose': if (ev) { ev.chosen = null; persist(ev.id); render(); } break;
+      case 'confirm': S.confirm = el.dataset.what; render(); break;
+      case 'confirm-no': S.confirm = null; render(); break;
+      case 'ans': if (ev && myPid()) setDay(ev, myPid(), el.dataset.d, el.dataset.v); break;
+      case 'ans-none': if (ev && myPid()) putAnswer(ev, myPid(), { yes: [], maybe: [], no: optionsOf(ev).map(o => o.d) }); break;
+      case 'cell': if (ev) {
+        const pid = el.dataset.pid, p = people().find(x => x.pid === pid);
+        if (!p || (pid !== myPid() && p.app)) break;
+        const s = stateOf(answerOf(ev, pid), el.dataset.d);
+        setDay(ev, pid, el.dataset.d, s === 'yes' ? 'maybe' : s === 'maybe' ? 'no' : 'yes');
+      } break;
+      case 'choose': if (canManage(ev)) write(api(gid).updateEvent(gid, ev.id, { chosen: el.dataset.d, updatedAt: Date.now() })); break;
+      case 'unchoose': if (canManage(ev)) write(api(gid).updateEvent(gid, ev.id, { chosen: null, updatedAt: Date.now() })); break;
+      case 'delete-event-yes': if (canManage(ev)) {
+        const t = ev.title;
+        write(api(gid).deleteEvent(gid, ev.id));
+        go('#/g/' + gid, true);
+        toast('“' + (t || 'Planning') + '” verwijderd.');
+      } break;
       case 'copy': copy(el.dataset.msg); break;
       case 'wa': markShared(el.dataset.msg); break;
       case 'share': {
         const key = el.dataset.msg;
-        try { navigator.share({ text: msgText(key) }).then(() => markShared(key), () => {}); } catch (e) {}
+        try { navigator.share({ text: msgText(key) }).then(() => markShared(key), () => {}); } catch (x) {}
         break;
       }
-      case 'example': addExample(); break;
-      case 'backup': backup(); break;
-      case 'restore': document.getElementById('restore-file').click(); break;
-      case 'cell': if (ev && !S.readOnly) {
-        const p = ev.people.find(x => x.id === el.dataset.pid); if (!p) break;
-        const r = cycle(p.yes, p.maybe, el.dataset.d); p.yes = r.yes; p.maybe = r.maybe; persist(ev.id, 600); render();
-      } break;
-      case 'remove-person': if (ev) {
-        const i = ev.people.findIndex(x => x.id === el.dataset.pid); if (i < 0) break;
-        const [p] = ev.people.splice(i, 1); persist(ev.id); render();
-        const evId = ev.id;
-        toast(p.name + ' verwijderd.', () => { const e2 = S.events[evId]; if (!e2) return; e2.people.splice(Math.min(i, e2.people.length), 0, p); persist(evId); render(); });
-      } break;
+      case 'month': { const m = new Date(S.calMonth); m.setMonth(m.getMonth() + +el.dataset.dir); S.calMonth = m; render(); break; }
+      case 'toggle-day': if (S.draft) toggleDay(el.dataset.d); break;
+      case 'bulk': if (S.draft) bulk(+el.dataset.wd); break;
+      case 'save-draft': saveDraft(); break;
       case 'parse': {
         const ta = document.getElementById('paste'); S.paste = ta ? ta.value : S.paste;
         if (!ev) break;
@@ -1106,66 +1627,93 @@ function parsePaste(text, opts) {
       case 'pv-chip': { const r = S.preview && S.preview.rows[+el.dataset.i]; if (!r) break; const c = cycle(r.yes, r.maybe, el.dataset.d); r.yes = c.yes; r.maybe = c.maybe; render(); break; }
       case 'pv-inc': { const r = S.preview && S.preview.rows[+el.dataset.i]; if (r) { r.include = el.checked; render(); } break; }
       case 'import': if (ev && S.preview) {
-        let n = 0;
-        S.preview.rows.forEach(r => { if (r.include && r.name.trim()) { upsertPerson(ev, r.name, r.yes, r.maybe); n++; } });
-        persist(ev.id, 0);
-        S.preview = null; S.previewEmpty = false; S.paste = ''; S.tab = 'result'; render(); window.scrollTo({ top: 0 });
+        const n = addAnswers(ev, S.preview.rows.filter(r => r.include));
+        S.preview = null; S.previewEmpty = false; S.paste = ''; S.tab = 'overview'; render(); window.scrollTo({ top: 0 });
         toast(plural(n, 'antwoord', 'antwoorden') + ' toegevoegd.');
       } break;
       case 'q-chip': { const q = S.quick; const c = cycle(q.yes, q.maybe, el.dataset.d); q.yes = c.yes; q.maybe = c.maybe; render(); break; }
       case 'quick-add': if (ev) {
-        const q = S.quick;
-        if (!q.name.trim()) { S.quickErr = 'Vul een naam in.'; render(); break; }
-        upsertPerson(ev, q.name, q.yes, q.maybe); persist(ev.id, 0);
-        const nm = q.name.trim();
+        const q = S.quick, nm = cleanName(q.name);
+        if (!nm) { S.quickErr = 'Vul een naam in.'; render(); break; }
+        addAnswers(ev, [{ name: nm, yes: q.yes, maybe: q.maybe }]);
         S.quick = { name: '', text: '', yes: [], maybe: [] }; S.quickErr = '';
         render(); toast('Antwoord van ' + nm + ' toegevoegd.');
         const f = document.getElementById('q-name'); if (f) f.focus();
       } break;
+      case 'save-me': {
+        const pid = myPid(), nm = cleanName(S.set.me != null ? S.set.me : '').slice(0, 40);
+        if (S.set.me == null) break;
+        if (!nm) { toast('Vul een naam in.'); break; }
+        if (people().some(p => p.pid !== pid && nameKey(p.name) === nameKey(nm))) { toast('Er zit al iemand met die naam in de groep.'); break; }
+        write(api(gid).updateGroup(gid, { ['people.' + pid + '.name']: nm, updatedAt: Date.now() }));
+        LS.set(K_NAME, nm); S.set.me = null; toast('Naam aangepast.');
+        break;
+      }
+      case 'save-gname': {
+        if (!isOwner() || S.set.name == null) break;
+        const nm = S.set.name.trim().replace(/\s+/g, ' ').slice(0, 60);
+        if (!nm) { toast('Geef de groep een naam.'); break; }
+        write(api(gid).updateGroup(gid, { name: nm, updatedAt: Date.now() }));
+        S.set.name = null; toast('Groepsnaam aangepast.');
+        break;
+      }
+      case 'rm-yes': if (isOwner()) {
+        const p = people().find(x => x.pid === el.dataset.pid);
+        write(api(gid).removePerson(gid, el.dataset.pid));
+        S.confirm = null; render();
+        if (p) toast(p.name + ' is uit de groep verwijderd.');
+      } break;
+      case 'new-invite-yes': if (isOwner()) {
+        write(api(gid).updateGroup(gid, { invite: rid(12), updatedAt: Date.now() }));
+        S.confirm = null; render(); toast('Nieuwe link gemaakt. De oude werkt niet meer.');
+      } break;
+      case 'leave-yes': leaveOrDelete('leave'); break;
+      case 'delete-group-yes': if (isOwner()) leaveOrDelete('delete'); break;
     }
   });
 
   app.addEventListener('input', e => {
-    const t = e.target;
-    if (t.id === 'title' && S.draft) { S.draft.title = t.value; return; }
-    if (t.id === 'paste') { S.paste = t.value; return; }
-    if (t.id === 'q-name') { S.quick.name = t.value; if (S.quickErr) { S.quickErr = ''; } return; }
-    if (t.id === 'q-text') {
-      S.quick.text = t.value;
-      const ev = cur(); if (!ev) return;
-      const r = parseAnswer(t.value, optionsOf(ev));
-      S.quick.yes = r.yes; S.quick.maybe = r.maybe;
-      const box = document.getElementById('q-chips');
-      if (box) box.innerHTML = chipRow(optionsOf(ev), S.quick.yes, S.quick.maybe, 'q-chip');
-      return;
+    const t = e.target, v = t.value;
+    switch (t.id) {
+      case 'ng-name': if (S.ng) S.ng.name = v; return;
+      case 'ng-me': if (S.ng) S.ng.me = v; return;
+      case 'join-name': if (S.join) S.join.name = v; return;
+      case 'who-name': if (S.who) S.who.name = v; return;
+      case 'set-me': if (S.set) S.set.me = v; return;
+      case 'set-name': if (S.set) S.set.name = v; return;
+      case 'title': if (S.draft) S.draft.title = v; return;
+      case 'paste': S.paste = v; return;
+      case 'q-name': S.quick.name = v; S.quickErr = ''; return;
+      case 'q-text': {
+        S.quick.text = v;
+        const ev = curEv(); if (!ev) return;
+        const r = parseAnswer(v, optionsOf(ev));
+        S.quick.yes = r.yes; S.quick.maybe = r.maybe;
+        const box = document.getElementById('q-chips');
+        if (box) box.innerHTML = chipRow(optionsOf(ev), S.quick.yes, S.quick.maybe, 'q-chip');
+        return;
+      }
     }
-    if (t.id && t.id.startsWith('pv-name-') && S.preview) { const r = S.preview.rows[+t.dataset.i]; if (r) r.name = t.value; return; }
+    if (t.id && t.id.startsWith('pv-name-') && S.preview) { const r = S.preview.rows[+t.dataset.i]; if (r) r.name = v; }
   });
   app.addEventListener('change', e => {
     const t = e.target;
-    if (t.classList.contains('nm')) {
-      const ev = cur(); if (!ev) return;
-      const p = ev.people.find(x => x.id === t.dataset.pid); if (!p) return;
-      const v = cleanName(t.value);
-      if (v && v !== p.name) { p.name = v; persist(ev.id); }
-      render();
-    }
     if (t.id && t.id.startsWith('pv-name-') && S.preview) render();
   });
-  document.getElementById('restore-file').addEventListener('change', e => {
-    const f = e.target.files && e.target.files[0];
-    if (f) restore(f);
-    e.target.value = '';
-  });
+  const ENTER = { 'ng-name': 'create-group', 'ng-me': 'create-group', 'join-name': 'join', 'who-name': 'who-go', 'set-me': 'save-me', 'set-name': 'save-gname', 'q-name': 'quick-add', 'q-text': 'quick-add', 'title': 'save-draft' };
   app.addEventListener('keydown', e => {
-    if (e.key === 'Enter' && (e.target.id === 'q-name' || e.target.id === 'q-text')) { e.preventDefault(); const b = app.querySelector('[data-action="quick-add"]'); if (b) b.click(); }
-    if (e.key === 'Enter' && e.target.id === 'title') { e.preventDefault(); saveDraft(); }
+    if (e.key !== 'Enter' || !ENTER[e.target.id]) return;
+    e.preventDefault();
+    const b = app.querySelector(`[data-action="${ENTER[e.target.id]}"]`);
+    if (b) b.click();
   });
 
   /* ---------- boot ---------- */
-  S.events = loadAll(); S.loaded = true;
-  if (!canStore) S.error = 'Je browser laat deze pagina niets bewaren (bijvoorbeeld in een privévenster). Je kan alles gebruiken, maar je planningen verdwijnen als je de pagina sluit.';
-  render();
+  window.addEventListener('hashchange', onRoute);
+  window.addEventListener('online', () => { S.offline = false; render(); });
+  window.addEventListener('offline', () => { S.offline = true; render(); });
+  onRoute();
+  if (configured) firebase().catch(e => { S.error = errText(e); render(); });
 })();
 </script>
 </body>
